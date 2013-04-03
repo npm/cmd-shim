@@ -12,7 +12,6 @@
   "license": "BSD",
   "dependencies": {
     "graceful-fs": "~1.2.0",
-    "rimraf": "2",
     "mkdirp": "~0.3.3",
     "slide": "1",
     "npmlog": "0"

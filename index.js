@@ -1,4 +1,3 @@
-// XXX Todo:
 // On windows, create a .cmd file.
 // Read the #! in the file to see what it uses.  The vast majority
 // of the time, this will be either:
@@ -15,7 +14,6 @@ cmdShim.ifExists = cmdShimIfExists
 var fs = require("graceful-fs")
   , chain = require("slide").chain
   , mkdir = require("mkdirp")
-  , rm = require("rimraf")
   , log = require("npmlog")
   , path = require("path")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
@@ -24,6 +22,14 @@ function cmdShimIfExists (from, to, cb) {
   fs.stat(from, function (er) {
     if (er) return cb()
     cmdShim(from, to, cb)
+  })
+}
+
+// Try to unlink, but ignore errors.
+// Any problems will surface later.
+function rm (path, cb) {
+  fs.unlink(path, function(er) {
+    cb()
   })
 }
 
