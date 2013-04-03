@@ -1,4 +1,3 @@
-// XXX Todo:
 // On windows, create a .cmd file.
 // Read the #! in the file to see what it uses.  The vast majority
 // of the time, this will be either:
@@ -12,11 +11,13 @@
 module.exports = cmdShim
 cmdShim.ifExists = cmdShimIfExists
 
-var fs = require("graceful-fs")
-  , chain = require("slide").chain
-  , mkdir = require("mkdirp")
-  , rm = require("rimraf")
-  , log = require("npmlog")
+try {
+  var fs = require("graceful-fs")
+} catch (e) {
+  var fs = require("fs")
+}
+
+var mkdir = require("mkdirp")
   , path = require("path")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
@@ -27,18 +28,31 @@ function cmdShimIfExists (from, to, cb) {
   })
 }
 
-function cmdShim (from, to, cb) {
-  if (process.platform !== "win32") {
-    return cb(new Error(".cmd shims only should be used on windows"))
-  }
+// Try to unlink, but ignore errors.
+// Any problems will surface later.
+function rm (path, cb) {
+  fs.unlink(path, function(er) {
+    cb()
+  })
+}
 
-  chain
-    ( [ [fs, "stat", from]
-      , [rm, to + ".cmd"]
-      , [rm, to]
-      , [mkdir, path.dirname(to)]
-      , [writeShim, from, to] ]
-    , cb )
+function cmdShim (from, to, cb) {
+  fs.stat(from, function (er, stat) {
+    if (er)
+      return cb(er)
+
+    cmdShim_(from, to, cb)
+  })
+}
+
+function cmdShim_ (from, to, cb) {
+  var then = times(2, next, cb)
+  rm(to, then)
+  rm(to + ".cmd", then)
+
+  function next(er) {
+    writeShim(from, to, cb)
+  }
 }
 
 function writeShim (from, to, cb) {
@@ -46,14 +60,18 @@ function writeShim (from, to, cb) {
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
   // sort of script, and just call it directly.
-  fs.readFile(from, "utf8", function (er, data) {
-    if (er) return writeShim_(from, to, null, null, cb)
-    var firstLine = data.trim().split(/\r*\n/)[0]
-      , shebang = firstLine.match(shebangExpr)
-    if (!shebang) return writeShim_(from, to, null, null, cb)
-    var prog = shebang[1]
-      , args = shebang[2] || ""
-    return writeShim_(from, to, prog, args, cb)
+  mkdir(path.dirname(to), function (er) {
+    if (er)
+      return cb(er)
+    fs.readFile(from, "utf8", function (er, data) {
+      if (er) return writeShim_(from, to, null, null, cb)
+      var firstLine = data.trim().split(/\r*\n/)[0]
+        , shebang = firstLine.match(shebangExpr)
+      if (!shebang) return writeShim_(from, to, null, null, cb)
+      var prog = shebang[1]
+        , args = shebang[2] || ""
+      return writeShim_(from, to, prog, args, cb)
+    })
   })
 }
 
@@ -93,8 +111,6 @@ function writeShim_ (from, to, prog, args, cb) {
   } else {
     cmd = prog + " " + args + " " + target + " %*\r\n"
   }
-
-  cmd = ":: Created by npm, please don't edit manually.\r\n" + cmd
 
   // #!/bin/sh
   // basedir=`dirname "$0"`
@@ -137,17 +153,28 @@ function writeShim_ (from, to, prog, args, cb) {
        + "exit $?\n"
   }
 
-  fs.writeFile(to + ".cmd", cmd, "utf8", function (er) {
-    if (er) {
-      log.warn("cmdShim", "Could not write "+to+".cmd")
-      return cb(er)
+  var then = times(2, next, cb)
+  fs.writeFile(to + ".cmd", cmd, "utf8", then)
+  fs.writeFile(to, sh, "utf8", then)
+  function next () {
+    chmodShim(to, cb)
+  }
+}
+
+function chmodShim (to, cb) {
+  var then = times(2, cb, cb)
+  fs.chmod(to, 0755, then)
+  fs.chmod(to + ".cmd", 0755, then)
+}
+
+function times(n, ok, cb) {
+  var errState = null
+  return function(er) {
+    if (!errState) {
+      if (er)
+        cb(errState = er)
+      else if (--n === 0)
+        ok()
     }
-    fs.writeFile(to, sh, "utf8", function (er) {
-      if (er) {
-        log.warn("shShim", "Could not write "+to)
-        return cb(er)
-      }
-      fs.chmod(to, 0755, cb)
-    })
-  })
+  }
 }

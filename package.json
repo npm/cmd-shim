@@ -3,18 +3,21 @@
   "version": "1.0.0",
   "description": "Used in npm for command line application support",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap test/*.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ForbesLindesay/cmd-shim.git"
   },
-  "license": "MIT",
+  "license": "BSD",
+  "optionalDependencies": {
+    "graceful-fs": "1.2"
+  },
   "dependencies": {
-    "graceful-fs": "~1.2.0",
-    "rimraf": "2",
-    "mkdirp": "~0.3.3",
-    "slide": "1",
-    "npmlog": "0"
+    "mkdirp": "~0.3.3"
+  },
+  "devDependencies": {
+    "tap": "~0.4.1",
+    "rimraf": "~2.1.4"
   }
 }
