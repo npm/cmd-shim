@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Used in npm for command line application support",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap test/*.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,9 @@
   },
   "dependencies": {
     "mkdirp": "~0.3.3"
+  },
+  "devDependencies": {
+    "tap": "~0.4.1",
+    "rimraf": "~2.1.4"
   }
 }
