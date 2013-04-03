@@ -37,9 +37,6 @@ function rm (path, cb) {
 }
 
 function cmdShim (from, to, cb) {
-  if (process.platform !== "win32")
-    return cb(new Error(".cmd shims only should be used on windows"))
-
   fs.stat(from, function (er, stat) {
     if (er)
       return cb(er)
