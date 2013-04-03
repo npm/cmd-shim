@@ -46,18 +46,12 @@ function cmdShim (from, to, cb) {
 }
 
 function cmdShim_ (from, to, cb) {
-  var n = 0
-  rm(to, then())
-  rm(to + ".cmd", then())
+  var then = times(2, next, cb)
+  rm(to, then)
+  rm(to + ".cmd", then)
 
-  function then() {
-    n++
-    return function (er) {
-      if (er)
-        cb(er)
-      else if (--n === 0)
-        writeShim(from, to, cb)
-    }
+  function next(er) {
+    writeShim(from, to, cb)
   }
 }
 
@@ -161,15 +155,28 @@ function writeShim_ (from, to, prog, args, cb) {
        + "exit $?\n"
   }
 
-  fs.writeFile(to + ".cmd", cmd, "utf8", function (er) {
-    if (er)
-      return cb(er)
+  var then = times(2, next, cb)
+  fs.writeFile(to + ".cmd", cmd, "utf8", then)
+  fs.writeFile(to, sh, "utf8", then)
+  function next () {
+    chmodShim(to, cb)
+  }
+}
 
-    fs.writeFile(to, sh, "utf8", function (er) {
+function chmodShim (to, cb) {
+  var then = times(2, cb, cb)
+  fs.chmod(to, 0755, then)
+  fs.chmod(to + ".cmd", 0755, then)
+}
+
+function times(n, ok, cb) {
+  var errState = null
+  return function(er) {
+    if (!errState) {
       if (er)
-        return cb(er)
-
-      fs.chmod(to, 0755, cb)
-    })
-  })
+        cb(errState = er)
+      else if (--n === 0)
+        ok()
+    }
+  }
 }
