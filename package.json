@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/ForbesLindesay/cmd-shim.git"
   },
-  "license": "MIT",
+  "license": "BSD",
   "dependencies": {
     "graceful-fs": "~1.2.0",
     "rimraf": "2",
