@@ -14,7 +14,6 @@
     "graceful-fs": "1.2"
   },
   "dependencies": {
-    "mkdirp": "~0.3.3",
-    "slide": "1"
+    "mkdirp": "~0.3.3"
   }
 }

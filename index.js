@@ -17,8 +17,7 @@ try {
   var fs = require("fs")
 }
 
-var chain = require("slide").chain
-  , mkdir = require("mkdirp")
+var mkdir = require("mkdirp")
   , path = require("path")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
@@ -38,17 +37,31 @@ function rm (path, cb) {
 }
 
 function cmdShim (from, to, cb) {
-  if (process.platform !== "win32") {
+  if (process.platform !== "win32")
     return cb(new Error(".cmd shims only should be used on windows"))
-  }
 
-  chain
-    ( [ [fs, "stat", from]
-      , [rm, to + ".cmd"]
-      , [rm, to]
-      , [mkdir, path.dirname(to)]
-      , [writeShim, from, to] ]
-    , cb )
+  fs.stat(from, function (er, stat) {
+    if (er)
+      return cb(er)
+
+    cmdShim_(from, to, cb)
+  })
+}
+
+function cmdShim_ (from, to, cb) {
+  var n = 0
+  rm(to, then())
+  rm(to + ".cmd", then())
+
+  function then() {
+    n++
+    return function (er) {
+      if (er)
+        cb(er)
+      else if (--n === 0)
+        writeShim(from, to, cb)
+    }
+  }
 }
 
 function writeShim (from, to, cb) {
@@ -56,14 +69,18 @@ function writeShim (from, to, cb) {
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
   // sort of script, and just call it directly.
-  fs.readFile(from, "utf8", function (er, data) {
-    if (er) return writeShim_(from, to, null, null, cb)
-    var firstLine = data.trim().split(/\r*\n/)[0]
-      , shebang = firstLine.match(shebangExpr)
-    if (!shebang) return writeShim_(from, to, null, null, cb)
-    var prog = shebang[1]
-      , args = shebang[2] || ""
-    return writeShim_(from, to, prog, args, cb)
+  mkdir(path.dirname(to), function (er) {
+    if (er)
+      return cb(er)
+    fs.readFile(from, "utf8", function (er, data) {
+      if (er) return writeShim_(from, to, null, null, cb)
+      var firstLine = data.trim().split(/\r*\n/)[0]
+        , shebang = firstLine.match(shebangExpr)
+      if (!shebang) return writeShim_(from, to, null, null, cb)
+      var prog = shebang[1]
+        , args = shebang[2] || ""
+      return writeShim_(from, to, prog, args, cb)
+    })
   })
 }
 
