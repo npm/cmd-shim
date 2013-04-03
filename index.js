@@ -14,7 +14,6 @@ cmdShim.ifExists = cmdShimIfExists
 var fs = require("graceful-fs")
   , chain = require("slide").chain
   , mkdir = require("mkdirp")
-  , log = require("npmlog")
   , path = require("path")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
@@ -144,15 +143,13 @@ function writeShim_ (from, to, prog, args, cb) {
   }
 
   fs.writeFile(to + ".cmd", cmd, "utf8", function (er) {
-    if (er) {
-      log.warn("cmdShim", "Could not write "+to+".cmd")
+    if (er)
       return cb(er)
-    }
+
     fs.writeFile(to, sh, "utf8", function (er) {
-      if (er) {
-        log.warn("shShim", "Could not write "+to)
+      if (er)
         return cb(er)
-      }
+
       fs.chmod(to, 0755, cb)
     })
   })
