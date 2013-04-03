@@ -112,8 +112,6 @@ function writeShim_ (from, to, prog, args, cb) {
     cmd = prog + " " + args + " " + target + " %*\r\n"
   }
 
-  cmd = ":: Created by npm, please don't edit manually.\r\n" + cmd
-
   // #!/bin/sh
   // basedir=`dirname "$0"`
   //
