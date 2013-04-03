@@ -11,8 +11,13 @@
 module.exports = cmdShim
 cmdShim.ifExists = cmdShimIfExists
 
-var fs = require("graceful-fs")
-  , chain = require("slide").chain
+try {
+  var fs = require("graceful-fs")
+} catch (e) {
+  var fs = require("fs")
+}
+
+var chain = require("slide").chain
   , mkdir = require("mkdirp")
   , path = require("path")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
