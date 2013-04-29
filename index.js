@@ -19,7 +19,8 @@ try {
 
 var mkdir = require("mkdirp")
   , path = require("path")
-  , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
+  , toBatchSyntax = require("./toBatchSyntax")
+  , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+=[^ \t]+\s+)*\s*([^ \t]+)(.*)$/
 
 function cmdShimIfExists (from, to, cb) {
   fs.stat(from, function (er) {
@@ -67,15 +68,17 @@ function writeShim (from, to, cb) {
       if (er) return writeShim_(from, to, null, null, cb)
       var firstLine = data.trim().split(/\r*\n/)[0]
         , shebang = firstLine.match(shebangExpr)
-      if (!shebang) return writeShim_(from, to, null, null, cb)
-      var prog = shebang[1]
-        , args = shebang[2] || ""
-      return writeShim_(from, to, prog, args, cb)
+      if (!shebang) return writeShim_(from, to, null, null, null, cb)
+      var vars = shebang[1] || ""
+        , prog = shebang[2]
+        , args = shebang[3] || ""
+      return writeShim_(from, to, prog, args, vars, cb)
     })
   })
 }
 
-function writeShim_ (from, to, prog, args, cb) {
+
+function writeShim_ (from, to, prog, args, variables, cb) {
   var shTarget = path.relative(path.dirname(to), from)
     , target = shTarget.split("/").join("\\")
     , longProg
@@ -83,6 +86,7 @@ function writeShim_ (from, to, prog, args, cb) {
     , shLongProg
   shTarget = shTarget.split("\\").join("/")
   args = args || ""
+  variables = variables || ""
   if (!prog) {
     prog = "\"%~dp0\\" + target + "\""
     shProg = "\"$basedir/" + shTarget + "\""
@@ -103,11 +107,17 @@ function writeShim_ (from, to, prog, args, cb) {
   // )
   var cmd
   if (longProg) {
-    cmd = "@IF EXIST " + longProg + " (\r\n"
+    shLongProg = shLongProg.trim();
+    args = args.trim();
+    var variableDeclarationsAsBatch = toBatchSyntax.convertToSetCommands(variables) || "";
+    cmd = ((variableDeclarationsAsBatch.length > 0) ? ("@SETLOCAL\r\n"
+        + variableDeclarationsAsBatch) : "")
+        + "@IF EXIST " + longProg + " (\r\n"
         + "  " + longProg + " " + args + " " + target + " %*\r\n"
         + ") ELSE (\r\n"
         + "  " + prog + " " + args + " " + target + " %*\r\n"
         + ")"
+        + ((variableDeclarationsAsBatch.length > 0) ? "\r\n@ENDLOCAL" : "")
   } else {
     cmd = prog + " " + args + " " + target + " %*\r\n"
   }
@@ -141,10 +151,10 @@ function writeShim_ (from, to, prog, args, cb) {
 
     sh = sh
        + "if [ -x "+shLongProg+" ]; then\n"
-       + "  " + shLongProg + " " + args + " " + shTarget + " \"$@\"\n"
+       + "  " + variables + shLongProg + " " + args + " " + shTarget + " \"$@\"\n"
        + "  ret=$?\n"
        + "else \n"
-       + "  " + shProg + " " + args + " " + shTarget + " \"$@\"\n"
+       + "  " + variables + shProg + " " + args + " " + shTarget + " \"$@\"\n"
        + "  ret=$?\n"
        + "fi\n"
        + "exit $ret\n"
