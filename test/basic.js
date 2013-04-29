@@ -76,22 +76,63 @@ test('env shebang with args', function (t) {
             "\nesac"+
             "\n"+
             "\nif [ -x \"$basedir/node\" ]; then"+
-            "\n  \"$basedir/node\"  --expose_gc \"$basedir/from.env.args\" \"$@\""+
+            "\n  \"$basedir/node\" --expose_gc \"$basedir/from.env.args\" \"$@\""+
             "\n  ret=$?"+
             "\nelse "+
-            "\n  node  --expose_gc \"$basedir/from.env.args\" \"$@\""+
+            "\n  node --expose_gc \"$basedir/from.env.args\" \"$@\""+
             "\n  ret=$?"+
             "\nfi"+
             "\nexit $ret"+
             "\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
             "@IF EXIST \"%~dp0\\node.exe\" (\r"+
-            "\n  \"%~dp0\\node.exe\"  --expose_gc \"%~dp0\\from.env.args\" %*\r"+
+            "\n  \"%~dp0\\node.exe\" --expose_gc \"%~dp0\\from.env.args\" %*\r"+
             "\n) ELSE (\r"+
             "\n  @SETLOCAL\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  node  --expose_gc \"%~dp0\\from.env.args\" %*\r"+
+            "\n  node --expose_gc \"%~dp0\\from.env.args\" %*\r"+
             "\n)")
+    t.end()
+  })
+})
+
+test('env shebang with variables', function (t) {
+  var from = path.resolve(fixtures, 'from.env.variables')
+  var to = path.resolve(fixtures, 'env.variables.shim')
+  cmdShim(from, to, function(er) {
+    if (er)
+      throw er
+    console.error('%j', fs.readFileSync(to, 'utf8'))
+    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+
+    t.equal(fs.readFileSync(to, 'utf8'),
+            "#!/bin/sh"+
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+            "\n"+
+            "\ncase `uname` in"+
+            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
+            "\nesac"+
+            "\n"+
+            "\nif [ -x \"$basedir/node\" ]; then"+
+            "\n  NODE_PATH=./lib:$NODE_PATH \"$basedir/node\"  \"$basedir/from.env.variables\" \"$@\""+
+            "\n  ret=$?"+
+            "\nelse "+
+            "\n  NODE_PATH=./lib:$NODE_PATH node  \"$basedir/from.env.variables\" \"$@\""+
+            "\n  ret=$?"+
+            "\nfi"+
+            "\nexit $ret"+
+            "\n")
+    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+            "@SETLOCAL\r"+
+            "\n@SET NODE_PATH=./lib:%NODE_PATH%\r"+
+            "\n@IF EXIST \"%~dp0\\node.exe\" (\r"+
+            "\n  \"%~dp0\\node.exe\"  \"%~dp0\\from.env.variables\" %*\r"+
+            "\n) ELSE (\r"+
+            "\n  @SETLOCAL\r" +
+            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r" +
+            "\n  node  \"%~dp0\\from.env.variables\" %*\r"+
+            "\n)\r"+
+      "\n@ENDLOCAL")
     t.end()
   })
 })
@@ -153,10 +194,10 @@ test('explicit shebang with args', function (t) {
             "\nesac" +
             "\n" +
             "\nif [ -x \"$basedir//usr/bin/sh\" ]; then" +
-            "\n  \"$basedir//usr/bin/sh\"  -x \"$basedir/from.sh.args\" \"$@\"" +
+            "\n  \"$basedir//usr/bin/sh\" -x \"$basedir/from.sh.args\" \"$@\"" +
             "\n  ret=$?" +
             "\nelse " +
-            "\n  /usr/bin/sh  -x \"$basedir/from.sh.args\" \"$@\"" +
+            "\n  /usr/bin/sh -x \"$basedir/from.sh.args\" \"$@\"" +
             "\n  ret=$?" +
             "\nfi" +
             "\nexit $ret" +
@@ -164,11 +205,11 @@ test('explicit shebang with args', function (t) {
 
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
             "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
-            "\n  \"%~dp0\\/usr/bin/sh.exe\"  -x \"%~dp0\\from.sh.args\" %*\r" +
+            "\n  \"%~dp0\\/usr/bin/sh.exe\" -x \"%~dp0\\from.sh.args\" %*\r" +
             "\n) ELSE (\r" +
             "\n  @SETLOCAL\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  /usr/bin/sh  -x \"%~dp0\\from.sh.args\" %*\r" +
+            "\n  /usr/bin/sh -x \"%~dp0\\from.sh.args\" %*\r" +
             "\n)")
     t.end()
   })
