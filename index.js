@@ -19,7 +19,7 @@ try {
 
 var mkdir = require("mkdirp")
   , path = require("path")
-  , toBatchSyntax = require("./toBatchSyntax")
+  , toBatchSyntax = require("./lib/to-batch-syntax")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+=[^ \t]+\s+)*\s*([^ \t]+)(.*)$/
 
 function cmdShimIfExists (from, to, cb) {
