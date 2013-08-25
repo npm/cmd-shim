@@ -11,7 +11,7 @@
   },
   "license": "BSD",
   "optionalDependencies": {
-    "graceful-fs": "1.2"
+    "graceful-fs": "2"
   },
   "dependencies": {
     "mkdirp": "~0.3.3"
