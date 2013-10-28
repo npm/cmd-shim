@@ -31,7 +31,7 @@ test('env shebang', function (t) {
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh"+
-            "\nbasedir=`dirname \"$0\"`"+
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
             "\n"+
             "\ncase `uname` in"+
             "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
@@ -67,7 +67,7 @@ test('env shebang with args', function (t) {
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh"+
-            "\nbasedir=`dirname \"$0\"`"+
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
             "\n"+
             "\ncase `uname` in"+
             "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
@@ -103,7 +103,7 @@ test('explicit shebang', function (t) {
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh" +
-            "\nbasedir=`dirname \"$0\"`" +
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
             "\ncase `uname` in" +
             "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;" +
@@ -140,7 +140,7 @@ test('explicit shebang with args', function (t) {
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh" +
-            "\nbasedir=`dirname \"$0\"`" +
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
             "\ncase `uname` in" +
             "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;" +
