@@ -10,11 +10,8 @@
     "url": "https://github.com/ForbesLindesay/cmd-shim.git"
   },
   "license": "BSD",
-  "optionalDependencies": {
-    "graceful-fs": "2"
-  },
   "dependencies": {
-    "graceful-fs": "^3.0.2",
+    "graceful-fs": ">3.0.1 <4.0.0-0",
     "mkdirp": "~0.5.0"
   },
   "devDependencies": {
