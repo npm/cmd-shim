@@ -6,6 +6,12 @@ var fixtures = path.resolve(__dirname, 'fixtures')
 
 var cmdShim = require('../')
 
+var resolveDir = "@ECHO.%0 | FINDSTR /C:\\ /C:/ >NUL && (\r\n"
+               + "  SET dir=%~dp0\r\n"
+               + ") || (\r\n"
+               + "  FOR /F %%i IN ('where %0') DO @SET dir=%%~dpi\r\n"
+               + ")\r\n"
+
 test('no shebang', function (t) {
   var from = path.resolve(fixtures, 'from.exe')
   var to = path.resolve(fixtures, 'exe.shim')
@@ -15,7 +21,7 @@ test('no shebang', function (t) {
     t.equal(fs.readFileSync(to, 'utf8'),
             "\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "\"%~dp0\\from.exe\"   %*\r\n")
+            resolveDir + "\"%dir%\\from.exe\"   %*\r\n")
     t.end()
   })
 })
@@ -47,12 +53,13 @@ test('env shebang', function (t) {
             "\nexit $ret"+
             "\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\node.exe\" (\r"+
-            "\n  \"%~dp0\\node.exe\"  \"%~dp0\\from.env\" %*\r"+
+            resolveDir+
+            "@IF EXIST \"%dir%\\node.exe\" (\r"+
+            "\n  \"%dir%\\node.exe\"  \"%dir%\\from.env\" %*\r"+
             "\n) ELSE (\r"+
             "\n  @SETLOCAL\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  node  \"%~dp0\\from.env\" %*\r"+
+            "\n  node  \"%dir%\\from.env\" %*\r"+
             "\n)")
     t.end()
   })
@@ -85,12 +92,13 @@ test('env shebang with args', function (t) {
             "\nexit $ret"+
             "\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\node.exe\" (\r"+
-            "\n  \"%~dp0\\node.exe\"  --expose_gc \"%~dp0\\from.env.args\" %*\r"+
+            resolveDir+
+            "@IF EXIST \"%dir%\\node.exe\" (\r"+
+            "\n  \"%dir%\\node.exe\"  --expose_gc \"%dir%\\from.env.args\" %*\r"+
             "\n) ELSE (\r"+
             "\n  @SETLOCAL\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  node  --expose_gc \"%~dp0\\from.env.args\" %*\r"+
+            "\n  node  --expose_gc \"%dir%\\from.env.args\" %*\r"+
             "\n)")
     t.end()
   })
@@ -124,12 +132,13 @@ test('explicit shebang', function (t) {
             "\n")
 
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
-            "\n  \"%~dp0\\/usr/bin/sh.exe\"  \"%~dp0\\from.sh\" %*\r" +
+            resolveDir +
+            "@IF EXIST \"%dir%\\/usr/bin/sh.exe\" (\r" +
+            "\n  \"%dir%\\/usr/bin/sh.exe\"  \"%dir%\\from.sh\" %*\r" +
             "\n) ELSE (\r" +
             "\n  @SETLOCAL\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  /usr/bin/sh  \"%~dp0\\from.sh\" %*\r" +
+            "\n  /usr/bin/sh  \"%dir%\\from.sh\" %*\r" +
             "\n)")
     t.end()
   })
@@ -163,12 +172,13 @@ test('explicit shebang with args', function (t) {
             "\n")
 
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
-            "\n  \"%~dp0\\/usr/bin/sh.exe\"  -x \"%~dp0\\from.sh.args\" %*\r" +
+            resolveDir +
+            "@IF EXIST \"%dir%\\/usr/bin/sh.exe\" (\r" +
+            "\n  \"%dir%\\/usr/bin/sh.exe\"  -x \"%dir%\\from.sh.args\" %*\r" +
             "\n) ELSE (\r" +
             "\n  @SETLOCAL\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  /usr/bin/sh  -x \"%~dp0\\from.sh.args\" %*\r" +
+            "\n  /usr/bin/sh  -x \"%dir%\\from.sh.args\" %*\r" +
             "\n)")
     t.end()
   })

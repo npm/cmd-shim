@@ -80,28 +80,38 @@ function writeShim_ (from, to, prog, args, cb) {
   shTarget = shTarget.split("\\").join("/")
   args = args || ""
   if (!prog) {
-    prog = "\"%~dp0\\" + target + "\""
+    prog = "\"%dir%\\" + target + "\""
     shProg = "\"$basedir/" + shTarget + "\""
     args = ""
     target = ""
     shTarget = ""
   } else {
-    longProg = "\"%~dp0\\" + prog + ".exe\""
+    longProg = "\"%dir%\\" + prog + ".exe\""
     shLongProg = "\"$basedir/" + prog + "\""
-    target = "\"%~dp0\\" + target + "\""
+    target = "\"%dir%\\" + target + "\""
     shTarget = "\"$basedir/" + shTarget + "\""
   }
 
-  // @IF EXIST "%~dp0\node.exe" (
-  //   "%~dp0\node.exe" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+  // @ECHO.%0 | FINDSTR /C:\ /C:/ >NUL && (
+  //   SET dir=%~dp0
+  // ) || (
+  //   FOR /F %%i IN ('where %0') DO @SET dir=%%~dpi
+  // )
+  // @IF EXIST "%dir%\node.exe" (
+  //   "%dir%\node.exe" "%dir%\.\node_modules\npm\bin\npm-cli.js" %*
   // ) ELSE (
   //   SETLOCAL
   //   SET PATHEXT=%PATHEXT:;.JS;=;%
-  //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+  //   node "%dir%\.\node_modules\npm\bin\npm-cli.js" %*
   // )
-  var cmd
+  var cmd = "@ECHO.%0 | FINDSTR /C:\\ /C:/ >NUL && (\r\n"
+          + "  SET dir=%~dp0\r\n"
+          + ") || (\r\n"
+          + "  FOR /F %%i IN ('where %0') DO @SET dir=%%~dpi\r\n"
+          + ")\r\n"
   if (longProg) {
-    cmd = "@IF EXIST " + longProg + " (\r\n"
+    cmd = cmd
+        + "@IF EXIST " + longProg + " (\r\n"
         + "  " + longProg + " " + args + " " + target + " %*\r\n"
         + ") ELSE (\r\n"
         + "  @SETLOCAL\r\n"
@@ -109,7 +119,7 @@ function writeShim_ (from, to, prog, args, cb) {
         + "  " + prog + " " + args + " " + target + " %*\r\n"
         + ")"
   } else {
-    cmd = prog + " " + args + " " + target + " %*\r\n"
+    cmd = cmd + prog + " " + args + " " + target + " %*\r\n"
   }
 
   // #!/bin/sh
