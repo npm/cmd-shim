@@ -15,7 +15,7 @@ test('no shebang', function (t) {
     t.equal(fs.readFileSync(to, 'utf8'),
             "\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "\"%~dp0\\from.exe\"   %*\r\n")
+            "@\"%~dp0\\from.exe\"   %*\r\n")
     t.end()
   })
 })
