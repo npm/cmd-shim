@@ -109,7 +109,7 @@ function writeShim_ (from, to, prog, args, cb) {
         + "  " + prog + " " + args + " " + target + " %*\r\n"
         + ")"
   } else {
-    cmd = prog + " " + args + " " + target + " %*\r\n"
+    cmd = "@" + prog + " " + args + " " + target + " %*\r\n"
   }
 
   // #!/bin/sh
