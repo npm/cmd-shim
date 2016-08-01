@@ -17,7 +17,7 @@ npm install cmd-shim
 
 ## API
 
-### cmdShim(from, to, cb)
+### cmdShim(from, to, opts?, cb)
 
 Create a cmd shim at `to` for the command line program at `from`.
 e.g.
@@ -29,7 +29,7 @@ cmdShim(__dirname + '/cli.js', '/usr/bin/command-name', function (err) {
 });
 ```
 
-### cmdShim.ifExists(from, to, cb)
+### cmdShim.ifExists(from, to, opts?, cb)
 
 The same as above, but will just continue if the file does not exist.
 Source:
@@ -41,4 +41,15 @@ function cmdShimIfExists (from, to, cb) {
     cmdShim(from, to, cb)
   })
 }
+```
+
+### opts
+
+* `opts.preserveSymlinks` - *Boolean* - if true, `--preserve-symlinks` is added to the options passed to NodeJS.
+
+```javascript
+var cmdShim = require('cmd-shim');
+cmdShim(__dirname + '/cli.js', '/usr/bin/command-name', { preserveSymlinks: true }, function (err) {
+  if (err) throw err;
+});
 ```

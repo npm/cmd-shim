@@ -17,10 +17,14 @@ var mkdir = require("mkdirp")
   , path = require("path")
   , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
-function cmdShimIfExists (from, to, cb) {
+function cmdShimIfExists (from, to, opts, cb) {
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = {}
+  }
   fs.stat(from, function (er) {
     if (er) return cb()
-    cmdShim(from, to, cb)
+    cmdShim(from, to, opts, cb)
   })
 }
 
@@ -32,26 +36,31 @@ function rm (path, cb) {
   })
 }
 
-function cmdShim (from, to, cb) {
+function cmdShim (from, to, opts, cb) {
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = {}
+  }
   fs.stat(from, function (er, stat) {
     if (er)
       return cb(er)
 
-    cmdShim_(from, to, cb)
+    cmdShim_(from, to, opts, cb)
   })
 }
 
-function cmdShim_ (from, to, cb) {
+function cmdShim_ (from, to, opts, cb) {
   var then = times(2, next, cb)
   rm(to, then)
   rm(to + ".cmd", then)
 
   function next(er) {
-    writeShim(from, to, cb)
+    writeShim(from, to, opts, cb)
   }
 }
 
-function writeShim (from, to, cb) {
+function writeShim (from, to, opts, cb) {
+  var defaultArgs = opts && opts.preserveSymlinks ? "--preserve-symlinks" : ""
   // make a cmd file and a sh script
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
@@ -60,12 +69,12 @@ function writeShim (from, to, cb) {
     if (er)
       return cb(er)
     fs.readFile(from, "utf8", function (er, data) {
-      if (er) return writeShim_(from, to, null, null, cb)
+      if (er) return writeShim_(from, to, null, defaultArgs, cb)
       var firstLine = data.trim().split(/\r*\n/)[0]
         , shebang = firstLine.match(shebangExpr)
-      if (!shebang) return writeShim_(from, to, null, null, cb)
+      if (!shebang) return writeShim_(from, to, null, defaultArgs, cb)
       var prog = shebang[1]
-        , args = shebang[2] || ""
+        , args = shebang[2] && (defaultArgs && (shebang[2] + " " + defaultArgs) || shebang[2]) || defaultArgs
       return writeShim_(from, to, prog, args, cb)
     })
   })

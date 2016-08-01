@@ -58,6 +58,44 @@ test('env shebang', function (t) {
   })
 })
 
+test('env shebang with default args', function (t) {
+  var from = path.resolve(fixtures, 'from.env')
+  var to = path.resolve(fixtures, 'env.shim')
+  cmdShim(from, to, { preserveSymlinks: true }, function(er) {
+    if (er)
+      throw er
+    console.error('%j', fs.readFileSync(to, 'utf8'))
+    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+
+    t.equal(fs.readFileSync(to, 'utf8'),
+            "#!/bin/sh"+
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
+            "\n"+
+            "\ncase `uname` in"+
+            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
+            "\nesac"+
+            "\n"+
+            "\nif [ -x \"$basedir/node\" ]; then"+
+            "\n  \"$basedir/node\" --preserve-symlinks \"$basedir/from.env\" \"$@\""+
+            "\n  ret=$?"+
+            "\nelse "+
+            "\n  node --preserve-symlinks \"$basedir/from.env\" \"$@\""+
+            "\n  ret=$?"+
+            "\nfi"+
+            "\nexit $ret"+
+            "\n")
+    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+            "@IF EXIST \"%~dp0\\node.exe\" (\r"+
+            "\n  \"%~dp0\\node.exe\" --preserve-symlinks \"%~dp0\\from.env\" %*\r"+
+            "\n) ELSE (\r"+
+            "\n  @SETLOCAL\r"+
+            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
+            "\n  node --preserve-symlinks \"%~dp0\\from.env\" %*\r"+
+            "\n)")
+    t.end()
+  })
+})
+
 test('env shebang with args', function (t) {
   var from = path.resolve(fixtures, 'from.env.args')
   var to = path.resolve(fixtures, 'env.args.shim')
