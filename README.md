@@ -1,4 +1,4 @@
-# cmd-shim
+# @zkochan/cmd-shim
 
 The cmd-shim used in npm to create executable scripts on Windows,
 since symlinks are not suitable for this purpose there.
@@ -12,7 +12,7 @@ On Unix systems, you should use a symbolic link instead.
 ## Installation
 
 ```
-npm install cmd-shim
+npm install @zkochan/cmd-shim
 ```
 
 ## API
@@ -23,7 +23,7 @@ Create a cmd shim at `to` for the command line program at `from`.
 e.g.
 
 ```javascript
-var cmdShim = require('cmd-shim');
+var cmdShim = require('@zkochan/cmd-shim');
 cmdShim(__dirname + '/cli.js', '/usr/bin/command-name', function (err) {
   if (err) throw err;
 });
@@ -48,7 +48,7 @@ function cmdShimIfExists (from, to, cb) {
 * `opts.preserveSymlinks` - *Boolean* - if true, `--preserve-symlinks` is added to the options passed to NodeJS.
 
 ```javascript
-var cmdShim = require('cmd-shim');
+var cmdShim = require('@zkochan/cmd-shim');
 cmdShim(__dirname + '/cli.js', '/usr/bin/command-name', { preserveSymlinks: true }, function (err) {
   if (err) throw err;
 });

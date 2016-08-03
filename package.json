@@ -1,13 +1,13 @@
 {
-  "name": "cmd-shim",
-  "version": "2.0.2",
+  "name": "@zkochan/cmd-shim",
+  "version": "1.0.0",
   "description": "Used in npm for command line application support",
   "scripts": {
     "test": "tap test/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ForbesLindesay/cmd-shim.git"
+    "url": "https://github.com/zkochan/cmd-shim.git"
   },
   "license": "BSD-2-Clause",
   "dependencies": {
