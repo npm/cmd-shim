@@ -5,14 +5,14 @@ since symlinks are not suitable for this purpose there.
 
 On Unix systems, you should use a symbolic link instead.
 
-[![Build Status](https://img.shields.io/travis/ForbesLindesay/cmd-shim/master.svg)](https://travis-ci.org/ForbesLindesay/cmd-shim)
-[![Dependency Status](https://img.shields.io/david/ForbesLindesay/cmd-shim.svg)](https://david-dm.org/ForbesLindesay/cmd-shim)
-[![NPM version](https://img.shields.io/npm/v/cmd-shim.svg)](https://www.npmjs.com/package/cmd-shim)
+<!--@shields('travis', 'npm')-->
+[![Build Status](https://img.shields.io/travis/zkochan/cmd-shim/master.svg)](https://travis-ci.org/zkochan/cmd-shim) [![npm version](https://img.shields.io/npm/v/@zkochan/cmd-shim.svg)](https://www.npmjs.com/package/@zkochan/cmd-shim)
+<!--/@-->
 
 ## Installation
 
-```
-npm install @zkochan/cmd-shim
+```sh
+npm install --save @zkochan/cmd-shim
 ```
 
 ## API
@@ -45,7 +45,7 @@ function cmdShimIfExists (from, to, cb) {
 
 ### opts
 
-* `opts.preserveSymlinks` - *Boolean* - if true, `--preserve-symlinks` is added to the options passed to NodeJS.
+- `opts.preserveSymlinks` - _Boolean_ - if true, `--preserve-symlinks` is added to the options passed to NodeJS.
 
 ```javascript
 var cmdShim = require('@zkochan/cmd-shim');
