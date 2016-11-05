@@ -1,4 +1,4 @@
-var test = require('tap').test
+var test = require('tape')
 var mkdirp = require('mkdirp')
 var fs = require('fs')
 var path = require('path')

@@ -1,4 +1,4 @@
-var test = require('tap').test
+var test = require('tape')
 var path = require('path')
 var fixtures = path.resolve(__dirname, 'fixtures')
 var rimraf = require('rimraf')
