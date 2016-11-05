@@ -1,3 +1,4 @@
+'use strict'
 const tape = require('tape')
 const promisifyTape = require('tape-promise').default
 const test = promisifyTape(tape)

@@ -1,3 +1,4 @@
+'use strict'
 // On windows, create a .cmd file.
 // Read the #! in the file to see what it uses.  The vast majority
 // of the time, this will be either:
@@ -153,7 +154,7 @@ function writeShim_ (src, to, prog, args) {
 
 function chmodShim (to) {
   return Promise.all([
-    fs.chmod(to, 0755),
-    fs.chmod(to + ".cmd", 0755),
+    fs.chmod(to, 0o755),
+    fs.chmod(to + ".cmd", 0o755),
   ])
 }
