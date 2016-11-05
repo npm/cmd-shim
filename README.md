@@ -53,3 +53,7 @@ cmdShim(__dirname + '/cli.js', '/usr/bin/command-name', { preserveSymlinks: true
   if (err) throw err;
 });
 ```
+
+## License
+
+[BSD-2-Clause](./LICENSE) © [Zoltan Kochan](http://kochan.io)

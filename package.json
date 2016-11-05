@@ -2,9 +2,15 @@
   "name": "@zkochan/cmd-shim",
   "version": "1.0.0",
   "description": "Used in npm for command line application support",
+  "author": {
+    "name": "Zoltan Kochan",
+    "email": "zoltan.kochan@gmail.com",
+    "url": "http://kochan.io"
+  },
   "scripts": {
     "test:unit": "tape test/*.js | tap-diff",
-    "test": "standard && npm run test:unit && mos test"
+    "test": "standard && npm run test:unit && mos test",
+    "md": "mos"
   },
   "repository": {
     "type": "git",
@@ -23,5 +29,8 @@
     "tap-diff": "^0.1.1",
     "tape": "^4.6.2",
     "tape-promise": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=4"
   }
 }
