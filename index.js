@@ -11,77 +11,59 @@
 module.exports = cmdShim
 cmdShim.ifExists = cmdShimIfExists
 
-var fs = require("graceful-fs")
+const fs = require('mz/fs')
 
-var mkdir = require("mkdirp")
-  , path = require("path")
-  , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
+const mkdir = require('mkdirp-promise/lib/node4')
+const path = require('path')
+const shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
-function cmdShimIfExists (from, to, opts, cb) {
-  if (typeof opts === 'function') {
-    cb = opts
-    opts = {}
-  }
-  fs.stat(from, function (er) {
-    if (er) return cb()
-    cmdShim(from, to, opts, cb)
-  })
+function cmdShimIfExists (src, to, opts) {
+  opts = opts || {}
+  return fs.stat(src)
+    .then(() => cmdShim(src, to, opts))
+    .catch(() => {})
 }
 
 // Try to unlink, but ignore errors.
 // Any problems will surface later.
-function rm (path, cb) {
-  fs.unlink(path, function(er) {
-    cb()
-  })
+function rm (path) {
+  return fs.unlink(path).catch(() => {})
 }
 
-function cmdShim (from, to, opts, cb) {
-  if (typeof opts === 'function') {
-    cb = opts
-    opts = {}
-  }
-  fs.stat(from, function (er, stat) {
-    if (er)
-      return cb(er)
-
-    cmdShim_(from, to, opts, cb)
-  })
+function cmdShim (src, to, opts) {
+  opts = opts || {}
+  return fs.stat(src)
+    .then(() => cmdShim_(src, to, opts))
 }
 
-function cmdShim_ (from, to, opts, cb) {
-  var then = times(2, next, cb)
-  rm(to, then)
-  rm(to + ".cmd", then)
-
-  function next(er) {
-    writeShim(from, to, opts, cb)
-  }
+function cmdShim_ (src, to, opts) {
+  return Promise.all([rm(to), rm(`${to}.cmd`)])
+    .then(() => writeShim(src, to, opts))
 }
 
-function writeShim (from, to, opts, cb) {
+function writeShim (src, to, opts) {
   var defaultArgs = opts && opts.preserveSymlinks ? "--preserve-symlinks" : ""
   // make a cmd file and a sh script
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
   // sort of script, and just call it directly.
-  mkdir(path.dirname(to), function (er) {
-    if (er)
-      return cb(er)
-    fs.readFile(from, "utf8", function (er, data) {
-      if (er) return writeShim_(from, to, null, defaultArgs, cb)
-      var firstLine = data.trim().split(/\r*\n/)[0]
-        , shebang = firstLine.match(shebangExpr)
-      if (!shebang) return writeShim_(from, to, null, defaultArgs, cb)
-      var prog = shebang[1]
-        , args = shebang[2] && (defaultArgs && (shebang[2] + " " + defaultArgs) || shebang[2]) || defaultArgs
-      return writeShim_(from, to, prog, args, cb)
+  return mkdir(path.dirname(to))
+    .then(() => {
+      return fs.readFile(src, 'utf8')
+        .then(data => {
+          const firstLine = data.trim().split(/\r*\n/)[0]
+          const shebang = firstLine.match(shebangExpr)
+          if (!shebang) return writeShim_(src, to, null, defaultArgs)
+          const prog = shebang[1]
+          const args = shebang[2] && (defaultArgs && (shebang[2] + " " + defaultArgs) || shebang[2]) || defaultArgs
+          return writeShim_(src, to, prog, args)
+        })
+        .catch(err => writeShim_(src, to, null, defaultArgs))
     })
-  })
 }
 
-function writeShim_ (from, to, prog, args, cb) {
-  var shTarget = path.relative(path.dirname(to), from)
+function writeShim_ (src, to, prog, args) {
+  var shTarget = path.relative(path.dirname(to), src)
     , target = shTarget.split("/").join("\\")
     , longProg
     , shProg = prog && prog.split("\\").join("/")
@@ -162,28 +144,16 @@ function writeShim_ (from, to, prog, args, cb) {
        + "exit $?\n"
   }
 
-  var then = times(2, next, cb)
-  fs.writeFile(to + ".cmd", cmd, "utf8", then)
-  fs.writeFile(to, sh, "utf8", then)
-  function next () {
-    chmodShim(to, cb)
-  }
+  return Promise.all([
+    fs.writeFile(to + ".cmd", cmd, "utf8"),
+    fs.writeFile(to, sh, "utf8"),
+  ])
+  .then(() => chmodShim(to))
 }
 
-function chmodShim (to, cb) {
-  var then = times(2, cb, cb)
-  fs.chmod(to, 0755, then)
-  fs.chmod(to + ".cmd", 0755, then)
-}
-
-function times(n, ok, cb) {
-  var errState = null
-  return function(er) {
-    if (!errState) {
-      if (er)
-        cb(errState = er)
-      else if (--n === 0)
-        ok()
-    }
-  }
+function chmodShim (to) {
+  return Promise.all([
+    fs.chmod(to, 0755),
+    fs.chmod(to + ".cmd", 0755),
+  ])
 }

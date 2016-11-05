@@ -1,4 +1,6 @@
-var test = require('tape')
+const tape = require('tape')
+const promisifyTape = require('tape-promise').default
+const test = promisifyTape(tape)
 var path = require('path')
 var fixtures = path.resolve(__dirname, 'fixtures')
 var rimraf = require('rimraf')
