@@ -4,7 +4,7 @@
   "description": "Used in npm for command line application support",
   "scripts": {
     "test:unit": "tape test/*.js | tap-diff",
-    "test": "npm run test:unit && mos test"
+    "test": "standard && npm run test:unit && mos test"
   },
   "repository": {
     "type": "git",

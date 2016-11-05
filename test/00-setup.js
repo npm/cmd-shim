@@ -15,8 +15,6 @@ const srcs = {
   'src.sh.args': '#!/usr/bin/sh -x\necho hi\n'
 }
 
-const cmdShim = require('../')
-
 test('create fixture', function (t) {
   return mkdirp(fixtures)
     .then(() => {
@@ -24,8 +22,7 @@ test('create fixture', function (t) {
       Object.keys(srcs).forEach(function (f) {
         t.test('write ' + f, function (t) {
           fs.writeFile(path.resolve(fixtures, f), srcs[f], function (er) {
-            if (er)
-              throw er
+            if (er) { throw er }
             t.pass('wrote ' + f)
             t.end()
           })

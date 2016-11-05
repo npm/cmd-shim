@@ -16,7 +16,7 @@ const fs = require('mz/fs')
 
 const mkdir = require('mkdirp-promise/lib/node4')
 const path = require('path')
-const shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
+const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
 function cmdShimIfExists (src, to, opts) {
   opts = opts || {}
@@ -43,7 +43,7 @@ function cmdShim_ (src, to, opts) {
 }
 
 function writeShim (src, to, opts) {
-  var defaultArgs = opts && opts.preserveSymlinks ? "--preserve-symlinks" : ""
+  const defaultArgs = opts && opts.preserveSymlinks ? '--preserve-symlinks' : ''
   // make a cmd file and a sh script
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
@@ -56,32 +56,32 @@ function writeShim (src, to, opts) {
           const shebang = firstLine.match(shebangExpr)
           if (!shebang) return writeShim_(src, to, null, defaultArgs)
           const prog = shebang[1]
-          const args = shebang[2] && (defaultArgs && (shebang[2] + " " + defaultArgs) || shebang[2]) || defaultArgs
+          const args = shebang[2] && (defaultArgs && (shebang[2] + ' ' + defaultArgs) || shebang[2]) || defaultArgs
           return writeShim_(src, to, prog, args)
         })
-        .catch(err => writeShim_(src, to, null, defaultArgs))
+        .catch(() => writeShim_(src, to, null, defaultArgs))
     })
 }
 
 function writeShim_ (src, to, prog, args) {
-  var shTarget = path.relative(path.dirname(to), src)
-    , target = shTarget.split("/").join("\\")
-    , longProg
-    , shProg = prog && prog.split("\\").join("/")
-    , shLongProg
-  shTarget = shTarget.split("\\").join("/")
-  args = args || ""
+  let shTarget = path.relative(path.dirname(to), src)
+  let target = shTarget.split('/').join('\\')
+  let longProg
+  let shProg = prog && prog.split('\\').join('/')
+  let shLongProg
+  shTarget = shTarget.split('\\').join('/')
+  args = args || ''
   if (!prog) {
-    prog = "\"%~dp0\\" + target + "\""
-    shProg = "\"$basedir/" + shTarget + "\""
-    args = ""
-    target = ""
-    shTarget = ""
+    prog = `"%~dp0\\${target}"`
+    shProg = `"$basedir/${shTarget}"`
+    args = ''
+    target = ''
+    shTarget = ''
   } else {
-    longProg = "\"%~dp0\\" + prog + ".exe\""
-    shLongProg = "\"$basedir/" + prog + "\""
-    target = "\"%~dp0\\" + target + "\""
-    shTarget = "\"$basedir/" + shTarget + "\""
+    longProg = `"%~dp0\\${prog}.exe"`
+    shLongProg = '"$basedir/' + prog + '"'
+    target = `"%~dp0\\${target}"`
+    shTarget = `"$basedir/${shTarget}"`
   }
 
   // @IF EXIST "%~dp0\node.exe" (
@@ -91,17 +91,17 @@ function writeShim_ (src, to, prog, args) {
   //   SET PATHEXT=%PATHEXT:;.JS;=;%
   //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
   // )
-  var cmd
+  let cmd
   if (longProg) {
-    cmd = "@IF EXIST " + longProg + " (\r\n"
-        + "  " + longProg + " " + args + " " + target + " %*\r\n"
-        + ") ELSE (\r\n"
-        + "  @SETLOCAL\r\n"
-        + "  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n"
-        + "  " + prog + " " + args + " " + target + " %*\r\n"
-        + ")"
+    cmd = '@IF EXIST ' + longProg + ' (\r\n' +
+      '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
+      ') ELSE (\r\n' +
+      '  @SETLOCAL\r\n' +
+      '  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n' +
+      '  ' + prog + ' ' + args + ' ' + target + ' %*\r\n' +
+      ')'
   } else {
-    cmd = "@" + prog + " " + args + " " + target + " %*\r\n"
+    cmd = `@${prog} ${args} ${target} %*\r\n`
   }
 
   // #!/bin/sh
@@ -120,34 +120,34 @@ function writeShim_ (src, to, prog, args) {
   // fi
   // exit $ret
 
-  var sh = "#!/bin/sh\n"
+  let sh = '#!/bin/sh\n'
 
   if (shLongProg) {
-    sh = sh
-        + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
-        + "\n"
-        + "case `uname` in\n"
-        + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
-        + "esac\n"
-        + "\n"
+    sh = sh +
+      "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n" +
+      '\n' +
+      'case `uname` in\n' +
+      '    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;\n' +
+      'esac\n' +
+      '\n'
 
-    sh = sh
-       + "if [ -x "+shLongProg+" ]; then\n"
-       + "  " + shLongProg + " " + args + " " + shTarget + " \"$@\"\n"
-       + "  ret=$?\n"
-       + "else \n"
-       + "  " + shProg + " " + args + " " + shTarget + " \"$@\"\n"
-       + "  ret=$?\n"
-       + "fi\n"
-       + "exit $ret\n"
+    sh = sh +
+      'if [ -x ' + shLongProg + ' ]; then\n' +
+      '  ' + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      '  ret=$?\n' +
+      'else \n' +
+      '  ' + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      '  ret=$?\n' +
+      'fi\n' +
+      'exit $ret\n'
   } else {
-    sh = shProg + " " + args + " " + shTarget + " \"$@\"\n"
-       + "exit $?\n"
+    sh = shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      'exit $?\n'
   }
 
   return Promise.all([
-    fs.writeFile(to + ".cmd", cmd, "utf8"),
-    fs.writeFile(to, sh, "utf8"),
+    fs.writeFile(to + '.cmd', cmd, 'utf8'),
+    fs.writeFile(to, sh, 'utf8')
   ])
   .then(() => chmodShim(to))
 }
@@ -155,6 +155,6 @@ function writeShim_ (src, to, prog, args) {
 function chmodShim (to) {
   return Promise.all([
     fs.chmod(to, 0o755),
-    fs.chmod(to + ".cmd", 0o755),
+    fs.chmod(`${to}.cmd`, 0o755)
   ])
 }
