@@ -1,7 +1,7 @@
 {
   "name": "@zkochan/cmd-shim",
   "version": "1.0.0",
-  "description": "Used in npm for command line application support",
+  "description": "Used in pnpm for command line application support",
   "author": {
     "name": "Zoltan Kochan",
     "email": "zoltan.kochan@gmail.com",
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "mos": "^1.3.1",
+    "mos-plugin-readme": "^1.0.4",
     "rimraf": "~2.2.8",
     "standard": "^8.5.0",
     "tap-diff": "^0.1.1",
@@ -32,5 +33,10 @@
   },
   "engines": {
     "node": ">=4"
+  },
+  "mos": {
+    "plugins": [
+      "readme"
+    ]
   }
 }
