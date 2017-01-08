@@ -54,23 +54,25 @@ function writeShim (src, to, opts) {
         .then(data => {
           const firstLine = data.trim().split(/\r*\n/)[0]
           const shebang = firstLine.match(shebangExpr)
-          if (!shebang) return writeShim_(src, to, null, defaultArgs)
+          if (!shebang) return writeShim_(src, to, {args: defaultArgs})
           const prog = shebang[1]
           const args = shebang[2] && (defaultArgs && (shebang[2] + ' ' + defaultArgs) || shebang[2]) || defaultArgs
-          return writeShim_(src, to, prog, args)
+          return writeShim_(src, to, {prog, args})
         })
-        .catch(() => writeShim_(src, to, null, defaultArgs))
+        .catch(() => writeShim_(src, to, {args: defaultArgs}))
     })
 }
 
-function writeShim_ (src, to, prog, args) {
+function writeShim_ (src, to, opts) {
+  opts = opts || {}
   let shTarget = path.relative(path.dirname(to), src)
   let target = shTarget.split('/').join('\\')
   let longProg
+  let prog = opts.prog
   let shProg = prog && prog.split('\\').join('/')
   let shLongProg
   shTarget = shTarget.split('\\').join('/')
-  args = args || ''
+  let args = opts.args || ''
   if (!prog) {
     prog = `"%~dp0\\${target}"`
     shProg = `"$basedir/${shTarget}"`
