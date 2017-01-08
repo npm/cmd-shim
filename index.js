@@ -43,7 +43,8 @@ function cmdShim_ (src, to, opts) {
 }
 
 function writeShim (src, to, opts) {
-  const defaultArgs = opts && opts.preserveSymlinks ? '--preserve-symlinks' : ''
+  opts = opts || {}
+  const defaultArgs = opts.preserveSymlinks ? '--preserve-symlinks' : ''
   // make a cmd file and a sh script
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
@@ -54,12 +55,12 @@ function writeShim (src, to, opts) {
         .then(data => {
           const firstLine = data.trim().split(/\r*\n/)[0]
           const shebang = firstLine.match(shebangExpr)
-          if (!shebang) return writeShim_(src, to, {args: defaultArgs})
+          if (!shebang) return writeShim_(src, to, {args: defaultArgs, nodePath: opts.nodePath})
           const prog = shebang[1]
           const args = shebang[2] && (defaultArgs && (shebang[2] + ' ' + defaultArgs) || shebang[2]) || defaultArgs
-          return writeShim_(src, to, {prog, args})
+          return writeShim_(src, to, {prog, args, nodePath: opts.nodePath})
         })
-        .catch(() => writeShim_(src, to, {args: defaultArgs}))
+        .catch(() => writeShim_(src, to, {args: defaultArgs, nodePath: opts.nodePath}))
     })
 }
 
@@ -93,9 +94,9 @@ function writeShim_ (src, to, opts) {
   //   SET PATHEXT=%PATHEXT:;.JS;=;%
   //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
   // )
-  let cmd
+  let cmd = opts.nodePath ? `@SET NODE_PATH=${opts.nodePath}\r\n` : ''
   if (longProg) {
-    cmd = '@IF EXIST ' + longProg + ' (\r\n' +
+    cmd += '@IF EXIST ' + longProg + ' (\r\n' +
       '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
       ') ELSE (\r\n' +
       '  @SETLOCAL\r\n' +
@@ -103,7 +104,7 @@ function writeShim_ (src, to, opts) {
       '  ' + prog + ' ' + args + ' ' + target + ' %*\r\n' +
       ')'
   } else {
-    cmd = `@${prog} ${args} ${target} %*\r\n`
+    cmd += `@${prog} ${args} ${target} %*\r\n`
   }
 
   // #!/bin/sh
@@ -123,6 +124,7 @@ function writeShim_ (src, to, opts) {
   // exit $ret
 
   let sh = '#!/bin/sh\n'
+  const env = opts.nodePath ? `NODE_PATH=${opts.nodePath} ` : ''
 
   if (shLongProg) {
     sh = sh +
@@ -135,15 +137,15 @@ function writeShim_ (src, to, opts) {
 
     sh = sh +
       'if [ -x ' + shLongProg + ' ]; then\n' +
-      '  ' + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      '  ' + env + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
       '  ret=$?\n' +
       'else \n' +
-      '  ' + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      '  ' + env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
       '  ret=$?\n' +
       'fi\n' +
       'exit $ret\n'
   } else {
-    sh = shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+    sh = env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
       'exit $?\n'
   }
 

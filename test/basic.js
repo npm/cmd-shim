@@ -57,6 +57,44 @@ test('env shebang', function (t) {
     })
 })
 
+test('env shebang with NODE_PATH', function (t) {
+  const src = path.resolve(fixtures, 'src.env')
+  const to = path.resolve(fixtures, 'env.shim')
+  return cmdShim(src, to, {nodePath: '/john/src/node_modules'})
+    .then(() => {
+      console.error('%j', fs.readFileSync(to, 'utf8'))
+      console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+
+      t.equal(fs.readFileSync(to, 'utf8'),
+              '#!/bin/sh' +
+              "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+              '\n' +
+              '\ncase `uname` in' +
+              '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
+              '\nesac' +
+              '\n' +
+              '\nif [ -x "$basedir/node" ]; then' +
+              '\n  NODE_PATH=/john/src/node_modules "$basedir/node"  "$basedir/src.env" "$@"' +
+              '\n  ret=$?' +
+              '\nelse ' +
+              '\n  NODE_PATH=/john/src/node_modules node  "$basedir/src.env" "$@"' +
+              '\n  ret=$?' +
+              '\nfi' +
+              '\nexit $ret' +
+              '\n')
+      t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+              '@SET NODE_PATH=/john/src/node_modules\r' +
+              '\n@IF EXIST "%~dp0\\node.exe" (\r' +
+              '\n  "%~dp0\\node.exe"  "%~dp0\\src.env" %*\r' +
+              '\n) ELSE (\r' +
+              '\n  @SETLOCAL\r' +
+              '\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r' +
+              '\n  node  "%~dp0\\src.env" %*\r' +
+              '\n)')
+      t.end()
+    })
+})
+
 test('env shebang with default args', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
