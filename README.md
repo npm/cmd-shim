@@ -2,8 +2,8 @@
 
 > Used in pnpm for command line application support
 
-<!--@shields('travis', 'npm')-->
-[![Build Status](https://img.shields.io/travis/zkochan/cmd-shim/master.svg)](https://travis-ci.org/zkochan/cmd-shim) [![npm version](https://img.shields.io/npm/v/@zkochan/cmd-shim.svg)](https://www.npmjs.com/package/@zkochan/cmd-shim)
+<!--@shields('travis', 'appveyor', 'npm')-->
+[![Build Status](https://img.shields.io/travis/zkochan/cmd-shim/master.svg)](https://travis-ci.org/zkochan/cmd-shim) [![Build Status on Windows](https://img.shields.io/appveyor/ci/zkochan/cmd-shim/master.svg)](https://ci.appveyor.com/project/zkochan/cmd-shim/branch/master) [![npm version](https://img.shields.io/npm/v/@zkochan/cmd-shim.svg)](https://www.npmjs.com/package/@zkochan/cmd-shim)
 <!--/@-->
 
 The cmd-shim used in [pnpm](https://github.com/rstacruz/pnpm) to create executable scripts on Windows,
