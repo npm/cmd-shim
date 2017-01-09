@@ -8,6 +8,22 @@ const fixtures = path.resolve(__dirname, 'fixtures')
 
 const cmdShim = require('../')
 
+test('no cmd file', function (t) {
+  const src = path.resolve(fixtures, 'src.exe')
+  const to = path.resolve(fixtures, 'exe.shim')
+  return cmdShim(src, to, {createCmdFile: false})
+    .then(function () {
+      t.equal(fs.readFileSync(to, 'utf8'),
+              '"$basedir/src.exe"   "$@"\nexit $?\n')
+      try {
+        fs.readFileSync(to + '.cmd', 'utf8')
+        t.fail('should have failed')
+      } catch (err) {
+        t.equal(err.code, 'ENOENT', 'cmd file not created')
+      }
+    })
+})
+
 test('no shebang', function (t) {
   const src = path.resolve(fixtures, 'src.exe')
   const to = path.resolve(fixtures, 'exe.shim')
