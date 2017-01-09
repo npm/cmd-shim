@@ -11,7 +11,7 @@ const cmdShim = require('../')
 test('no shebang', function (t) {
   const src = path.resolve(fixtures, 'src.exe')
   const to = path.resolve(fixtures, 'exe.shim')
-  return cmdShim(src, to)
+  return cmdShim(src, to, {createCmdFile: true})
     .then(function () {
       t.equal(fs.readFileSync(to, 'utf8'),
               '"$basedir/src.exe"   "$@"\nexit $?\n')
@@ -23,7 +23,7 @@ test('no shebang', function (t) {
 test('env shebang', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  return cmdShim(src, to)
+  return cmdShim(src, to, {createCmdFile: true})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -60,7 +60,7 @@ test('env shebang', function (t) {
 test('env shebang with NODE_PATH', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  return cmdShim(src, to, {nodePath: '/john/src/node_modules'})
+  return cmdShim(src, to, {nodePath: '/john/src/node_modules', createCmdFile: true})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -98,7 +98,7 @@ test('env shebang with NODE_PATH', function (t) {
 test('env shebang with default args', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  return cmdShim(src, to, { preserveSymlinks: true })
+  return cmdShim(src, to, { preserveSymlinks: true, createCmdFile: true })
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -135,7 +135,7 @@ test('env shebang with default args', function (t) {
 test('env shebang with args', function (t) {
   const src = path.resolve(fixtures, 'src.env.args')
   const to = path.resolve(fixtures, 'env.args.shim')
-  return cmdShim(src, to)
+  return cmdShim(src, to, {createCmdFile: true})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -172,7 +172,7 @@ test('env shebang with args', function (t) {
 test('explicit shebang', function (t) {
   const src = path.resolve(fixtures, 'src.sh')
   const to = path.resolve(fixtures, 'sh.shim')
-  return cmdShim(src, to)
+  return cmdShim(src, to, {createCmdFile: true})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -210,7 +210,7 @@ test('explicit shebang', function (t) {
 test('explicit shebang with args', function (t) {
   const src = path.resolve(fixtures, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
-  return cmdShim(src, to)
+  return cmdShim(src, to, {createCmdFile: true})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))

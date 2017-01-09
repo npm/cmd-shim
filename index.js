@@ -16,10 +16,14 @@ const fs = require('mz/fs')
 
 const mkdir = require('mkdirp-promise/lib/node4')
 const path = require('path')
+const isWindows = require('is-windows')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
+const DEFAULT_OPTIONS = {
+  createCmdFile: isWindows()
+}
 
 function cmdShimIfExists (src, to, opts) {
-  opts = opts || {}
+  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
   return fs.stat(src)
     .then(() => cmdShim(src, to, opts))
     .catch(() => {})
@@ -32,13 +36,13 @@ function rm (path) {
 }
 
 function cmdShim (src, to, opts) {
-  opts = opts || {}
+  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
   return fs.stat(src)
     .then(() => cmdShim_(src, to, opts))
 }
 
 function cmdShim_ (src, to, opts) {
-  return Promise.all([rm(to), rm(`${to}.cmd`)])
+  return Promise.all([rm(to), opts.createCmdFile && rm(`${to}.cmd`)])
     .then(() => writeShim(src, to, opts))
 }
 
@@ -55,12 +59,12 @@ function writeShim (src, to, opts) {
         .then(data => {
           const firstLine = data.trim().split(/\r*\n/)[0]
           const shebang = firstLine.match(shebangExpr)
-          if (!shebang) return writeShim_(src, to, {args: defaultArgs, nodePath: opts.nodePath})
+          if (!shebang) return writeShim_(src, to, Object.assign({}, opts, {args: defaultArgs}))
           const prog = shebang[1]
           const args = shebang[2] && (defaultArgs && (shebang[2] + ' ' + defaultArgs) || shebang[2]) || defaultArgs
-          return writeShim_(src, to, {prog, args, nodePath: opts.nodePath})
+          return writeShim_(src, to, Object.assign({}, opts, {prog, args}))
         })
-        .catch(() => writeShim_(src, to, {args: defaultArgs, nodePath: opts.nodePath}))
+        .catch(() => writeShim_(src, to, Object.assign({}, opts, {args: defaultArgs})))
     })
 }
 
@@ -87,24 +91,27 @@ function writeShim_ (src, to, opts) {
     shTarget = `"$basedir/${shTarget}"`
   }
 
-  // @IF EXIST "%~dp0\node.exe" (
-  //   "%~dp0\node.exe" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
-  // ) ELSE (
-  //   SETLOCAL
-  //   SET PATHEXT=%PATHEXT:;.JS;=;%
-  //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
-  // )
-  let cmd = opts.nodePath ? `@SET NODE_PATH=${opts.nodePath}\r\n` : ''
-  if (longProg) {
-    cmd += '@IF EXIST ' + longProg + ' (\r\n' +
-      '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
-      ') ELSE (\r\n' +
-      '  @SETLOCAL\r\n' +
-      '  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n' +
-      '  ' + prog + ' ' + args + ' ' + target + ' %*\r\n' +
-      ')'
-  } else {
-    cmd += `@${prog} ${args} ${target} %*\r\n`
+  let cmd
+  if (opts.createCmdFile) {
+    // @IF EXIST "%~dp0\node.exe" (
+    //   "%~dp0\node.exe" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+    // ) ELSE (
+    //   SETLOCAL
+    //   SET PATHEXT=%PATHEXT:;.JS;=;%
+    //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+    // )
+    cmd = opts.nodePath ? `@SET NODE_PATH=${opts.nodePath}\r\n` : ''
+    if (longProg) {
+      cmd += '@IF EXIST ' + longProg + ' (\r\n' +
+        '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
+        ') ELSE (\r\n' +
+        '  @SETLOCAL\r\n' +
+        '  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n' +
+        '  ' + prog + ' ' + args + ' ' + target + ' %*\r\n' +
+        ')'
+    } else {
+      cmd += `@${prog} ${args} ${target} %*\r\n`
+    }
   }
 
   // #!/bin/sh
@@ -150,15 +157,15 @@ function writeShim_ (src, to, opts) {
   }
 
   return Promise.all([
-    fs.writeFile(to + '.cmd', cmd, 'utf8'),
+    opts.createCmdFile && fs.writeFile(to + '.cmd', cmd, 'utf8'),
     fs.writeFile(to, sh, 'utf8')
   ])
-  .then(() => chmodShim(to))
+  .then(() => chmodShim(to, opts.createCmdFile))
 }
 
-function chmodShim (to) {
+function chmodShim (to, createCmdFile) {
   return Promise.all([
     fs.chmod(to, 0o755),
-    fs.chmod(`${to}.cmd`, 0o755)
+    createCmdFile && fs.chmod(`${to}.cmd`, 0o755)
   ])
 }

@@ -38,6 +38,7 @@ The same as above, but will just continue if the file does not exist.
 
 - `opts.preserveSymlinks` - _Boolean_ - if true, `--preserve-symlinks` is added to the options passed to NodeJS.
 - `opts.nodePath` - _String_ - sets the [NODE_PATH](https://nodejs.org/api/cli.html#cli_node_path_path) env variable.
+- `opts.createCmdFile` - _Boolean - is `true` on Windows by default. If true, creates a cmd file.
 
 ```javascript
 const cmdShim = require('@zkochan/cmd-shim')
