@@ -12,6 +12,9 @@
     "test": "standard && npm run test:unit && mos test",
     "md": "mos"
   },
+  "files": [
+    "index.js"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/zkochan/cmd-shim.git"
