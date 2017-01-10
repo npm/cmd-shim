@@ -1,6 +1,6 @@
 {
   "name": "@zkochan/cmd-shim",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Used in pnpm for command line application support",
   "author": {
     "name": "Zoltan Kochan",
