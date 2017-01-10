@@ -90,16 +90,16 @@ test('env shebang with NODE_PATH', function (t) {
               '\nesac' +
               '\n' +
               '\nif [ -x "$basedir/node" ]; then' +
-              '\n  NODE_PATH=/john/src/node_modules "$basedir/node"  "$basedir/src.env" "$@"' +
+              '\n  NODE_PATH="/john/src/node_modules" "$basedir/node"  "$basedir/src.env" "$@"' +
               '\n  ret=$?' +
               '\nelse ' +
-              '\n  NODE_PATH=/john/src/node_modules node  "$basedir/src.env" "$@"' +
+              '\n  NODE_PATH="/john/src/node_modules" node  "$basedir/src.env" "$@"' +
               '\n  ret=$?' +
               '\nfi' +
               '\nexit $ret' +
               '\n')
       t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-              '@SET NODE_PATH=/john/src/node_modules\r' +
+              '@SET NODE_PATH="/john/src/node_modules"\r' +
               '\n@IF EXIST "%~dp0\\node.exe" (\r' +
               '\n  "%~dp0\\node.exe"  "%~dp0\\src.env" %*\r' +
               '\n) ELSE (\r' +

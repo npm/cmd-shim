@@ -100,7 +100,7 @@ function writeShim_ (src, to, opts) {
     //   SET PATHEXT=%PATHEXT:;.JS;=;%
     //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
     // )
-    cmd = opts.nodePath ? `@SET NODE_PATH=${opts.nodePath}\r\n` : ''
+    cmd = opts.nodePath ? `@SET NODE_PATH="${opts.nodePath}"\r\n` : ''
     if (longProg) {
       cmd += '@IF EXIST ' + longProg + ' (\r\n' +
         '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
@@ -131,7 +131,7 @@ function writeShim_ (src, to, opts) {
   // exit $ret
 
   let sh = '#!/bin/sh\n'
-  const env = opts.nodePath ? `NODE_PATH=${opts.nodePath} ` : ''
+  const env = opts.nodePath ? `NODE_PATH="${opts.nodePath}" ` : ''
 
   if (shLongProg) {
     sh = sh +
