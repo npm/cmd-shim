@@ -2,7 +2,7 @@
 const tape = require('tape')
 const promisifyTape = require('tape-promise').default
 const test = promisifyTape(tape)
-const mkdirp = require('mkdirp-promise/lib/node4')
+const mkdirp = require('mkdirp-promise')
 const fs = require('fs')
 const path = require('path')
 const fixtures = path.resolve(__dirname, 'fixtures')

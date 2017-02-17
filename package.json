@@ -22,8 +22,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "is-windows": "^1.0.0",
-    "mkdirp": "^0.5.1",
-    "mkdirp-promise": "4.0.0",
+    "mkdirp-promise": "^5.0.1",
     "mz": "^2.5.0"
   },
   "devDependencies": {

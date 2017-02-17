@@ -14,7 +14,7 @@ cmdShim.ifExists = cmdShimIfExists
 
 const fs = require('mz/fs')
 
-const mkdir = require('mkdirp-promise/lib/node4')
+const mkdir = require('mkdirp-promise')
 const path = require('path')
 const isWindows = require('is-windows')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
