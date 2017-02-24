@@ -1,5 +1,7 @@
 # cmd-shim
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ForbesLindesay/cmd-shim.svg)](https://greenkeeper.io/)
+
 The cmd-shim used in npm to create executable scripts on Windows,
 since symlinks are not suitable for this purpose there.
 
