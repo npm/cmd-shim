@@ -173,8 +173,8 @@ function writeShim_ (from, to, prog, args, variables, cb) {
 
 function chmodShim (to, cb) {
   var then = times(2, cb, cb)
-  fs.chmod(to, 0755, then)
-  fs.chmod(to + ".cmd", 0755, then)
+  fs.chmod(to, "0755", then)
+  fs.chmod(to + ".cmd", "0755", then)
 }
 
 function times(n, ok, cb) {
