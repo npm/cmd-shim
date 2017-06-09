@@ -99,7 +99,7 @@ test('env shebang with NODE_PATH', function (t) {
               '\nexit $ret' +
               '\n')
       t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-              '@SET NODE_PATH="/john/src/node_modules"\r' +
+              '@SET NODE_PATH=/john/src/node_modules\r' +
               '\n@IF EXIST "%~dp0\\node.exe" (\r' +
               '\n  "%~dp0\\node.exe"  "%~dp0\\src.env" %*\r' +
               '\n) ELSE (\r' +
