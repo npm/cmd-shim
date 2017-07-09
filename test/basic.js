@@ -13,7 +13,14 @@ test('no shebang', function (t) {
     if (er)
       throw er
     t.equal(fs.readFileSync(to, 'utf8'),
-            "\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
+            "#!/bin/sh"+
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
+            "\n"+
+            "\ncase `uname` in"+
+            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
+            "\nesac"+
+            "\n"+
+            "\n\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
             "@\"%~dp0\\from.exe\"   %*\r\n")
     t.end()
