@@ -140,15 +140,15 @@ function writeShim_ (from, to, prog, args, variables, cb) {
 
   var sh = "#!/bin/sh\n"
 
-  if (shLongProg) {
-    sh = sh
-        + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
-        + "\n"
-        + "case `uname` in\n"
-        + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
-        + "esac\n"
-        + "\n"
+  sh = sh
+      + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
+      + "\n"
+      + "case `uname` in\n"
+      + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
+      + "esac\n"
+      + "\n"
 
+  if (shLongProg) {
     sh = sh
        + "if [ -x "+shLongProg+" ]; then\n"
        + "  " + variables + shLongProg + " " + args + " " + shTarget + " \"$@\"\n"
@@ -159,7 +159,8 @@ function writeShim_ (from, to, prog, args, variables, cb) {
        + "fi\n"
        + "exit $ret\n"
   } else {
-    sh = shProg + " " + args + " " + shTarget + " \"$@\"\n"
+    sh = sh
+       + shProg + " " + args + " " + shTarget + " \"$@\"\n"
        + "exit $?\n"
   }
 
