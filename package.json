@@ -8,7 +8,7 @@
     "url": "http://kochan.io"
   },
   "scripts": {
-    "test:unit": "tape test/*.js | tap-diff",
+    "test:unit": "tape test/*.js",
     "test": "standard && npm run test:unit && mos test",
     "md": "mos"
   },
@@ -30,7 +30,6 @@
     "mos-plugin-readme": "^1.0.4",
     "rimraf": "^2.6.2",
     "standard": "^8.6.0",
-    "tap-diff": "^0.1.1",
     "tape": "^4.6.2",
     "tape-promise": "^2.0.0"
   },
