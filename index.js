@@ -131,17 +131,16 @@ function writeShim_ (src, to, opts) {
   // exit $ret
 
   let sh = '#!/bin/sh\n'
+  sh = sh +
+    "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n" +
+    '\n' +
+    'case `uname` in\n' +
+    '    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;\n' +
+    'esac\n' +
+    '\n'
   const env = opts.nodePath ? `NODE_PATH="${opts.nodePath}" ` : ''
 
   if (shLongProg) {
-    sh = sh +
-      "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n" +
-      '\n' +
-      'case `uname` in\n' +
-      '    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;\n' +
-      'esac\n' +
-      '\n'
-
     sh = sh +
       'if [ -x ' + shLongProg + ' ]; then\n' +
       '  ' + env + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
@@ -152,7 +151,7 @@ function writeShim_ (src, to, opts) {
       'fi\n' +
       'exit $ret\n'
   } else {
-    sh = env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+    sh = sh + env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
       'exit $?\n'
   }
 

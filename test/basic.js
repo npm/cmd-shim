@@ -14,6 +14,13 @@ test('no cmd file', function (t) {
   return cmdShim(src, to, {createCmdFile: false})
     .then(function () {
       t.equal(fs.readFileSync(to, 'utf8'),
+              '#!/bin/sh' +
+              "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+              '\n' +
+              '\ncase `uname` in' +
+              '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
+              '\nesac' +
+              '\n\n' +
               '"$basedir/src.exe"   "$@"\nexit $?\n')
       try {
         fs.readFileSync(to + '.cmd', 'utf8')
@@ -30,6 +37,13 @@ test('no shebang', function (t) {
   return cmdShim(src, to, {createCmdFile: true})
     .then(function () {
       t.equal(fs.readFileSync(to, 'utf8'),
+              '#!/bin/sh' +
+              "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+              '\n' +
+              '\ncase `uname` in' +
+              '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
+              '\nesac' +
+              '\n\n' +
               '"$basedir/src.exe"   "$@"\nexit $?\n')
       t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
               '@"%~dp0\\src.exe"   %*\r\n')
