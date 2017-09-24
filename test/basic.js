@@ -22,12 +22,7 @@ test('no cmd file', function (t) {
               '\nesac' +
               '\n\n' +
               '"$basedir/src.exe"   "$@"\nexit $?\n')
-      try {
-        fs.readFileSync(to + '.cmd', 'utf8')
-        t.fail('should have failed')
-      } catch (err) {
-        t.equal(err.code, 'ENOENT', 'cmd file not created')
-      }
+      t.throws(() => fs.readFileSync(to + '.cmd', 'utf8'), 'cmd file not created')
     })
 })
 
