@@ -33,34 +33,37 @@ test('env shebang', function (t) {
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
-            "#!/bin/sh"+
-            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
-            "\n"+
-            "\ncase `uname` in"+
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
-            "\nesac"+
-            "\n"+
-            "\nif [ -x \"$basedir/node\" ]; then"+
-            "\n  \"$basedir/node\"  \"$basedir/from.env\" \"$@\""+
-            "\n  ret=$?"+
-            "\nelse "+
-            "\n  node  \"$basedir/from.env\" \"$@\""+
-            "\n  ret=$?"+
-            "\nfi"+
-            "\nexit $ret"+
+            "#!/bin/sh" +
+            "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+            "\n" +
+            "\ncase `uname` in" +
+            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;" +
+            "\nesac" +
+            "\n" +
+            "\nif [ -x \"$basedir/node\" ]; then" +
+            "\n  \"$basedir/node\"  \"$basedir/from.env\" \"$@\"" +
+            "\n  ret=$?" +
+            "\nelse " +
+            "\n  node  \"$basedir/from.env\" \"$@\"" +
+            "\n  ret=$?" +
+            "\nfi" +
+            "\nexit $ret" +
             "\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\node.exe\" (\r"+
-            "\n  \"%~dp0\\node.exe\"  \"%~dp0\\from.env\" %*\r"+
-            "\n) ELSE (\r"+
-            "\n  @SETLOCAL\r"+
-            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  node  \"%~dp0\\from.env\" %*\r"+
-            "\n)")
+            "@SETLOCAL\r" +
+            "\n\r" +
+            "\n@IF EXIST \"%~dp0\\node.exe\" (\r" +
+            "\n  @SET \"_prog=%~dp0\\node.exe\"\r" +
+            "\n) ELSE (\r" +
+            "\n  @SET \"_prog=node\"\r" +
+            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r" +
+            "\n)\r" +
+            "\n\r" +
+            "\n\"%_prog%\"  \"%~dp0\\from.env\" %*\r" +
+            "\n@ENDLOCAL\r" +
+            "\n")
     t.end()
   })
 })
@@ -71,8 +74,6 @@ test('env shebang with args', function (t) {
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh"+
@@ -92,13 +93,18 @@ test('env shebang with args', function (t) {
             "\nexit $ret"+
             "\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\node.exe\" (\r"+
-            "\n  \"%~dp0\\node.exe\" --expose_gc \"%~dp0\\from.env.args\" %*\r"+
-            "\n) ELSE (\r"+
-            "\n  @SETLOCAL\r"+
-            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  node --expose_gc \"%~dp0\\from.env.args\" %*\r"+
-            "\n)")
+            "@SETLOCAL\r" +
+            "\n\r" +
+            "\n@IF EXIST \"%~dp0\\node.exe\" (\r" +
+            "\n  @SET \"_prog=%~dp0\\node.exe\"\r" +
+            "\n) ELSE (\r" +
+            "\n  @SET \"_prog=node\"\r" +
+            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r" +
+            "\n)\r" +
+            "\n\r" +
+            "\n\"%_prog%\" --expose_gc \"%~dp0\\from.env.args\" %*\r" +
+            "\n@ENDLOCAL\r" +
+            "\n")
     t.end()
   })
 })
@@ -109,8 +115,6 @@ test('env shebang with variables', function (t) {
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh"+
@@ -132,14 +136,16 @@ test('env shebang with variables', function (t) {
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
             "@SETLOCAL\r"+
             "\n@SET NODE_PATH=./lib:%NODE_PATH%\r"+
+            "\n\r" +
             "\n@IF EXIST \"%~dp0\\node.exe\" (\r"+
-            "\n  \"%~dp0\\node.exe\"  \"%~dp0\\from.env.variables\" %*\r"+
+            "\n  @SET \"_prog=%~dp0\\node.exe\"\r" +
             "\n) ELSE (\r"+
-            "\n  @SETLOCAL\r" +
+            "\n  @SET \"_prog=node\"\r"+
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r" +
-            "\n  node  \"%~dp0\\from.env.variables\" %*\r"+
             "\n)\r"+
-      "\n@ENDLOCAL")
+            "\n\r"+
+            "\n\"%_prog%\"  \"%~dp0\\from.env.variables\" %*\r"+
+            "\n@ENDLOCAL\r\n")
     t.end()
   })
 })
@@ -150,8 +156,6 @@ test('explicit shebang', function (t) {
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh" +
@@ -172,13 +176,18 @@ test('explicit shebang', function (t) {
             "\n")
 
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
-            "\n  \"%~dp0\\/usr/bin/sh.exe\"  \"%~dp0\\from.sh\" %*\r" +
+            "@SETLOCAL\r" +
+            "\n\r" +
+            "\n@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
+            "\n  @SET \"_prog=%~dp0\\/usr/bin/sh.exe\"\r" +
             "\n) ELSE (\r" +
-            "\n  @SETLOCAL\r"+
-            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  /usr/bin/sh  \"%~dp0\\from.sh\" %*\r" +
-            "\n)")
+            "\n  @SET \"_prog=/usr/bin/sh\"\r" +
+            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r" +
+            "\n)\r" +
+            "\n\r" +
+            "\n\"%_prog%\"  \"%~dp0\\from.sh\" %*\r" +
+            "\n@ENDLOCAL\r" +
+            "\n")
     t.end()
   })
 })
@@ -189,8 +198,6 @@ test('explicit shebang with args', function (t) {
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh" +
@@ -211,13 +218,18 @@ test('explicit shebang with args', function (t) {
             "\n")
 
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
-            "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
-            "\n  \"%~dp0\\/usr/bin/sh.exe\" -x \"%~dp0\\from.sh.args\" %*\r" +
+            "@SETLOCAL\r" +
+            "\n\r" +
+            "\n@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
+            "\n  @SET \"_prog=%~dp0\\/usr/bin/sh.exe\"\r" +
             "\n) ELSE (\r" +
-            "\n  @SETLOCAL\r"+
-            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
-            "\n  /usr/bin/sh -x \"%~dp0\\from.sh.args\" %*\r" +
-            "\n)")
+            "\n  @SET \"_prog=/usr/bin/sh\"\r" +
+            "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r" +
+            "\n)\r" +
+            "\n\r" +
+            "\n\"%_prog%\" -x \"%~dp0\\from.sh.args\" %*\r" +
+            "\n@ENDLOCAL\r" +
+            "\n")
     t.end()
   })
 })

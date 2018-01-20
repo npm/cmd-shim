@@ -96,28 +96,34 @@ function writeShim_ (from, to, prog, args, variables, cb) {
     shTarget = "\"$basedir/" + shTarget + "\""
   }
 
+  // @SETLOCAL
+  //
   // @IF EXIST "%~dp0\node.exe" (
-  //   "%~dp0\node.exe" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+  //   @SET "_prog=%~dp0\node.exe"
   // ) ELSE (
-  //   SETLOCAL
-  //   SET PATHEXT=%PATHEXT:;.JS;=;%
-  //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+  //   @SET "_prog=node"
+  //   @SET PATHEXT=%PATHEXT:;.JS;=;%
   // )
+  //
+  // "%_prog%" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
+  // @ENDLOCAL
   var cmd
   if (longProg) {
     shLongProg = shLongProg.trim();
     args = args.trim();
-    var variableDeclarationsAsBatch = toBatchSyntax.convertToSetCommands(variables) || "";
-    cmd = ((variableDeclarationsAsBatch.length > 0) ? ("@SETLOCAL\r\n"
-        + variableDeclarationsAsBatch) : "")
+    var variableDeclarationsAsBatch = toBatchSyntax.convertToSetCommands(variables)
+    cmd = "@SETLOCAL\r\n"
+        + variableDeclarationsAsBatch
+        + "\r\n"
         + "@IF EXIST " + longProg + " (\r\n"
-        + "  " + longProg + " " + args + " " + target + " %*\r\n"
+        + "  @SET \"_prog=" + longProg.replace(/(^")|("$)/g, '') + "\"\r\n"
         + ") ELSE (\r\n"
-        + "  @SETLOCAL\r\n"
+        + "  @SET \"_prog=" + prog.replace(/(^")|("$)/g, '') + "\"\r\n"
         + "  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n"
-        + "  " + prog + " " + args + " " + target + " %*\r\n"
-        + ")"
-        + ((variableDeclarationsAsBatch.length > 0) ? "\r\n@ENDLOCAL" : "")
+        + ")\r\n"
+        + "\r\n"
+        +  "\"%_prog%\" " + args + " " + target + " %*\r\n"
+        + '@ENDLOCAL\r\n'
   } else {
     cmd = "@" + prog + " " + args + " " + target + " %*\r\n"
   }
