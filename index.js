@@ -15,7 +15,7 @@ var fs = require("graceful-fs")
 
 var mkdir = require("mkdirp")
   , path = require("path")
-  , shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
+  , shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 
 function cmdShimIfExists (from, to, cb) {
   fs.stat(from, function (er) {
@@ -132,12 +132,12 @@ function writeShim_ (from, to, prog, args, cb) {
 
   if (shLongProg) {
     sh = sh
-        + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
-        + "\n"
-        + "case `uname` in\n"
-        + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
-        + "esac\n"
-        + "\n"
+       + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
+       + "\n"
+       + "case `uname` in\n"
+       + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
+       + "esac\n"
+       + "\n"
 
     sh = sh
        + "if [ -x "+shLongProg+" ]; then\n"
