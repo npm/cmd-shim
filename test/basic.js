@@ -1,35 +1,35 @@
-var test = require('tap').test
-var mkdirp = require('mkdirp')
-var fs = require('fs')
-var path = require('path')
-var fixtures = path.resolve(__dirname, 'fixtures')
+var test = require("tap").test
+var mkdirp = require("mkdirp")
+var fs = require("fs")
+var path = require("path")
+var fixtures = path.resolve(__dirname, "fixtures")
 
-var cmdShim = require('../')
+var cmdShim = require("../")
 
-test('no shebang', function (t) {
-  var from = path.resolve(fixtures, 'from.exe')
-  var to = path.resolve(fixtures, 'exe.shim')
+test("no shebang", function (t) {
+  var from = path.resolve(fixtures, "from.exe")
+  var to = path.resolve(fixtures, "exe.shim")
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    t.equal(fs.readFileSync(to, 'utf8'),
+    t.equal(fs.readFileSync(to, "utf8"),
             "\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
-    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+    t.equal(fs.readFileSync(to + ".cmd", "utf8"),
             "@\"%~dp0\\from.exe\"   %*\r\n")
     t.end()
   })
 })
 
-test('env shebang', function (t) {
-  var from = path.resolve(fixtures, 'from.env')
-  var to = path.resolve(fixtures, 'env.shim')
+test("env shebang", function (t) {
+  var from = path.resolve(fixtures, "from.env")
+  var to = path.resolve(fixtures, "env.shim")
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error("%j", fs.readFileSync(to, "utf8"))
+    console.error("%j", fs.readFileSync(to + ".cmd", "utf8"))
 
-    t.equal(fs.readFileSync(to, 'utf8'),
+    t.equal(fs.readFileSync(to, "utf8"),
             "#!/bin/sh"+
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
             "\n"+
@@ -46,7 +46,7 @@ test('env shebang', function (t) {
             "\nfi"+
             "\nexit $ret"+
             "\n")
-    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+    t.equal(fs.readFileSync(to + ".cmd", "utf8"),
             "@IF EXIST \"%~dp0\\node.exe\" (\r"+
             "\n  \"%~dp0\\node.exe\"  \"%~dp0\\from.env\" %*\r"+
             "\n) ELSE (\r"+
@@ -58,16 +58,16 @@ test('env shebang', function (t) {
   })
 })
 
-test('env shebang with args', function (t) {
-  var from = path.resolve(fixtures, 'from.env.args')
-  var to = path.resolve(fixtures, 'env.args.shim')
+test("env shebang with args", function (t) {
+  var from = path.resolve(fixtures, "from.env.args")
+  var to = path.resolve(fixtures, "env.args.shim")
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error("%j", fs.readFileSync(to, "utf8"))
+    console.error("%j", fs.readFileSync(to + ".cmd", "utf8"))
 
-    t.equal(fs.readFileSync(to, 'utf8'),
+    t.equal(fs.readFileSync(to, "utf8"),
             "#!/bin/sh"+
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
             "\n"+
@@ -84,7 +84,7 @@ test('env shebang with args', function (t) {
             "\nfi"+
             "\nexit $ret"+
             "\n")
-    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+    t.equal(fs.readFileSync(to + ".cmd", "utf8"),
             "@IF EXIST \"%~dp0\\node.exe\" (\r"+
             "\n  \"%~dp0\\node.exe\"  --expose_gc \"%~dp0\\from.env.args\" %*\r"+
             "\n) ELSE (\r"+
@@ -96,16 +96,16 @@ test('env shebang with args', function (t) {
   })
 })
 
-test('explicit shebang', function (t) {
-  var from = path.resolve(fixtures, 'from.sh')
-  var to = path.resolve(fixtures, 'sh.shim')
+test("explicit shebang", function (t) {
+  var from = path.resolve(fixtures, "from.sh")
+  var to = path.resolve(fixtures, "sh.shim")
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error("%j", fs.readFileSync(to, "utf8"))
+    console.error("%j", fs.readFileSync(to + ".cmd", "utf8"))
 
-    t.equal(fs.readFileSync(to, 'utf8'),
+    t.equal(fs.readFileSync(to, "utf8"),
             "#!/bin/sh" +
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
@@ -123,7 +123,7 @@ test('explicit shebang', function (t) {
             "\nexit $ret" +
             "\n")
 
-    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+    t.equal(fs.readFileSync(to + ".cmd", "utf8"),
             "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
             "\n  \"%~dp0\\/usr/bin/sh.exe\"  \"%~dp0\\from.sh\" %*\r" +
             "\n) ELSE (\r" +
@@ -135,16 +135,16 @@ test('explicit shebang', function (t) {
   })
 })
 
-test('explicit shebang with args', function (t) {
-  var from = path.resolve(fixtures, 'from.sh.args')
-  var to = path.resolve(fixtures, 'sh.args.shim')
+test("explicit shebang with args", function (t) {
+  var from = path.resolve(fixtures, "from.sh.args")
+  var to = path.resolve(fixtures, "sh.args.shim")
   cmdShim(from, to, function(er) {
     if (er)
       throw er
-    console.error('%j', fs.readFileSync(to, 'utf8'))
-    console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error("%j", fs.readFileSync(to, "utf8"))
+    console.error("%j", fs.readFileSync(to + ".cmd", "utf8"))
 
-    t.equal(fs.readFileSync(to, 'utf8'),
+    t.equal(fs.readFileSync(to, "utf8"),
             "#!/bin/sh" +
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
@@ -162,7 +162,7 @@ test('explicit shebang with args', function (t) {
             "\nexit $ret" +
             "\n")
 
-    t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+    t.equal(fs.readFileSync(to + ".cmd", "utf8"),
             "@IF EXIST \"%~dp0\\/usr/bin/sh.exe\" (\r" +
             "\n  \"%~dp0\\/usr/bin/sh.exe\"  -x \"%~dp0\\from.sh.args\" %*\r" +
             "\n) ELSE (\r" +

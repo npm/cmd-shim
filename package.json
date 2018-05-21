@@ -3,6 +3,7 @@
   "version": "2.0.2",
   "description": "Used in npm for command line application support",
   "scripts": {
+    "lint": "eslint **/*.js",
     "test": "tap test/*.js"
   },
   "repository": {
@@ -15,6 +16,7 @@
     "mkdirp": "~0.5.0"
   },
   "devDependencies": {
+    "eslint": "~4.19.1",
     "rimraf": "~2.2.8",
     "tap": "~0.4.11"
   }
