@@ -16,6 +16,19 @@ test('no shebang', function (t) {
             "\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
     t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
             "@\"%~dp0\\from.exe\"   %*\r\n")
+    t.equal(fs.readFileSync(to + '.ps1', 'utf8'),
+            '#!/usr/bin/env pwsh'+
+            '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent'+
+            '\n'+
+            '\n$exe=""'+
+            '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {'+
+            '\n  # Fix case when both the Windows and Linux builds of Node'+
+            '\n  # are installed in the same directory'+
+            '\n  $exe=".exe"'+
+            '\n}'+
+            '\n& "$basedir/from.exe"   $args'+
+            '\nexit $LASTEXITCODE'+
+            '\n')
     t.end()
   })
 })
@@ -28,6 +41,7 @@ test('env shebang', function (t) {
       throw er
     console.error('%j', fs.readFileSync(to, 'utf8'))
     console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error('%j', fs.readFileSync(to + '.ps1', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh"+
@@ -54,6 +68,26 @@ test('env shebang', function (t) {
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
             "\n  node  \"%~dp0\\from.env\" %*\r"+
             "\n)")
+    t.equal(fs.readFileSync(to + '.ps1', 'utf8'),
+            '#!/usr/bin/env pwsh'+
+            '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent'+
+            '\n'+
+            '\n$exe=""'+
+            '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {'+
+            '\n  # Fix case when both the Windows and Linux builds of Node'+
+            '\n  # are installed in the same directory'+
+            '\n  $exe=".exe"'+
+            '\n}'+
+            '\n$ret=0'+
+            '\nif (Test-Path "$basedir/node$exe") {'+
+            '\n  & "$basedir/node$exe"  "$basedir/from.env" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n} else {'+
+            '\n  & "node$exe"  "$basedir/from.env" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n}'+
+            '\nexit $ret'+
+            '\n')
     t.end()
   })
 })
@@ -66,6 +100,7 @@ test('env shebang with args', function (t) {
       throw er
     console.error('%j', fs.readFileSync(to, 'utf8'))
     console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error('%j', fs.readFileSync(to + '.ps1', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh"+
@@ -92,6 +127,26 @@ test('env shebang with args', function (t) {
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
             "\n  node  --expose_gc \"%~dp0\\from.env.args\" %*\r"+
             "\n)")
+    t.equal(fs.readFileSync(to + '.ps1', 'utf8'),
+            '#!/usr/bin/env pwsh'+
+            '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent'+
+            '\n'+
+            '\n$exe=""'+
+            '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {'+
+            '\n  # Fix case when both the Windows and Linux builds of Node'+
+            '\n  # are installed in the same directory'+
+            '\n  $exe=".exe"'+
+            '\n}'+
+            '\n$ret=0'+
+            '\nif (Test-Path "$basedir/node$exe") {'+
+            '\n  & "$basedir/node$exe"  --expose_gc "$basedir/from.env.args" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n} else {'+
+            '\n  & "node$exe"  --expose_gc "$basedir/from.env.args" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n}'+
+            '\nexit $ret'+
+            '\n')
     t.end()
   })
 })
@@ -104,6 +159,7 @@ test('explicit shebang', function (t) {
       throw er
     console.error('%j', fs.readFileSync(to, 'utf8'))
     console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error('%j', fs.readFileSync(to + '.ps1', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh" +
@@ -131,6 +187,27 @@ test('explicit shebang', function (t) {
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
             "\n  /usr/bin/sh  \"%~dp0\\from.sh\" %*\r" +
             "\n)")
+
+    t.equal(fs.readFileSync(to + '.ps1', 'utf8'),
+            '#!/usr/bin/env pwsh'+
+            '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent'+
+            '\n'+
+            '\n$exe=""'+
+            '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {'+
+            '\n  # Fix case when both the Windows and Linux builds of Node'+
+            '\n  # are installed in the same directory'+
+            '\n  $exe=".exe"'+
+            '\n}'+
+            '\n$ret=0'+
+            '\nif (Test-Path "$basedir//usr/bin/sh$exe") {'+
+            '\n  & "$basedir//usr/bin/sh$exe"  "$basedir/from.sh" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n} else {'+
+            '\n  & "/usr/bin/sh$exe"  "$basedir/from.sh" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n}'+
+            '\nexit $ret'+
+            '\n')
     t.end()
   })
 })
@@ -143,6 +220,7 @@ test('explicit shebang with args', function (t) {
       throw er
     console.error('%j', fs.readFileSync(to, 'utf8'))
     console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+    console.error('%j', fs.readFileSync(to + '.ps1', 'utf8'))
 
     t.equal(fs.readFileSync(to, 'utf8'),
             "#!/bin/sh" +
@@ -170,6 +248,27 @@ test('explicit shebang with args', function (t) {
             "\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r"+
             "\n  /usr/bin/sh  -x \"%~dp0\\from.sh.args\" %*\r" +
             "\n)")
+
+    t.equal(fs.readFileSync(to + '.ps1', 'utf8'),
+            '#!/usr/bin/env pwsh'+
+            '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent'+
+            '\n'+
+            '\n$exe=""'+
+            '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {'+
+            '\n  # Fix case when both the Windows and Linux builds of Node'+
+            '\n  # are installed in the same directory'+
+            '\n  $exe=".exe"'+
+            '\n}'+
+            '\n$ret=0'+
+            '\nif (Test-Path "$basedir//usr/bin/sh$exe") {'+
+            '\n  & "$basedir//usr/bin/sh$exe"  -x "$basedir/from.sh.args" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n} else {'+
+            '\n  & "/usr/bin/sh$exe"  -x "$basedir/from.sh.args" $args'+
+            '\n  $ret=$LASTEXITCODE'+
+            '\n}'+
+            '\nexit $ret'+
+            '\n')
     t.end()
   })
 })
