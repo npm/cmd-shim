@@ -80,18 +80,22 @@ function writeShim_ (from, to, prog, args, variables, cb) {
     , longProg
     , shProg = prog && prog.split("\\").join("/")
     , shLongProg
+    , pwshProg = shProg && "\"" + shProg + "$exe\""
+    , pwshLongProg
   shTarget = shTarget.split("\\").join("/")
   args = args || ""
   variables = variables || ""
   if (!prog) {
     prog = "\"%~dp0\\" + target + "\""
     shProg = "\"$basedir/" + shTarget + "\""
+    pwshProg = shProg
     args = ""
     target = ""
     shTarget = ""
   } else {
     longProg = "\"%~dp0\\" + prog + ".exe\""
     shLongProg = "\"$basedir/" + prog + "\""
+    pwshLongProg = "\"$basedir/" + prog + "$exe\""
     target = "\"%~dp0\\" + target + "\""
     shTarget = "\"$basedir/" + shTarget + "\""
   }
@@ -170,7 +174,52 @@ function writeShim_ (from, to, prog, args, variables, cb) {
        + "exit $?\n"
   }
 
-  var then = times(2, next, cb)
+  // #!/usr/bin/env pwsh
+  // $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+  //
+  // $ret=0
+  // $exe = ""
+  // if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
+  //   # Fix case when both the Windows and Linux builds of Node
+  //   # are installed in the same directory
+  //   $exe = ".exe"
+  // }
+  // if (Test-Path "$basedir/node") {
+  //   & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   $ret=$LASTEXITCODE
+  // } else {
+  //   & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   $ret=$LASTEXITCODE
+  // }
+  // exit $ret
+  var pwsh = "#!/usr/bin/env pwsh\n"
+           + "$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent\n"
+           + "\n"
+           + "$exe=\"\"\n"
+           + "if ($PSVersionTable.PSVersion -lt \"6.0\" -or $IsWindows) {\n"
+           + "  # Fix case when both the Windows and Linux builds of Node\n"
+           + "  # are installed in the same directory\n"
+           + "  $exe=\".exe\"\n"
+           + "}\n"
+  if (shLongProg) {
+    pwsh = pwsh
+         + "$ret=0\n"
+         + "if (Test-Path " + pwshLongProg + ") {\n"
+         + "  & " + pwshLongProg + " " + args + " " + shTarget + " $args\n"
+         + "  $ret=$LASTEXITCODE\n"
+         + "} else {\n"
+         + "  & " + pwshProg + " " + args + " " + shTarget + " $args\n"
+         + "  $ret=$LASTEXITCODE\n"
+         + "}\n"
+         + "exit $ret\n"
+  } else {
+    pwsh = pwsh
+         + "& " + pwshProg + " " + args + " " + shTarget + " $args\n"
+         + "exit $LASTEXITCODE\n"
+  }
+
+  var then = times(3, next, cb)
+  fs.writeFile(to + ".ps1", pwsh, "utf8", then)
   fs.writeFile(to + ".cmd", cmd, "utf8", then)
   fs.writeFile(to, sh, "utf8", then)
   function next () {
@@ -182,6 +231,7 @@ function chmodShim (to, cb) {
   var then = times(2, cb, cb)
   fs.chmod(to, "0755", then)
   fs.chmod(to + ".cmd", "0755", then)
+  fs.chmod(to + ".ps1", "0755", then)
 }
 
 function times(n, ok, cb) {
