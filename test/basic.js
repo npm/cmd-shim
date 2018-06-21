@@ -17,7 +17,7 @@ test('no shebang', function (t) {
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
             "\n"+
             "\ncase `uname` in"+
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
+            "\n    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;"+
             "\nesac"+
             "\n"+
             "\n\"$basedir/from.exe\"   \"$@\"\nexit $?\n")
@@ -39,7 +39,7 @@ test('env shebang', function (t) {
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
             "\ncase `uname` in" +
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;" +
+            "\n    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;" +
             "\nesac" +
             "\n" +
             "\nif [ -x \"$basedir/node\" ]; then" +
@@ -80,7 +80,7 @@ test('env shebang with args', function (t) {
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")"+
             "\n"+
             "\ncase `uname` in"+
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
+            "\n    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;"+
             "\nesac"+
             "\n"+
             "\nif [ -x \"$basedir/node\" ]; then"+
@@ -121,7 +121,7 @@ test('env shebang with variables', function (t) {
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n"+
             "\ncase `uname` in"+
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;"+
+            "\n    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;"+
             "\nesac"+
             "\n"+
             "\nif [ -x \"$basedir/node\" ]; then"+
@@ -162,7 +162,7 @@ test('explicit shebang', function (t) {
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
             "\ncase `uname` in" +
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;" +
+            "\n    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;" +
             "\nesac" +
             "\n" +
             "\nif [ -x \"$basedir//usr/bin/sh\" ]; then" +
@@ -204,7 +204,7 @@ test('explicit shebang with args', function (t) {
             "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
             "\n" +
             "\ncase `uname` in" +
-            "\n    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;" +
+            "\n    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;" +
             "\nesac" +
             "\n" +
             "\nif [ -x \"$basedir//usr/bin/sh\" ]; then" +

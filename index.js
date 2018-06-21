@@ -132,7 +132,7 @@ function writeShim_ (from, to, prog, args, variables, cb) {
   // basedir=`dirname "$0"`
   //
   // case `uname` in
-  //     *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
+  //     *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w "$basedir"`;;
   // esac
   //
   // if [ -x "$basedir/node.exe" ]; then
@@ -150,7 +150,7 @@ function writeShim_ (from, to, prog, args, variables, cb) {
       + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
       + "\n"
       + "case `uname` in\n"
-      + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
+      + "    *CYGWIN*|*MINGW*|*MSYS*) basedir=`cygpath -w \"$basedir\"`;;\n"
       + "esac\n"
       + "\n"
 
