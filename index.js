@@ -42,8 +42,12 @@ function cmdShim (src, to, opts) {
 }
 
 function cmdShim_ (src, to, opts) {
-  return Promise.all([rm(to), opts.createCmdFile && rm(`${to}.cmd`)])
-    .then(() => writeShim(src, to, opts))
+  return Promise.all([
+    rm(to),
+    rm(`${to}.ps1`),
+    opts.createCmdFile && rm(`${to}.cmd`)
+  ])
+  .then(() => writeShim(src, to, opts))
 }
 
 function writeShim (src, to, opts) {
@@ -70,23 +74,29 @@ function writeShim (src, to, opts) {
 
 function writeShim_ (src, to, opts) {
   opts = opts || {}
+  // Create PowerShell file by default if the option hasn't been specified
+  opts.createPwshFile = (typeof opts.createPwshFile !== 'undefined' ? opts.createPwshFile : true)
   let shTarget = path.relative(path.dirname(to), src)
   let target = shTarget.split('/').join('\\')
   let longProg
   let prog = opts.prog
   let shProg = prog && prog.split('\\').join('/')
   let shLongProg
+  let pwshProg = shProg && `"${shProg}$exe"`
+  let pwshLongProg
   shTarget = shTarget.split('\\').join('/')
   let args = opts.args || ''
   if (!prog) {
     prog = `"%~dp0\\${target}"`
     shProg = `"$basedir/${shTarget}"`
+    pwshProg = shProg
     args = ''
     target = ''
     shTarget = ''
   } else {
     longProg = `"%~dp0\\${prog}.exe"`
     shLongProg = '"$basedir/' + prog + '"'
+    pwshLongProg = `"$basedir/${prog}$exe"`
     target = `"%~dp0\\${target}"`
     shTarget = `"$basedir/${shTarget}"`
   }
@@ -155,16 +165,62 @@ function writeShim_ (src, to, opts) {
       'exit $?\n'
   }
 
+  // #!/usr/bin/env pwsh
+  // $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+  //
+  // $ret=0
+  // $exe = ""
+  // if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
+  //   # Fix case when both the Windows and Linux builds of Node
+  //   # are installed in the same directory
+  //   $exe = ".exe"
+  // }
+  // if (Test-Path "$basedir/node") {
+  //   & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   $ret=$LASTEXITCODE
+  // } else {
+  //   & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   $ret=$LASTEXITCODE
+  // }
+  // exit $ret
+  let pwsh = '#!/usr/bin/env pwsh\n' +
+    '$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent\n' +
+    '\n' +
+    '$exe=""\n' +
+    'if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {\n' +
+    '  # Fix case when both the Windows and Linux builds of Node\n' +
+    '  # are installed in the same directory\n' +
+    '  $exe=".exe"\n' +
+    '}\n'
+  if (shLongProg) {
+    pwsh = pwsh +
+      '$ret=0\n' +
+      `if (Test-Path ${pwshLongProg}) {\n` +
+      `  & ${pwshLongProg} ${args} ${shTarget} $args\n` +
+      '  $ret=$LASTEXITCODE\n' +
+      '} else {\n' +
+      `  & ${pwshProg} ${args} ${shTarget} $args\n` +
+      '  $ret=$LASTEXITCODE\n' +
+      '}\n' +
+      'exit $ret\n'
+  } else {
+    pwsh = pwsh +
+      `& ${pwshProg} ${args} ${shTarget} $args\n` +
+      'exit $LASTEXITCODE\n'
+  }
+
   return Promise.all([
     opts.createCmdFile && fs.writeFile(to + '.cmd', cmd, 'utf8'),
+    opts.createPwshFile && fs.writeFile(`${to}.ps1`, pwsh, 'utf8'),
     fs.writeFile(to, sh, 'utf8')
   ])
-  .then(() => chmodShim(to, opts.createCmdFile))
+  .then(() => chmodShim(to, opts))
 }
 
-function chmodShim (to, createCmdFile) {
+function chmodShim (to, {createCmdFile, createPwshFile}) {
   return Promise.all([
     fs.chmod(to, 0o755),
+    createPwshFile && fs.chmod(`${to}.ps1`, 0o755),
     createCmdFile && fs.chmod(`${to}.cmd`, 0o755)
   ])
 }
