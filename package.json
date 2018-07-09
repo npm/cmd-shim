@@ -29,9 +29,9 @@
     "mos": "^1.3.1",
     "mos-plugin-readme": "^1.0.4",
     "rimraf": "^2.6.2",
-    "standard": "^8.6.0",
+    "standard": "^11.0.1",
     "tape": "^4.6.2",
-    "tape-promise": "^2.0.0"
+    "tape-promise": "^3.0.0"
   },
   "engines": {
     "node": ">=6"

@@ -47,7 +47,7 @@ function cmdShim_ (src, to, opts) {
     rm(`${to}.ps1`),
     opts.createCmdFile && rm(`${to}.cmd`)
   ])
-  .then(() => writeShim(src, to, opts))
+    .then(() => writeShim(src, to, opts))
 }
 
 function writeShim (src, to, opts) {
@@ -65,7 +65,7 @@ function writeShim (src, to, opts) {
           const shebang = firstLine.match(shebangExpr)
           if (!shebang) return writeShim_(src, to, Object.assign({}, opts, {args: defaultArgs}))
           const prog = shebang[1]
-          const args = shebang[2] && (defaultArgs && (shebang[2] + ' ' + defaultArgs) || shebang[2]) || defaultArgs
+          const args = (shebang[2] && ((defaultArgs && (shebang[2] + ' ' + defaultArgs)) || shebang[2])) || defaultArgs
           return writeShim_(src, to, Object.assign({}, opts, {prog, args}))
         })
         .catch(() => writeShim_(src, to, Object.assign({}, opts, {args: defaultArgs})))
@@ -214,7 +214,7 @@ function writeShim_ (src, to, opts) {
     opts.createPwshFile && fs.writeFile(`${to}.ps1`, pwsh, 'utf8'),
     fs.writeFile(to, sh, 'utf8')
   ])
-  .then(() => chmodShim(to, opts))
+    .then(() => chmodShim(to, opts))
 }
 
 function chmodShim (to, {createCmdFile, createPwshFile}) {
