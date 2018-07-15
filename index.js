@@ -19,6 +19,8 @@ const path = require('path')
 const isWindows = require('is-windows')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 const DEFAULT_OPTIONS = {
+  // Create PowerShell file by default if the option hasn't been specified
+  createPwshFile: true,
   createCmdFile: isWindows()
 }
 
@@ -51,7 +53,7 @@ function cmdShim_ (src, to, opts) {
 }
 
 function writeShim (src, to, opts) {
-  opts = opts || {}
+  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
   const defaultArgs = opts.preserveSymlinks ? '--preserve-symlinks' : ''
   // make a cmd file and a sh script
   // First, check if the bin is a #! of some sort.
@@ -73,9 +75,7 @@ function writeShim (src, to, opts) {
 }
 
 function writeShim_ (src, to, opts) {
-  opts = opts || {}
-  // Create PowerShell file by default if the option hasn't been specified
-  opts.createPwshFile = (typeof opts.createPwshFile !== 'undefined' ? opts.createPwshFile : true)
+  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
   let shTarget = path.relative(path.dirname(to), src)
   let target = shTarget.split('/').join('\\')
   let longProg
@@ -86,6 +86,10 @@ function writeShim_ (src, to, opts) {
   let pwshLongProg
   shTarget = shTarget.split('\\').join('/')
   let args = opts.args || ''
+  let {
+    win32: nodePath,
+    posix: shNodePath
+  } = normalizePathEnvVar(opts.nodePath)
   if (!prog) {
     prog = `"%~dp0\\${target}"`
     shProg = `"$basedir/${shTarget}"`
@@ -110,7 +114,7 @@ function writeShim_ (src, to, opts) {
     //   SET PATHEXT=%PATHEXT:;.JS;=;%
     //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
     // )
-    cmd = opts.nodePath ? `@SET NODE_PATH=${opts.nodePath}\r\n` : ''
+    cmd = nodePath ? `@SET NODE_PATH=${nodePath}\r\n` : ''
     if (longProg) {
       cmd += '@IF EXIST ' + longProg + ' (\r\n' +
         '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
@@ -148,7 +152,7 @@ function writeShim_ (src, to, opts) {
     '    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;\n' +
     'esac\n' +
     '\n'
-  const env = opts.nodePath ? `NODE_PATH="${opts.nodePath}" ` : ''
+  const env = opts.nodePath ? `NODE_PATH="${shNodePath}" ` : ''
 
   if (shLongProg) {
     sh = sh +
@@ -187,11 +191,20 @@ function writeShim_ (src, to, opts) {
     '$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent\n' +
     '\n' +
     '$exe=""\n' +
+    (opts.nodePath ? '$env_node_path=$env:NODE_PATH\n' +
+      `$env:NODE_PATH="${nodePath}"\n` : '') +
     'if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {\n' +
     '  # Fix case when both the Windows and Linux builds of Node\n' +
     '  # are installed in the same directory\n' +
     '  $exe=".exe"\n' +
-    '}\n'
+    '}'
+  if (opts.nodePath) {
+    pwsh = pwsh +
+      ' else {\n' +
+      `  $env:NODE_PATH="${shNodePath}"\n` +
+      '}'
+  }
+  pwsh += '\n'
   if (shLongProg) {
     pwsh = pwsh +
       '$ret=0\n' +
@@ -202,10 +215,12 @@ function writeShim_ (src, to, opts) {
       `  & ${pwshProg} ${args} ${shTarget} $args\n` +
       '  $ret=$LASTEXITCODE\n' +
       '}\n' +
+      (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
       'exit $ret\n'
   } else {
     pwsh = pwsh +
       `& ${pwshProg} ${args} ${shTarget} $args\n` +
+      (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
       'exit $LASTEXITCODE\n'
   }
 
@@ -223,4 +238,29 @@ function chmodShim (to, {createCmdFile, createPwshFile}) {
     createPwshFile && fs.chmod(`${to}.ps1`, 0o755),
     createCmdFile && fs.chmod(`${to}.cmd`, 0o755)
   ])
+}
+
+/**
+ * @param {string} nodePath
+ * @returns {{win32:string,posix:string}}
+ */
+function normalizePathEnvVar (nodePath) {
+  if (!nodePath) {
+    return {
+      win32: nodePath,
+      posix: nodePath
+    }
+  }
+  let split = (typeof nodePath === 'string' ? String(nodePath).split(path.delimiter) : Array.from(nodePath))
+  let result = {}
+  for (let i = 0; i < split.length; i++) {
+    const win32 = split[i].split('/').join('\\')
+    const posix = isWindows() ? split[i].split('\\').join('/').replace(/^([^:\\/]*):/, (_, $1) => `/mnt/${$1.toLowerCase()}`) : split[i]
+
+    result.win32 = result.win32 ? `${result.win32};${win32}` : win32
+    result.posix = result.posix ? `${result.posix}:${posix}` : posix
+
+    result[i] = {win32, posix}
+  }
+  return result
 }
