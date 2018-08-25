@@ -13,8 +13,10 @@
     "md": "mos"
   },
   "files": [
+    "index.d.ts",
     "index.js"
   ],
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/pnpm/cmd-shim.git"

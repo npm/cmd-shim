@@ -241,7 +241,7 @@ function chmodShim (to, {createCmdFile, createPwshFile}) {
 }
 
 /**
- * @param {string} nodePath
+ * @param {string|string[]} nodePath
  * @returns {{win32:string,posix:string}}
  */
 function normalizePathEnvVar (nodePath) {
@@ -251,7 +251,7 @@ function normalizePathEnvVar (nodePath) {
       posix: nodePath
     }
   }
-  let split = (typeof nodePath === 'string' ? String(nodePath).split(path.delimiter) : Array.from(nodePath))
+  let split = (typeof nodePath === 'string' ? nodePath.split(path.delimiter) : Array.from(nodePath))
   let result = {}
   for (let i = 0; i < split.length; i++) {
     const win32 = split[i].split('/').join('\\')
