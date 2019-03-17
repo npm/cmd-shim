@@ -12,6 +12,10 @@
 module.exports = cmdShim
 cmdShim.ifExists = cmdShimIfExists
 
+/**
+ * @typedef {import('./index').Options} Options
+ */
+
 const fs = require('mz/fs')
 
 const mkdir = require('mkdirp-promise')
@@ -24,23 +28,47 @@ const DEFAULT_OPTIONS = {
   createCmdFile: isWindows()
 }
 
-function cmdShimIfExists (src, to, opts) {
-  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  return fs.stat(src)
-    .then(() => cmdShim(src, to, opts))
-    .catch(() => {})
-}
-
-// Try to unlink, but ignore errors.
-// Any problems will surface later.
-function rm (path) {
-  return fs.unlink(path).catch(() => {})
-}
-
+/**
+ * Try to create shims.
+ *
+ * @param {string} src Path to program (executable or script).
+ * @param {string} to Path to shims.
+ * Don't add an extension if you will create multiple types of shims.
+ * @param {Options} opts Options.
+ * @return {Promise<void>}
+ * @throws If `src` is missing.
+ */
 function cmdShim (src, to, opts) {
   opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  return fs.stat(src)
+  return fs
+    .stat(src)
     .then(() => cmdShim_(src, to, opts))
+}
+
+/**
+ * Try to create shims.
+ *
+ * Does nothing if `src` doesn't exist.
+ *
+ * @param {string} src Path to program (executable or script).
+ * @param {string} to Path to shims.
+ * Don't add an extension if you will create multiple types of shims.
+ * @param {Options} opts Options.
+ * @return {Promise<void>}
+ */
+function cmdShimIfExists (src, to, opts) {
+  return cmdShim(src, to, opts).catch(() => {})
+}
+
+/**
+ * Try to unlink, but ignore errors.
+ * Any problems will surface later.
+ *
+ * @param {string} path File to be removed.
+ * @return {Promise<void>}
+ */
+function rm (path) {
+  return fs.unlink(path).catch(() => {})
 }
 
 function cmdShim_ (src, to, opts) {
@@ -247,8 +275,8 @@ function chmodShim (to, {createCmdFile, createPwshFile}) {
 function normalizePathEnvVar (nodePath) {
   if (!nodePath) {
     return {
-      win32: nodePath,
-      posix: nodePath
+      win32: '',
+      posix: ''
     }
   }
   let split = (typeof nodePath === 'string' ? nodePath.split(path.delimiter) : Array.from(nodePath))
