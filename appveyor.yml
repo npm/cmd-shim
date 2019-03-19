@@ -1,16 +1,16 @@
 environment:
   matrix:
-    - nodejs_version: 4
-    - nodejs_version: 6
-    - nodejs_version: 8
-    - nodejs_version: 10
+    - nodejs_version: '4'
+    - nodejs_version: '6'
+    - nodejs_version: '8'
+    - nodejs_version: '10'
 install:
   - ps: Install-Product node $env:nodejs_version
   - curl -L https://unpkg.com/@pnpm/self-installer | node
   - pnpm install
 matrix:
   fast_finish: true
-build: off
+build: 'off'
 version: '{build}'
 test_script:
   - node --version

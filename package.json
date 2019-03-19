@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test:unit": "tape test/*.js",
-    "test": "standard && npm run test:unit && mos test",
+    "test": "standard && pnpm run test:unit && mos test",
     "md": "mos"
   },
   "files": [
