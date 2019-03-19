@@ -4,9 +4,6 @@ node_js:
   - 6
   - 8
   - 10
-os:
-  - linux
-  - windows
 before_install:
   - curl -L https://unpkg.com/@pnpm/self-installer | node
 install:
