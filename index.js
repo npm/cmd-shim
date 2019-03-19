@@ -126,14 +126,16 @@ function writeShimsPreCommon (target) {
 function writeAllShims (src, to, srcRuntimeInfo, opts) {
   opts = Object.assign({}, DEFAULT_OPTIONS, opts)
   /** @type {Array<[ShimGenerator, string]>} */
-  const generatorAndExtPairs = [[generateShShim, '']]
+  const generatorAndExts = [{ generator: generateShShim, extension: '' }]
   if (opts.createCmdFile) {
-    generatorAndExtPairs.push([generateCmdShim, '.cmd'])
+    generatorAndExts.push({ generator: generateCmdShim, extension: '.cmd' })
   }
   if (opts.createPwshFile) {
-    generatorAndExtPairs.push([generatePwshShim, '.ps1'])
+    generatorAndExts.push({ generator: generatePwshShim, extension: '.ps1' })
   }
-  return Promise.all(generatorAndExtPairs.map(([generateShimScript, extension]) => writeShim(src, to + extension, srcRuntimeInfo, generateShimScript, opts)))
+  return Promise.all(
+    generatorAndExts.map((generatorAndExt) => writeShim(src, to + generatorAndExt.extension, srcRuntimeInfo, generatorAndExt.generator, opts))
+  )
 }
 
 /**
@@ -251,9 +253,7 @@ function generateCmdShim (src, to, opts) {
   let longProg
   let prog = opts.prog
   let args = opts.args || ''
-  const {
-    win32: nodePath
-  } = normalizePathEnvVar(opts.nodePath)
+  const nodePath = normalizePathEnvVar(opts.nodePath).win32
   if (!prog) {
     prog = `"%~dp0\\${target}"`
     args = ''
@@ -302,9 +302,7 @@ function generateShShim (src, to, opts) {
   let shLongProg
   shTarget = shTarget.split('\\').join('/')
   let args = opts.args || ''
-  const {
-    posix: shNodePath
-  } = normalizePathEnvVar(opts.nodePath)
+  const shNodePath = normalizePathEnvVar(opts.nodePath).posix
   if (!shProg) {
     shProg = `"$basedir/${shTarget}"`
     args = ''
@@ -375,10 +373,9 @@ function generatePwshShim (src, to, opts) {
   let pwshLongProg
   shTarget = shTarget.split('\\').join('/')
   let args = opts.args || ''
-  let {
-    win32: nodePath,
-    posix: shNodePath
-  } = normalizePathEnvVar(opts.nodePath)
+  let normalizedPathEnvVar = normalizePathEnvVar(opts.nodePath)
+  const nodePath = normalizedPathEnvVar.win32
+  const shNodePath = normalizedPathEnvVar.posix
   if (!pwshProg) {
     pwshProg = `"$basedir/${shTarget}"`
     args = ''
