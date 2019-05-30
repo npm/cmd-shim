@@ -36,7 +36,7 @@ cmdShim.ifExists = cmdShimIfExists
 
 const fs = require('mz/fs')
 
-const mkdir = require('mkdirp-promise')
+const makeDir = require('make-dir')
 const path = require('path')
 const isWindows = require('is-windows')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
@@ -127,7 +127,7 @@ function cmdShim_ (src, to, opts) {
  * @param {string} target Path of shims that are going to be created.
  */
 function writeShimsPreCommon (target) {
-  return mkdir(path.dirname(target))
+  return makeDir(path.dirname(target))
 }
 
 /**

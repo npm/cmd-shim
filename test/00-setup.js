@@ -2,7 +2,7 @@
 const tape = require('tape')
 const promisifyTape = require('tape-promise').default
 const test = promisifyTape(tape)
-const mkdirp = require('mkdirp-promise')
+const makeDir = require('make-dir')
 const fs = require('fs')
 const path = require('path')
 const fixtures = path.resolve(__dirname, 'fixtures')
@@ -16,7 +16,7 @@ const srcs = {
 }
 
 test('create fixture', function (t) {
-  return mkdirp(fixtures)
+  return makeDir(fixtures)
     .then(() => {
       t.pass('made dir')
       Object.keys(srcs).forEach(function (f) {
