@@ -67,11 +67,10 @@ const extensionToProgramMap = new Map([
  * @return {Promise<void>}
  * @throws If `src` is missing.
  */
-function cmdShim (src, to, opts) {
+async function cmdShim (src, to, opts) {
   opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  return fs
-    .stat(src)
-    .then(() => cmdShim_(src, to, opts))
+  await fs.stat(src)
+  return cmdShim_(src, to, opts)
 }
 
 /**
@@ -109,15 +108,15 @@ function rm (path) {
  * @param {Options} opts Options.
  *
  */
-function cmdShim_ (src, to, opts) {
+async function cmdShim_ (src, to, opts) {
   opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  return searchScriptRuntime(src).then((srcRuntimeInfo) => {
-    // Always tries to create all types of shims by calling `writeAllShims` as of now.
-    // Append your code here to change the behavior in response to `srcRuntimeInfo`.
+  const srcRuntimeInfo = await searchScriptRuntime(src)
+  // Always tries to create all types of shims by calling `writeAllShims` as of now.
+  // Append your code here to change the behavior in response to `srcRuntimeInfo`.
 
-    // Create 3 shims for (Ba)sh in Cygwin / MSYS, no extension) & CMD (.cmd) & PowerShell (.ps1)
-    return writeShimsPreCommon(to).then(() => writeAllShims(src, to, srcRuntimeInfo, opts))
-  })
+  // Create 3 shims for (Ba)sh in Cygwin / MSYS, no extension) & CMD (.cmd) & PowerShell (.ps1)
+  await writeShimsPreCommon(to)
+  return writeAllShims(src, to, srcRuntimeInfo, opts)
 }
 
 /**
@@ -183,29 +182,27 @@ function writeShimPost (target) {
  * @param {string} target Path to the executable or script.
  * @return {Promise<RuntimeInfo>} Promise of infomation of runtime of `target`.
  */
-function searchScriptRuntime (target) {
-  return fs
-    .readFile(target, 'utf8')
-    .then(data => {
-      // First, check if the bin is a #! of some sort.
-      const firstLine = data.trim().split(/\r*\n/)[0]
-      const shebang = firstLine.match(shebangExpr)
-      if (!shebang) {
-        // If not, infer script type from its extension.
-        // If the inference fails, it's something that'll be compiled, or some other
-        // sort of script, and just call it directly.
-        const targetExtension = path.extname(target).toLowerCase()
-        return Promise.resolve({
-          // undefined if extension is unknown but it's converted to null.
-          program: extensionToProgramMap.get(targetExtension) || null,
-          additionalArgs: ''
-        })
-      }
-      return Promise.resolve({
-        program: shebang[1],
-        additionalArgs: shebang[2]
-      })
-    })
+async function searchScriptRuntime (target) {
+  const data = await fs.readFile(target, 'utf8')
+
+  // First, check if the bin is a #! of some sort.
+  const firstLine = data.trim().split(/\r*\n/)[0]
+  const shebang = firstLine.match(shebangExpr)
+  if (!shebang) {
+    // If not, infer script type from its extension.
+    // If the inference fails, it's something that'll be compiled, or some other
+    // sort of script, and just call it directly.
+    const targetExtension = path.extname(target).toLowerCase()
+    return {
+      // undefined if extension is unknown but it's converted to null.
+      program: extensionToProgramMap.get(targetExtension) || null,
+      additionalArgs: ''
+    }
+  }
+  return {
+    program: shebang[1],
+    additionalArgs: shebang[2]
+  }
 }
 
 /**
@@ -218,7 +215,7 @@ function searchScriptRuntime (target) {
  * @param {ShimGenerator} generateShimScript Generator of shim script.
  * @param {Options} opts Other options.
  */
-function writeShim (src, to, srcRuntimeInfo, generateShimScript, opts) {
+async function writeShim (src, to, srcRuntimeInfo, generateShimScript, opts) {
   const defaultArgs = opts.preserveSymlinks ? '--preserve-symlinks' : ''
   // `Array.prototype.filter` removes ''.
   // ['--foo', '--bar'].join(' ') and [].join(' ') returns '--foo --bar' and '' respectively.
@@ -228,9 +225,9 @@ function writeShim (src, to, srcRuntimeInfo, generateShimScript, opts) {
     args: args
   })
 
-  return writeShimPre(to)
-    .then(() => fs.writeFile(to, generateShimScript(src, to, opts), 'utf8'))
-    .then(() => writeShimPost(to))
+  await writeShimPre(to)
+  await fs.writeFile(to, generateShimScript(src, to, opts), 'utf8')
+  return writeShimPost(to)
 }
 
 /**

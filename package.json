@@ -36,7 +36,7 @@
     "tape-promise": "^2.0.1"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8.15"
   },
   "mos": {
     "plugins": [
