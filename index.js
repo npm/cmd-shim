@@ -129,16 +129,14 @@ function writeShim_ (from, to, prog, args, cb) {
   // exit $ret
 
   var sh = "#!/bin/sh\n"
+      + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
+      + "\n"
+      + "case `uname` in\n"
+      + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
+      + "esac\n"
+      + "\n"
 
   if (shLongProg) {
-    sh = sh
-        + "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n"
-        + "\n"
-        + "case `uname` in\n"
-        + "    *CYGWIN*) basedir=`cygpath -w \"$basedir\"`;;\n"
-        + "esac\n"
-        + "\n"
-
     sh = sh
        + "if [ -x "+shLongProg+" ]; then\n"
        + "  " + shLongProg + " " + args + " " + shTarget + " \"$@\"\n"
