@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "rimraf": "~2.2.8",
-    "tap": "^1.2.0"
+    "tap": "^12.7.0"
   }
 }
