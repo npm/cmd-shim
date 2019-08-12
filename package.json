@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ForbesLindesay/cmd-shim.git"
+    "url": "https://github.com/npm/cmd-shim.git"
   },
   "license": "ISC",
   "dependencies": {
