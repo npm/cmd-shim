@@ -3,7 +3,8 @@
   "version": "2.1.0",
   "description": "Used in npm for command line application support",
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tap test/*.js --100",
+    "snap": "TAP_SNAPSHOT=1 tap test/*.js --100"
   },
   "repository": {
     "type": "git",
