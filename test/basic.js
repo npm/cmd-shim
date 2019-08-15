@@ -62,7 +62,7 @@ test('fails if mkdir fails', t => {
   var from = path.resolve(fixtures, 'from.env')
   var to = path.resolve(fixtures, 'from.env/a/b/c')
   cmdShim(from, to, er => {
-    t.match(er, { code: 'ENOTDIR' })
+    t.match(er, { code: /^(ENOTDIR|EEXIST)$/ })
     t.end()
   })
 })
