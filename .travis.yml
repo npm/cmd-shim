@@ -15,5 +15,7 @@ cache:
   directories:
     - $HOME/.npm
 
+install: npm install
+
 notifications:
   email: false
