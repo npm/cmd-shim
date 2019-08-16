@@ -242,20 +242,28 @@ async function writeShim (src, to, srcRuntimeInfo, generateShimScript, opts) {
  */
 function generateCmdShim (src, to, opts) {
   // `shTarget` is not used to generate the content.
+  console.dir({
+    to,
+    src,
+    toDirname: path.dirname(to),
+    relative: path.relative(path.dirname(to), src)
+  })
   const shTarget = path.relative(path.dirname(to), src)
   let target = shTarget.split('/').join('\\')
+  const quotedPathToTarget = path.isAbsolute(target) ? `"${target}"` : `"%~dp0\\${target}"`
   let longProg
   let prog = opts.prog
   let args = opts.args || ''
   const nodePath = normalizePathEnvVar(opts.nodePath).win32
   if (!prog) {
-    prog = `"%~dp0\\${target}"`
+    prog = quotedPathToTarget
     args = ''
     target = ''
   } else {
     longProg = `"%~dp0\\${prog}.exe"`
-    target = `"%~dp0\\${target}"`
+    target = quotedPathToTarget
   }
+  console.dir({shTarget, target, quotedPathToTarget, longProg, prog, args})
 
   // @IF EXIST "%~dp0\node.exe" (
   //   "%~dp0\node.exe" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*

@@ -4,7 +4,7 @@ const promisifyTape = require('tape-promise').default
 const test = promisifyTape(tape)
 const fs = require('fs')
 const path = require('path')
-const fixtures = path.resolve(__dirname, 'fixtures')
+const {fixtures1: fixtures, fixtures2} = require('./00-setup')
 
 const cmdShim = require('../')
 
@@ -431,3 +431,65 @@ test('explicit shebang with args', function (t) {
       t.end()
     })
 })
+
+if (process.platform === 'win32') {
+  test('explicit shebang with args, linking to another drive on Windows', function (t) {
+    const src = path.resolve(fixtures2, 'src.sh.args')
+    const to = path.resolve(fixtures, 'sh.args.shim')
+    return cmdShim(src, to, {createCmdFile: true})
+      .then(() => {
+        console.error('%j', fs.readFileSync(to, 'utf8'))
+        console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+        console.error('%j', fs.readFileSync(`${to}.ps1`, 'utf8'))
+
+        t.equal(fs.readFileSync(to, 'utf8'),
+          '#!/bin/sh' +
+          "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+          '\n' +
+          '\ncase `uname` in' +
+          '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
+          '\nesac' +
+          '\n' +
+          '\nif [ -x "$basedir//usr/bin/sh" ]; then' +
+          '\n  "$basedir//usr/bin/sh"  -x "E:/cmd-shim/fixtures/src.sh.args" "$@"' +
+          '\n  ret=$?' +
+          '\nelse ' +
+          '\n  /usr/bin/sh  -x "E:/cmd-shim/fixtures/src.sh.args" "$@"' +
+          '\n  ret=$?' +
+          '\nfi' +
+          '\nexit $ret' +
+          '\n')
+
+        t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+          '@IF EXIST "%~dp0\\/usr/bin/sh.exe" (\r' +
+          '\n  "%~dp0\\/usr/bin/sh.exe"  -x "E:\\cmd-shim\\fixtures\\src.sh.args" %*\r' +
+          '\n) ELSE (\r' +
+          '\n  @SETLOCAL\r' +
+          '\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r' +
+          '\n  /usr/bin/sh  -x "E:\\cmd-shim\\fixtures\\src.sh.args" %*\r' +
+          '\n)')
+
+        t.equal(fs.readFileSync(`${to}.ps1`, 'utf8'),
+          '#!/usr/bin/env pwsh' +
+          '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent' +
+          '\n' +
+          '\n$exe=""' +
+          '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {' +
+          '\n  # Fix case when both the Windows and Linux builds of Node' +
+          '\n  # are installed in the same directory' +
+          '\n  $exe=".exe"' +
+          '\n}' +
+          '\n$ret=0' +
+          '\nif (Test-Path "$basedir//usr/bin/sh$exe") {' +
+          '\n  & "$basedir//usr/bin/sh$exe"  -x "E:/cmd-shim/fixtures/src.sh.args" $args' +
+          '\n  $ret=$LASTEXITCODE' +
+          '\n} else {' +
+          '\n  & "/usr/bin/sh$exe"  -x "E:/cmd-shim/fixtures/src.sh.args" $args' +
+          '\n  $ret=$LASTEXITCODE' +
+          '\n}' +
+          '\nexit $ret' +
+          '\n')
+        t.end()
+      })
+  })
+}
