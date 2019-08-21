@@ -19,7 +19,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
 \\r
 "%_prog%"  "%dp0%\\from.env" %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -81,7 +81,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
 \\r
 "%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -144,7 +144,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
 \\r
 "%_prog%"  "%dp0%\\from.env.variables" %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -206,7 +206,7 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
 \\r
 "%_prog%"  "%dp0%\\from.sh" %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -268,7 +268,7 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
 \\r
 "%_prog%" -x "%dp0%\\from.sh.args" %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -322,7 +322,7 @@ SETLOCAL\\r
 CALL :find_dp0\\r
 "%dp0%\\from.exe"   %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -363,7 +363,7 @@ SETLOCAL\\r
 CALL :find_dp0\\r
 "%dp0%\\"   %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
@@ -404,7 +404,7 @@ SETLOCAL\\r
 CALL :find_dp0\\r
 "%dp0%\\from.exe"   %*\\r
 ENDLOCAL\\r
-EXIT /b\\r
+EXIT /b %errorlevel%\\r
 :find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
