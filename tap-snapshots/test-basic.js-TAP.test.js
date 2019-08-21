@@ -8,7 +8,7 @@
 exports[`test/basic.js TAP env shebang > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 \\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
@@ -20,7 +20,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
 "%_prog%"  "%dp0%\\from.env" %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -70,7 +70,7 @@ exit $ret
 exports[`test/basic.js TAP env shebang with args > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 \\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
@@ -82,7 +82,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
 "%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -132,7 +132,7 @@ exit $ret
 exports[`test/basic.js TAP env shebang with variables > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 @SET NODE_PATH=./lib:%NODE_PATH%\\r
 \\r
 IF EXIST "%dp0%\\node.exe" (\\r
@@ -145,7 +145,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
 "%_prog%"  "%dp0%\\from.env.variables" %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -195,7 +195,7 @@ exit $ret
 exports[`test/basic.js TAP explicit shebang > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 \\r
 IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET "_prog=%dp0%\\/usr/bin/sh.exe"\\r
@@ -207,7 +207,7 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
 "%_prog%"  "%dp0%\\from.sh" %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -257,7 +257,7 @@ exit $ret
 exports[`test/basic.js TAP explicit shebang with args > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 \\r
 IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET "_prog=%dp0%\\/usr/bin/sh.exe"\\r
@@ -269,7 +269,7 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
 "%_prog%" -x "%dp0%\\from.sh.args" %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -319,11 +319,11 @@ exit $ret
 exports[`test/basic.js TAP if exists (it does exist) > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 "%dp0%\\from.exe"   %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -360,11 +360,11 @@ exit $?
 exports[`test/basic.js TAP just proceed if reading fails > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 "%dp0%\\"   %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
@@ -401,11 +401,11 @@ exit $?
 exports[`test/basic.js TAP no shebang > cmd 1`] = `
 @ECHO off\\r
 SETLOCAL\\r
-CALL find_dp0\\r
+CALL :find_dp0\\r
 "%dp0%\\from.exe"   %*\\r
 ENDLOCAL\\r
 EXIT /b\\r
-find_dp0:\\r
+:find_dp0\\r
 SET dp0=%~dp0\\r
 EXIT /b\\r
 
