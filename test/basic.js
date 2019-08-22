@@ -1,17 +1,17 @@
+
 'use strict'
+const path = require('path')
 const tape = require('tape')
 const promisifyTape = require('tape-promise').default
 const test = promisifyTape(tape)
-const fs = require('fs')
-const path = require('path')
-const fixtures = path.resolve(__dirname, 'fixtures')
+const {fixtures, fixtures2, fs} = require('./00-setup')
 
 const cmdShim = require('../')
 
 test('no cmd file', function (t) {
   const src = path.resolve(fixtures, 'src.exe')
   const to = path.resolve(fixtures, 'exe.shim')
-  return cmdShim(src, to, {createCmdFile: false})
+  return cmdShim(src, to, {createCmdFile: false, fs})
     .then(function () {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(`${to}.ps1`, 'utf8'))
@@ -45,7 +45,7 @@ test('no cmd file', function (t) {
 test('no shebang', function (t) {
   const src = path.resolve(fixtures, 'src.exe')
   const to = path.resolve(fixtures, 'exe.shim')
-  return cmdShim(src, to, {createCmdFile: true})
+  return cmdShim(src, to, {createCmdFile: true, fs})
     .then(function () {
       t.equal(fs.readFileSync(to, 'utf8'),
         '#!/bin/sh' +
@@ -77,7 +77,7 @@ test('no shebang', function (t) {
 test('env shebang', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  return cmdShim(src, to, {createCmdFile: true})
+  return cmdShim(src, to, {createCmdFile: true, fs})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -135,7 +135,7 @@ test('env shebang', function (t) {
 test('env shebang with NODE_PATH', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  return cmdShim(src, to, {nodePath: ['/john/src/node_modules', '/bin/node/node_modules'], createCmdFile: true})
+  return cmdShim(src, to, {nodePath: ['/john/src/node_modules', '/bin/node/node_modules'], createCmdFile: true, fs})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -199,7 +199,7 @@ test('env shebang with NODE_PATH', function (t) {
 test('env shebang with default args', function (t) {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  return cmdShim(src, to, { preserveSymlinks: true, createCmdFile: true })
+  return cmdShim(src, to, { preserveSymlinks: true, createCmdFile: true, fs })
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -257,7 +257,7 @@ test('env shebang with default args', function (t) {
 test('env shebang with args', function (t) {
   const src = path.resolve(fixtures, 'src.env.args')
   const to = path.resolve(fixtures, 'env.args.shim')
-  return cmdShim(src, to, {createCmdFile: true})
+  return cmdShim(src, to, {createCmdFile: true, fs})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -315,7 +315,7 @@ test('env shebang with args', function (t) {
 test('explicit shebang', function (t) {
   const src = path.resolve(fixtures, 'src.sh')
   const to = path.resolve(fixtures, 'sh.shim')
-  return cmdShim(src, to, {createCmdFile: true})
+  return cmdShim(src, to, {createCmdFile: true, fs})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -375,7 +375,7 @@ test('explicit shebang', function (t) {
 test('explicit shebang with args', function (t) {
   const src = path.resolve(fixtures, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
-  return cmdShim(src, to, {createCmdFile: true})
+  return cmdShim(src, to, {createCmdFile: true, fs})
     .then(() => {
       console.error('%j', fs.readFileSync(to, 'utf8'))
       console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
@@ -424,6 +424,66 @@ test('explicit shebang with args', function (t) {
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
         '\n  & "/usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  $ret=$LASTEXITCODE' +
+        '\n}' +
+        '\nexit $ret' +
+        '\n')
+      t.end()
+    })
+})
+
+;(process.platform === 'win32' ? test : test.skip)('explicit shebang with args, linking to another drive on Windows', function (t) {
+  const src = path.resolve(fixtures2, 'src.sh.args')
+  const to = path.resolve(fixtures, 'sh.args.shim')
+  return cmdShim(src, to, {createCmdFile: true, fs})
+    .then(() => {
+      console.error('%j', fs.readFileSync(to, 'utf8'))
+      console.error('%j', fs.readFileSync(to + '.cmd', 'utf8'))
+      console.error('%j', fs.readFileSync(`${to}.ps1`, 'utf8'))
+
+      t.equal(fs.readFileSync(to, 'utf8'),
+        '#!/bin/sh' +
+        "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+        '\n' +
+        '\ncase `uname` in' +
+        '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
+        '\nesac' +
+        '\n' +
+        '\nif [ -x "$basedir//usr/bin/sh" ]; then' +
+        '\n  "$basedir//usr/bin/sh"  -x "J:/cmd-shim/fixtures/src.sh.args" "$@"' +
+        '\n  ret=$?' +
+        '\nelse ' +
+        '\n  /usr/bin/sh  -x "J:/cmd-shim/fixtures/src.sh.args" "$@"' +
+        '\n  ret=$?' +
+        '\nfi' +
+        '\nexit $ret' +
+        '\n')
+
+      t.equal(fs.readFileSync(to + '.cmd', 'utf8'),
+        '@IF EXIST "%~dp0\\/usr/bin/sh.exe" (\r' +
+        '\n  "%~dp0\\/usr/bin/sh.exe"  -x "J:\\cmd-shim\\fixtures\\src.sh.args" %*\r' +
+        '\n) ELSE (\r' +
+        '\n  @SETLOCAL\r' +
+        '\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r' +
+        '\n  /usr/bin/sh  -x "J:\\cmd-shim\\fixtures\\src.sh.args" %*\r' +
+        '\n)')
+
+      t.equal(fs.readFileSync(`${to}.ps1`, 'utf8'),
+        '#!/usr/bin/env pwsh' +
+        '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent' +
+        '\n' +
+        '\n$exe=""' +
+        '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {' +
+        '\n  # Fix case when both the Windows and Linux builds of Node' +
+        '\n  # are installed in the same directory' +
+        '\n  $exe=".exe"' +
+        '\n}' +
+        '\n$ret=0' +
+        '\nif (Test-Path "$basedir//usr/bin/sh$exe") {' +
+        '\n  & "$basedir//usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  $ret=$LASTEXITCODE' +
+        '\n} else {' +
+        '\n  & "/usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +

@@ -9,41 +9,95 @@
 // Write a binroot/pkg.bin + ".cmd" file that has this line in it:
 // @<prog> <args...> %~dp0<target> %*
 
-module.exports = cmdShim
+namespace cmdShim {
+  export interface Options {
+    /**
+     * If a PowerShell script should be created.
+     *
+     * @default true
+     */
+    createPwshFile?: boolean
+
+    /**
+     * If a Windows Command Prompt script should be created.
+     *
+     * @default false
+     */
+    createCmdFile?: boolean
+
+    /**
+     * If symbolic links should be preserved.
+     *
+     * @default false
+     */
+    preserveSymlinks?: boolean
+
+    /**
+     * The path to the executable file.
+     */
+    prog?: string
+
+    /**
+     * The arguments to initialize the `node` process with.
+     */
+    args?: string
+
+    /**
+     * The value of the $NODE_PATH environment variable.
+     *
+     * The single `string` format is only kept for legacy compatibility,
+     * and the array form should be preferred.
+     */
+    nodePath?: string | string[]
+
+    /**
+     * fs implementation to use.  Must implement node's `fs` module interface.
+     */
+    fs?: typeof import('fs')
+  }
+}
+type Options = cmdShim.Options
+
+export = cmdShim
 cmdShim.ifExists = cmdShimIfExists
 
 /**
- * @typedef {import('./index').Options} Options
- *
- * @typedef {object} RuntimeInfo Information of runtime and its arguments
- * of the script `target`, defined in the shebang of it.
- * @property {string|null} [program] If `program` is `null`, the program may
- * be a binary executable and can be called from shells by just its path.
- * (e.g. `.\foo.exe` in CMD or PowerShell)
- * @property {string} additionalArgs Additional arguments embedded in the shebang and passed to `program`.
- * `''` if nothing, unlike `program`.
- *
- * @callback ShimGenerator Callback functions to generate scripts for shims.
- * @param {string} src Path to the executable or script.
- * @param {string} to Path to the shim(s) that is going to be created.
- * @param {Options} opts Options.
- * @return {string} Generated script for shim.
- *
- * @typedef {object} ShimGenExtTuple
- * @property {ShimGenerator} generator The shim generator function.
- * @property {string} extension The file extension for the shim.
+ * @internal
  */
+type InternalOptions = Options & Required<Pick<Options, keyof typeof DEFAULT_OPTIONS>> & {
+  fs_: FsPromisified
+}
 
-const fs = require('mz/fs')
+type Fs_= Pick<typeof import('fs'), 'stat' | 'unlink' | 'readFile' | 'writeFile' | 'chmod'>
+type FsPromisified = {[K in keyof Fs_]: Fs_[K]['__promisify__']}
 
-const makeDir = require('make-dir')
-const path = require('path')
-const isWindows = require('is-windows')
+/**
+ * Callback functions to generate scripts for shims.
+ * @param src Path to the executable or script.
+ * @param to Path to the shim(s) that is going to be created.
+ * @param opts Options.
+ * @return Generated script for shim.
+ */
+type ShimGenerator = (src: string, to: string, opts: InternalOptions) => string
+
+interface ShimGenExtTuple {
+  /** The shim generator function. */
+  generator: ShimGenerator
+  /** The file extension for the shim. */
+  extension: string
+}
+
+import {promisify} from 'util'
+
+import makeDir = require('make-dir')
+import path = require('path')
+import isWindows = require('is-windows')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 const DEFAULT_OPTIONS = {
   // Create PowerShell file by default if the option hasn't been specified
   createPwshFile: true,
-  createCmdFile: isWindows()
+  createCmdFile: isWindows(),
+  fs: require('fs')
 }
 /**
  * Map from extensions of files that this module is frequently used for to their runtime.
@@ -57,20 +111,33 @@ const extensionToProgramMap = new Map([
   ['.sh', 'sh']
 ])
 
+function ingestOptions (opts: Options): InternalOptions {
+  const opts_ = {...DEFAULT_OPTIONS, ...opts} as InternalOptions
+  const fs = opts_.fs
+  opts_.fs_ = {
+  
+    chmod: fs.chmod ? promisify(fs.chmod) : (async () => { /* noop */ }) as any,
+    stat: promisify(fs.stat),
+    unlink: promisify(fs.unlink),
+    readFile: promisify(fs.readFile),
+    writeFile: promisify(fs.writeFile)
+  }
+  return opts_
+}
+
 /**
  * Try to create shims.
  *
- * @param {string} src Path to program (executable or script).
- * @param {string} to Path to shims.
+ * @param src Path to program (executable or script).
+ * @param to Path to shims.
  * Don't add an extension if you will create multiple types of shims.
- * @param {Options} opts Options.
- * @return {Promise<void>}
+ * @param opts Options.
  * @throws If `src` is missing.
  */
-async function cmdShim (src, to, opts) {
-  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  await fs.stat(src)
-  return cmdShim_(src, to, opts)
+async function cmdShim (src: string, to: string, opts: Options): Promise<void> {
+  const opts_ = ingestOptions(opts)
+  await opts_.fs_.stat(src)
+  await cmdShim_(src, to, opts_)
 }
 
 /**
@@ -78,13 +145,12 @@ async function cmdShim (src, to, opts) {
  *
  * Does nothing if `src` doesn't exist.
  *
- * @param {string} src Path to program (executable or script).
- * @param {string} to Path to shims.
+ * @param src Path to program (executable or script).
+ * @param to Path to shims.
  * Don't add an extension if you will create multiple types of shims.
- * @param {Options} opts Options.
- * @return {Promise<void>}
+ * @param opts Options.
  */
-function cmdShimIfExists (src, to, opts) {
+function cmdShimIfExists (src: string, to: string, opts: Options): Promise<void> {
   return cmdShim(src, to, opts).catch(() => {})
 }
 
@@ -92,30 +158,27 @@ function cmdShimIfExists (src, to, opts) {
  * Try to unlink, but ignore errors.
  * Any problems will surface later.
  *
- * @param {string} path File to be removed.
- * @return {Promise<void>}
+ * @param path File to be removed.
  */
-function rm (path) {
-  return fs.unlink(path).catch(() => {})
+function rm (path: string, opts: InternalOptions): Promise<void> {
+  return opts.fs_.unlink(path).catch(() => {})
 }
 
 /**
  * Try to create shims **even if `src` is missing**.
  *
- * @param {string} src Path to program (executable or script).
- * @param {string} to Path to shims.
+ * @param src Path to program (executable or script).
+ * @param to Path to shims.
  * Don't add an extension if you will create multiple types of shims.
- * @param {Options} opts Options.
- *
+ * @param opts Options.
  */
-async function cmdShim_ (src, to, opts) {
-  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  const srcRuntimeInfo = await searchScriptRuntime(src)
+async function cmdShim_ (src: string, to: string, opts: InternalOptions) {
+  const srcRuntimeInfo = await searchScriptRuntime(src, opts)
   // Always tries to create all types of shims by calling `writeAllShims` as of now.
   // Append your code here to change the behavior in response to `srcRuntimeInfo`.
 
   // Create 3 shims for (Ba)sh in Cygwin / MSYS, no extension) & CMD (.cmd) & PowerShell (.ps1)
-  await writeShimsPreCommon(to)
+  await writeShimsPreCommon(to, opts)
   return writeAllShims(src, to, srcRuntimeInfo, opts)
 }
 
@@ -123,10 +186,10 @@ async function cmdShim_ (src, to, opts) {
  * Do processes before **all** shims are created.
  * This must be called **only once** for one call of `cmdShim(IfExists)`.
  *
- * @param {string} target Path of shims that are going to be created.
+ * @param target Path of shims that are going to be created.
  */
-function writeShimsPreCommon (target) {
-  return makeDir(path.dirname(target))
+function writeShimsPreCommon (target: string, opts: InternalOptions) {
+  return makeDir(path.dirname(target), {fs: opts.fs})
 }
 
 /**
@@ -134,56 +197,60 @@ function writeShimsPreCommon (target) {
  * Extensions (`.cmd` and `.ps1`) are appended to cmd and pwsh shims.
  *
  *
- * @param {string} src Path to program (executable or script).
- * @param {string} to Path to shims **without extensions**.
+ * @param src Path to program (executable or script).
+ * @param to Path to shims **without extensions**.
  * Extensions are added for CMD and PowerShell shims.
- * @param {RuntimeInfo} srcRuntimeInfo Return value of `await searchScriptRuntime(src)`.
- * @param {Options} opts Options.
+ * @param srcRuntimeInfo Return value of `await searchScriptRuntime(src)`.
+ * @param opts Options.
  */
-function writeAllShims (src, to, srcRuntimeInfo, opts) {
-  opts = Object.assign({}, DEFAULT_OPTIONS, opts)
-  /** @type {ShimGenExtTuple[]} */
-  const generatorAndExts = [{ generator: generateShShim, extension: '' }]
-  if (opts.createCmdFile) {
+function writeAllShims (src: string, to: string, srcRuntimeInfo: RuntimeInfo, opts: Options) {
+  const opts_ = ingestOptions(opts)
+  const generatorAndExts: ShimGenExtTuple[] = [{ generator: generateShShim, extension: '' }]
+  if (opts_.createCmdFile) {
     generatorAndExts.push({ generator: generateCmdShim, extension: '.cmd' })
   }
-  if (opts.createPwshFile) {
+  if (opts_.createPwshFile) {
     generatorAndExts.push({ generator: generatePwshShim, extension: '.ps1' })
   }
   return Promise.all(
-    generatorAndExts.map((generatorAndExt) => writeShim(src, to + generatorAndExt.extension, srcRuntimeInfo, generatorAndExt.generator, opts))
+    generatorAndExts.map((generatorAndExt) => writeShim(src, to + generatorAndExt.extension, srcRuntimeInfo, generatorAndExt.generator, opts_))
   )
 }
 
 /**
  * Do processes before writing shim.
  *
- * @param {string} target Path to shim that is going to be created.
+ * @param target Path to shim that is going to be created.
  */
-function writeShimPre (target) {
-  return rm(target)
+function writeShimPre (target: string, opts: InternalOptions) {
+  return rm(target, opts)
 }
 
 /**
  * Do processes after writing the shim.
  *
- * @param {string} target Path to just created shim.
+ * @param target Path to just created shim.
  */
-function writeShimPost (target) {
+function writeShimPost (target: string, opts: InternalOptions) {
   // Only chmoding shims as of now.
   // Some other processes may be appended.
-  return chmodShim(target)
+  return chmodShim(target, opts)
+}
+
+interface RuntimeInfo {
+  program: string | null
+  additionalArgs: string
 }
 
 /**
  * Look into runtime (e.g. `node` & `sh` & `pwsh`) and its arguments
  * of the target program (script or executable).
  *
- * @param {string} target Path to the executable or script.
- * @return {Promise<RuntimeInfo>} Promise of infomation of runtime of `target`.
+ * @param target Path to the executable or script.
+ * @return Promise of infomation of runtime of `target`.
  */
-async function searchScriptRuntime (target) {
-  const data = await fs.readFile(target, 'utf8')
+async function searchScriptRuntime (target: string, opts: InternalOptions): Promise<RuntimeInfo> {
+  const data = await opts.fs_.readFile(target, 'utf8')
 
   // First, check if the bin is a #! of some sort.
   const firstLine = data.trim().split(/\r*\n/)[0]
@@ -209,13 +276,13 @@ async function searchScriptRuntime (target) {
  * Write shim to the file system while executing the pre- and post-processes
  * defined in `WriteShimPre` and `WriteShimPost`.
  *
- * @param {string} src Path to the executable or script.
- * @param {string} to Path to the (sh) shim(s) that is going to be created.
- * @param {RuntimeInfo} srcRuntimeInfo Result of `await searchScriptRuntime(src)`.
- * @param {ShimGenerator} generateShimScript Generator of shim script.
- * @param {Options} opts Other options.
+ * @param src Path to the executable or script.
+ * @param to Path to the (sh) shim(s) that is going to be created.
+ * @param srcRuntimeInfo Result of `await searchScriptRuntime(src)`.
+ * @param generateShimScript Generator of shim script.
+ * @param opts Other options.
  */
-async function writeShim (src, to, srcRuntimeInfo, generateShimScript, opts) {
+async function writeShim (src: string, to: string, srcRuntimeInfo: RuntimeInfo, generateShimScript: ShimGenerator, opts: InternalOptions) {
   const defaultArgs = opts.preserveSymlinks ? '--preserve-symlinks' : ''
   // `Array.prototype.filter` removes ''.
   // ['--foo', '--bar'].join(' ') and [].join(' ') returns '--foo --bar' and '' respectively.
@@ -225,36 +292,36 @@ async function writeShim (src, to, srcRuntimeInfo, generateShimScript, opts) {
     args: args
   })
 
-  await writeShimPre(to)
-  await fs.writeFile(to, generateShimScript(src, to, opts), 'utf8')
-  return writeShimPost(to)
+  await writeShimPre(to, opts)
+  await opts.fs_.writeFile(to, generateShimScript(src, to, opts), 'utf8')
+  return writeShimPost(to, opts)
 }
 
 /**
  * Generate the content of a shim for CMD.
  *
- * @type {ShimGenerator}
- * @param {string} src Path to the executable or script.
- * @param {string} to Path to the shim to be created.
+ * @param src Path to the executable or script.
+ * @param to Path to the shim to be created.
  * It is highly recommended to end with `.cmd` (or `.bat`).
- * @param {Options} opts Options.
- * @return {string} The content of shim.
+ * @param opts Options.
+ * @return The content of shim.
  */
-function generateCmdShim (src, to, opts) {
+function generateCmdShim (src: string, to: string, opts: InternalOptions): string {
   // `shTarget` is not used to generate the content.
   const shTarget = path.relative(path.dirname(to), src)
   let target = shTarget.split('/').join('\\')
+  const quotedPathToTarget = path.isAbsolute(target) ? `"${target}"` : `"%~dp0\\${target}"`
   let longProg
   let prog = opts.prog
   let args = opts.args || ''
   const nodePath = normalizePathEnvVar(opts.nodePath).win32
   if (!prog) {
-    prog = `"%~dp0\\${target}"`
+    prog = quotedPathToTarget
     args = ''
     target = ''
   } else {
     longProg = `"%~dp0\\${prog}.exe"`
-    target = `"%~dp0\\${target}"`
+    target = quotedPathToTarget
   }
 
   // @IF EXIST "%~dp0\node.exe" (
@@ -283,27 +350,27 @@ function generateCmdShim (src, to, opts) {
 /**
  * Generate the content of a shim for (Ba)sh in, for example, Cygwin and MSYS(2).
  *
- * @type {ShimGenerator}
- * @param {string} src Path to the executable or script.
- * @param {string} to Path to the shim to be created.
+ * @param src Path to the executable or script.
+ * @param to Path to the shim to be created.
  * It is highly recommended to end with `.sh` or to contain no extension.
- * @param {Options} opts Options.
- * @return {string} The content of shim.
+ * @param opts Options.
+ * @return The content of shim.
  */
-function generateShShim (src, to, opts) {
+function generateShShim (src: string, to: string, opts: InternalOptions): string {
   let shTarget = path.relative(path.dirname(to), src)
   let shProg = opts.prog && opts.prog.split('\\').join('/')
   let shLongProg
   shTarget = shTarget.split('\\').join('/')
+  const quotedPathToTarget = path.isAbsolute(shTarget) ? `"${shTarget}"` : `"$basedir/${shTarget}"`
   let args = opts.args || ''
   const shNodePath = normalizePathEnvVar(opts.nodePath).posix
   if (!shProg) {
-    shProg = `"$basedir/${shTarget}"`
+    shProg = quotedPathToTarget
     args = ''
     shTarget = ''
   } else {
     shLongProg = `"$basedir/${opts.prog}"`
-    shTarget = `"$basedir/${shTarget}"`
+    shTarget = quotedPathToTarget
   }
 
   // #!/bin/sh
@@ -353,30 +420,30 @@ function generateShShim (src, to, opts) {
 /**
  * Generate the content of a shim for PowerShell.
  *
- * @type {ShimGenerator}
- * @param {string} src Path to the executable or script.
- * @param {string} to Path to the shim to be created.
+ * @param src Path to the executable or script.
+ * @param to Path to the shim to be created.
  * It is highly recommended to end with `.ps1`.
- * @param {Options} opts Options.
- * @return {string} The content of shim.
+ * @param opts Options.
+ * @return The content of shim.
  */
-function generatePwshShim (src, to, opts) {
+function generatePwshShim (src: string, to: string, opts: InternalOptions): string {
   let shTarget = path.relative(path.dirname(to), src)
   const shProg = opts.prog && opts.prog.split('\\').join('/')
   let pwshProg = shProg && `"${shProg}$exe"`
   let pwshLongProg
   shTarget = shTarget.split('\\').join('/')
+  const quotedPathToTarget = path.isAbsolute(shTarget) ? `"${shTarget}"` : `"$basedir/${shTarget}"`
   let args = opts.args || ''
   let normalizedPathEnvVar = normalizePathEnvVar(opts.nodePath)
   const nodePath = normalizedPathEnvVar.win32
   const shNodePath = normalizedPathEnvVar.posix
   if (!pwshProg) {
-    pwshProg = `"$basedir/${shTarget}"`
+    pwshProg = quotedPathToTarget
     args = ''
     shTarget = ''
   } else {
     pwshLongProg = `"$basedir/${opts.prog}$exe"`
-    shTarget = `"$basedir/${shTarget}"`
+    shTarget = quotedPathToTarget
   }
 
   // #!/usr/bin/env pwsh
@@ -440,17 +507,18 @@ function generatePwshShim (src, to, opts) {
 /**
  * Chmod just created shim and make it executable
  *
- * @param {string} to Path to shim.
+ * @param to Path to shim.
  */
-function chmodShim (to) {
-  return fs.chmod(to, 0o755)
+function chmodShim (to: string, opts: InternalOptions) {
+  return opts.fs_.chmod(to, 0o755)
 }
 
-/**
- * @param {string|string[]} nodePath
- * @returns {{win32:string,posix:string}}
- */
-function normalizePathEnvVar (nodePath) {
+interface NormalizedPathEnvVar {
+  win32: string
+  posix: string
+  [index:number]: {win32:string,posix:string}
+}
+function normalizePathEnvVar (nodePath: undefined | string | string[]): NormalizedPathEnvVar {
   if (!nodePath) {
     return {
       win32: '',
@@ -458,7 +526,7 @@ function normalizePathEnvVar (nodePath) {
     }
   }
   let split = (typeof nodePath === 'string' ? nodePath.split(path.delimiter) : Array.from(nodePath))
-  let result = {}
+  let result = {} as NormalizedPathEnvVar
   for (let i = 0; i < split.length; i++) {
     const win32 = split[i].split('/').join('\\')
     const posix = isWindows() ? split[i].split('\\').join('/').replace(/^([^:\\/]*):/, (_, $1) => `/mnt/${$1.toLowerCase()}`) : split[i]

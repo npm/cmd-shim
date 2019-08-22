@@ -14,3 +14,9 @@ results
 npm-debug.log
 
 node_modules
+
+index.d.ts
+index.d.ts.map
+index.js
+index.js.map
+tsconfig.tsbuildinfo
