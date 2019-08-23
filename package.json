@@ -12,7 +12,8 @@
     "build": "tsc --build --verbose --listEmittedFiles",
     "test:unit": "tape test/*.js",
     "test": "pnpm run build && standard && pnpm run test:unit && mos test",
-    "md": "mos"
+    "md": "mos",
+    "prepublishOnly": "pnpm run build"
   },
   "files": [
     "index.d.ts",
