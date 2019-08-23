@@ -8,7 +8,7 @@ const _fs = new MemoryFS()
 const fs = _.mapValues(Object.getPrototypeOf(_fs), (v, k) => typeof v === 'function' ? v.bind(_fs) : v)
 const path = require('path')
 
-const {fixtures, fixtures2} = process.platform === 'win32' ? {
+const { fixtures, fixtures2 } = process.platform === 'win32' ? {
   fixtures: 'I:\\cmd-shim\\fixtures',
   fixtures2: 'J:\\cmd-shim\\fixtures'
 } : {
