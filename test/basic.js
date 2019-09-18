@@ -36,7 +36,12 @@ test('no cmd file', function (t) {
         '\n  # are installed in the same directory' +
         '\n  $exe=".exe"' +
         '\n}' +
-        '\n& "$basedir/src.exe"   $args' +
+        '\n# Support pipeline input' +
+        '\nif ($MyInvocation.ExpectingInput) {' +
+        '\n  $input | & "$basedir/src.exe"   $args' +
+        '\n} else {' +
+        '\n  & "$basedir/src.exe"   $args' +
+        '\n}' +
         '\nexit $LASTEXITCODE' +
         '\n')
     })
@@ -68,7 +73,12 @@ test('no shebang', function (t) {
         '\n  # are installed in the same directory' +
         '\n  $exe=".exe"' +
         '\n}' +
-        '\n& "$basedir/src.exe"   $args' +
+        '\n# Support pipeline input' +
+        '\nif ($MyInvocation.ExpectingInput) {' +
+        '\n  $input | & "$basedir/src.exe"   $args' +
+        '\n} else {' +
+        '\n  & "$basedir/src.exe"   $args' +
+        '\n}' +
         '\nexit $LASTEXITCODE' +
         '\n')
     })
@@ -120,10 +130,20 @@ test('env shebang', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir/node$exe") {' +
-        '\n  & "$basedir/node$exe"  "$basedir/src.env" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir/node$exe"  "$basedir/src.env" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir/node$exe"  "$basedir/src.env" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "node$exe"  "$basedir/src.env" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "node$exe"  "$basedir/src.env" $args' +
+        '\n  } else {' +
+        '\n    & "node$exe"  "$basedir/src.env" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +
@@ -183,10 +203,20 @@ test('env shebang with NODE_PATH', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir/node$exe") {' +
-        '\n  & "$basedir/node$exe"  "$basedir/src.env" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir/node$exe"  "$basedir/src.env" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir/node$exe"  "$basedir/src.env" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "node$exe"  "$basedir/src.env" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "node$exe"  "$basedir/src.env" $args' +
+        '\n  } else {' +
+        '\n    & "node$exe"  "$basedir/src.env" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\n$env:NODE_PATH=$env_node_path' +
@@ -242,10 +272,20 @@ test('env shebang with default args', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir/node$exe") {' +
-        '\n  & "$basedir/node$exe" --preserve-symlinks "$basedir/src.env" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir/node$exe" --preserve-symlinks "$basedir/src.env" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir/node$exe" --preserve-symlinks "$basedir/src.env" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "node$exe" --preserve-symlinks "$basedir/src.env" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "node$exe" --preserve-symlinks "$basedir/src.env" $args' +
+        '\n  } else {' +
+        '\n    & "node$exe" --preserve-symlinks "$basedir/src.env" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +
@@ -300,10 +340,20 @@ test('env shebang with args', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir/node$exe") {' +
-        '\n  & "$basedir/node$exe"  --expose_gc "$basedir/src.env.args" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir/node$exe"  --expose_gc "$basedir/src.env.args" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir/node$exe"  --expose_gc "$basedir/src.env.args" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "node$exe"  --expose_gc "$basedir/src.env.args" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "node$exe"  --expose_gc "$basedir/src.env.args" $args' +
+        '\n  } else {' +
+        '\n    & "node$exe"  --expose_gc "$basedir/src.env.args" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +
@@ -360,10 +410,20 @@ test('explicit shebang', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir//usr/bin/sh$exe") {' +
-        '\n  & "$basedir//usr/bin/sh$exe"  "$basedir/src.sh" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir//usr/bin/sh$exe"  "$basedir/src.sh" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir//usr/bin/sh$exe"  "$basedir/src.sh" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "/usr/bin/sh$exe"  "$basedir/src.sh" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "/usr/bin/sh$exe"  "$basedir/src.sh" $args' +
+        '\n  } else {' +
+        '\n    & "/usr/bin/sh$exe"  "$basedir/src.sh" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +
@@ -420,10 +480,20 @@ test('explicit shebang with args', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir//usr/bin/sh$exe") {' +
-        '\n  & "$basedir//usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir//usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir//usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "/usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "/usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  } else {' +
+        '\n    & "/usr/bin/sh$exe"  -x "$basedir/src.sh.args" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +
@@ -480,10 +550,20 @@ test('explicit shebang with args', function (t) {
         '\n}' +
         '\n$ret=0' +
         '\nif (Test-Path "$basedir//usr/bin/sh$exe") {' +
-        '\n  & "$basedir//usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "$basedir//usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  } else {' +
+        '\n    & "$basedir//usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n} else {' +
-        '\n  & "/usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  # Support pipeline input' +
+        '\n  if ($MyInvocation.ExpectingInput) {' +
+        '\n    $input | & "/usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  } else {' +
+        '\n    & "/usr/bin/sh$exe"  -x "J:/cmd-shim/fixtures/src.sh.args" $args' +
+        '\n  }' +
         '\n  $ret=$LASTEXITCODE' +
         '\n}' +
         '\nexit $ret' +

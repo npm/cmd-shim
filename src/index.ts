@@ -115,7 +115,7 @@ function ingestOptions (opts: Options): InternalOptions {
   const opts_ = {...DEFAULT_OPTIONS, ...opts} as InternalOptions
   const fs = opts_.fs
   opts_.fs_ = {
-  
+
     chmod: fs.chmod ? promisify(fs.chmod) : (async () => { /* noop */ }) as any,
     stat: promisify(fs.stat),
     unlink: promisify(fs.unlink),
@@ -457,10 +457,20 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
   //   $exe = ".exe"
   // }
   // if (Test-Path "$basedir/node") {
-  //   & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   # Support pipeline input
+  //   if ($MyInvocation.ExpectingInput) {
+  //     $input | & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   } else {
+  //     & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   }
   //   $ret=$LASTEXITCODE
   // } else {
-  //   & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   # Support pipeline input
+  //   if ($MyInvocation.ExpectingInput) {
+  //     $input | & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   } else {
+  //     & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   }
   //   $ret=$LASTEXITCODE
   // }
   // exit $ret
@@ -486,17 +496,32 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
     pwsh = pwsh +
       '$ret=0\n' +
       `if (Test-Path ${pwshLongProg}) {\n` +
-      `  & ${pwshLongProg} ${args} ${shTarget} $args\n` +
+      '  # Support pipeline input\n' +
+      '  if ($MyInvocation.ExpectingInput) {\n' +
+      `    $input | & ${pwshLongProg} ${args} ${shTarget} $args\n` +
+      '  } else {\n' +
+      `    & ${pwshLongProg} ${args} ${shTarget} $args\n` +
+      '  }\n' +
       '  $ret=$LASTEXITCODE\n' +
       '} else {\n' +
-      `  & ${pwshProg} ${args} ${shTarget} $args\n` +
+      '  # Support pipeline input\n' +
+      '  if ($MyInvocation.ExpectingInput) {\n' +
+      `    $input | & ${pwshProg} ${args} ${shTarget} $args\n` +
+      '  } else {\n' +
+      `    & ${pwshProg} ${args} ${shTarget} $args\n` +
+      '  }\n' +
       '  $ret=$LASTEXITCODE\n' +
       '}\n' +
       (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
       'exit $ret\n'
   } else {
     pwsh = pwsh +
-      `& ${pwshProg} ${args} ${shTarget} $args\n` +
+      '# Support pipeline input\n' +
+      'if ($MyInvocation.ExpectingInput) {\n' +
+      `  $input | & ${pwshProg} ${args} ${shTarget} $args\n` +
+      '} else {\n' +
+      `  & ${pwshProg} ${args} ${shTarget} $args\n` +
+      '}\n' +
       (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
       'exit $LASTEXITCODE\n'
   }
