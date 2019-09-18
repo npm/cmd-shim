@@ -1,7 +1,4 @@
 'use strict'
-const tape = require('tape')
-const promisifyTape = require('tape-promise').default
-const test = promisifyTape(tape)
 const _ = require('lodash')
 const MemoryFS = require('memory-fs')
 const _fs = new MemoryFS()
@@ -33,12 +30,9 @@ const fixtureFiles = {
   }
 }
 
-test('create fixture', function (t) {
-  for (const [dir, files] of Object.entries(fixtureFiles)) {
-    fs.mkdirpSync(dir)
-    for (const [filename, contents] of Object.entries(files)) {
-      fs.writeFileSync(path.join(dir, filename), contents)
-    }
+for (const [dir, files] of Object.entries(fixtureFiles)) {
+  fs.mkdirpSync(dir)
+  for (const [filename, contents] of Object.entries(files)) {
+    fs.writeFileSync(path.join(dir, filename), contents)
   }
-  t.end()
-})
+}
