@@ -10,14 +10,16 @@ exports[`test/basic.js TAP env shebang > cmd 1`] = `
 SETLOCAL\\r
 CALL :find_dp0\\r
 \\r
+SET _maybeQuote="\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
+  SET _maybeQuote=\\r
   SET "_prog=node"\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%"  "%dp0%\\from.env" %*\\r
+%_maybeQuote%%_prog%%_maybeQuote%  "%dp0%\\from.env" %*\\r
 ENDLOCAL\\r
 EXIT /b %errorlevel%\\r
 :find_dp0\\r
@@ -72,14 +74,16 @@ exports[`test/basic.js TAP env shebang with args > cmd 1`] = `
 SETLOCAL\\r
 CALL :find_dp0\\r
 \\r
+SET _maybeQuote="\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
+  SET _maybeQuote=\\r
   SET "_prog=node"\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
+%_maybeQuote%%_prog%%_maybeQuote% --expose_gc "%dp0%\\from.env.args" %*\\r
 ENDLOCAL\\r
 EXIT /b %errorlevel%\\r
 :find_dp0\\r
@@ -135,14 +139,16 @@ SETLOCAL\\r
 CALL :find_dp0\\r
 @SET NODE_PATH=./lib:%NODE_PATH%\\r
 \\r
+SET _maybeQuote="\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
+  SET _maybeQuote=\\r
   SET "_prog=node"\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%"  "%dp0%\\from.env.variables" %*\\r
+%_maybeQuote%%_prog%%_maybeQuote%  "%dp0%\\from.env.variables" %*\\r
 ENDLOCAL\\r
 EXIT /b %errorlevel%\\r
 :find_dp0\\r
@@ -197,14 +203,16 @@ exports[`test/basic.js TAP explicit shebang > cmd 1`] = `
 SETLOCAL\\r
 CALL :find_dp0\\r
 \\r
+SET _maybeQuote="\\r
 IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET "_prog=%dp0%\\/usr/bin/sh.exe"\\r
 ) ELSE (\\r
+  SET _maybeQuote=\\r
   SET "_prog=/usr/bin/sh"\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%"  "%dp0%\\from.sh" %*\\r
+%_maybeQuote%%_prog%%_maybeQuote%  "%dp0%\\from.sh" %*\\r
 ENDLOCAL\\r
 EXIT /b %errorlevel%\\r
 :find_dp0\\r
@@ -259,14 +267,16 @@ exports[`test/basic.js TAP explicit shebang with args > cmd 1`] = `
 SETLOCAL\\r
 CALL :find_dp0\\r
 \\r
+SET _maybeQuote="\\r
 IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET "_prog=%dp0%\\/usr/bin/sh.exe"\\r
 ) ELSE (\\r
+  SET _maybeQuote=\\r
   SET "_prog=/usr/bin/sh"\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%" -x "%dp0%\\from.sh.args" %*\\r
+%_maybeQuote%%_prog%%_maybeQuote% -x "%dp0%\\from.sh.args" %*\\r
 ENDLOCAL\\r
 EXIT /b %errorlevel%\\r
 :find_dp0\\r

@@ -101,19 +101,21 @@ function writeShim_ (from, to, prog, args, variables, cb) {
     shTarget = "\"$basedir/" + shTarget + "\""
   }
 
-  // @SETLOCAL
-  // @CALL :find_dp0
+  // SETLOCAL
+  // CALL :find_dp0
   //
-  // @IF EXIST "%dp0%\node.exe" (
-  //   @SET "_prog=%dp0%\node.exe"
+  // SET _maybeQuote="
+  // IF EXIST "%dp0%\node.exe" (
+  //   SET "_prog=%dp0%\node.exe"
   // ) ELSE (
-  //   @SET "_prog=node"
-  //   @SET PATHEXT=%PATHEXT:;.JS;=;%
+  //   SET "_prog=node"
+  //   SET _maybeQuote=
+  //   SET PATHEXT=%PATHEXT:;.JS;=;%
   // )
   //
-  // "%_prog%" "%dp0%\.\node_modules\npm\bin\npm-cli.js" %*
-  // @ENDLOCAL
-  // @EXIT /b %errorlevel%
+  // %_maybeQuote%%_prog%%_maybeQuote% "%dp0%\.\node_modules\npm\bin\npm-cli.js" %*
+  // ENDLOCAL
+  // EXIT /b %errorlevel%
   //
   // :find_dp0
   // SET dp0=%~dp0
@@ -137,14 +139,16 @@ function writeShim_ (from, to, prog, args, variables, cb) {
     cmd = head
         + variableDeclarationsAsBatch
         + "\r\n"
+	+ "SET _maybeQuote=\"\r\n"
         + "IF EXIST " + longProg + " (\r\n"
         + "  SET \"_prog=" + longProg.replace(/(^")|("$)/g, '') + "\"\r\n"
         + ") ELSE (\r\n"
+	+ "  SET _maybeQuote=\r\n"
         + "  SET \"_prog=" + prog.replace(/(^")|("$)/g, '') + "\"\r\n"
         + "  SET PATHEXT=%PATHEXT:;.JS;=;%\r\n"
         + ")\r\n"
         + "\r\n"
-        +  "\"%_prog%\" " + args + " " + target + " %*\r\n"
+        +  "%_maybeQuote%%_prog%%_maybeQuote% " + args + " " + target + " %*\r\n"
         + foot
   } else {
     cmd = head + prog + " " + args + " " + target + " %*\r\n" + foot
