@@ -38,10 +38,20 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
 }
 $ret=0
 if (Test-Path "$basedir/node$exe") {
-  & "$basedir/node$exe"  "$basedir/from.env" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir/node$exe"  "$basedir/from.env" $args
+  } else {
+    & "$basedir/node$exe"  "$basedir/from.env" $args
+  }
   $ret=$LASTEXITCODE
 } else {
-  & "node$exe"  "$basedir/from.env" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "node$exe"  "$basedir/from.env" $args
+  } else {
+    & "node$exe"  "$basedir/from.env" $args
+  }
   $ret=$LASTEXITCODE
 }
 exit $ret
@@ -100,10 +110,20 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
 }
 $ret=0
 if (Test-Path "$basedir/node$exe") {
-  & "$basedir/node$exe" --expose_gc "$basedir/from.env.args" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir/node$exe" --expose_gc "$basedir/from.env.args" $args
+  } else {
+    & "$basedir/node$exe" --expose_gc "$basedir/from.env.args" $args
+  }
   $ret=$LASTEXITCODE
 } else {
-  & "node$exe" --expose_gc "$basedir/from.env.args" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "node$exe" --expose_gc "$basedir/from.env.args" $args
+  } else {
+    & "node$exe" --expose_gc "$basedir/from.env.args" $args
+  }
   $ret=$LASTEXITCODE
 }
 exit $ret
@@ -163,10 +183,20 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
 }
 $ret=0
 if (Test-Path "$basedir/node$exe") {
-  & "$basedir/node$exe"  "$basedir/from.env.variables" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir/node$exe"  "$basedir/from.env.variables" $args
+  } else {
+    & "$basedir/node$exe"  "$basedir/from.env.variables" $args
+  }
   $ret=$LASTEXITCODE
 } else {
-  & "node$exe"  "$basedir/from.env.variables" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "node$exe"  "$basedir/from.env.variables" $args
+  } else {
+    & "node$exe"  "$basedir/from.env.variables" $args
+  }
   $ret=$LASTEXITCODE
 }
 exit $ret
@@ -225,10 +255,20 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
 }
 $ret=0
 if (Test-Path "$basedir//usr/bin/sh$exe") {
-  & "$basedir//usr/bin/sh$exe"  "$basedir/from.sh" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir//usr/bin/sh$exe"  "$basedir/from.sh" $args
+  } else {
+    & "$basedir//usr/bin/sh$exe"  "$basedir/from.sh" $args
+  }
   $ret=$LASTEXITCODE
 } else {
-  & "/usr/bin/sh$exe"  "$basedir/from.sh" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "/usr/bin/sh$exe"  "$basedir/from.sh" $args
+  } else {
+    & "/usr/bin/sh$exe"  "$basedir/from.sh" $args
+  }
   $ret=$LASTEXITCODE
 }
 exit $ret
@@ -287,10 +327,20 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
 }
 $ret=0
 if (Test-Path "$basedir//usr/bin/sh$exe") {
-  & "$basedir//usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir//usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
+  } else {
+    & "$basedir//usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
+  }
   $ret=$LASTEXITCODE
 } else {
-  & "/usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "/usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
+  } else {
+    & "/usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
+  }
   $ret=$LASTEXITCODE
 }
 exit $ret
@@ -339,7 +389,12 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # are installed in the same directory
   $exe=".exe"
 }
-& "$basedir/from.exe"   $args
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$basedir/from.exe"   $args
+} else {
+  & "$basedir/from.exe"   $args
+}
 exit $LASTEXITCODE
 
 `
@@ -380,7 +435,12 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # are installed in the same directory
   $exe=".exe"
 }
-& "$basedir/"   $args
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$basedir/"   $args
+} else {
+  & "$basedir/"   $args
+}
 exit $LASTEXITCODE
 
 `
@@ -421,7 +481,12 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # are installed in the same directory
   $exe=".exe"
 }
-& "$basedir/from.exe"   $args
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$basedir/from.exe"   $args
+} else {
+  & "$basedir/from.exe"   $args
+}
 exit $LASTEXITCODE
 
 `

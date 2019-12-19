@@ -183,10 +183,20 @@ const writeShim_ = (from, to, prog, args, variables) => {
   //   $exe = ".exe"
   // }
   // if (Test-Path "$basedir/node") {
-  //   & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   # Suport pipeline input
+  //   if ($MyInvocation.ExpectingInput) {
+  //     input | & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   } else {
+  //     & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   }
   //   $ret=$LASTEXITCODE
   // } else {
-  //   & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   # Support pipeline input
+  //   if ($MyInvocation.ExpectingInput) {
+  //     $input | & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   } else {
+  //     & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  //   }
   //   $ret=$LASTEXITCODE
   // }
   // exit $ret
@@ -203,16 +213,31 @@ const writeShim_ = (from, to, prog, args, variables) => {
     pwsh = pwsh
          + '$ret=0\n'
          + `if (Test-Path ${pwshLongProg}) {\n`
-         + `  & ${pwshLongProg} ${args} ${shTarget} $args\n`
+         + '  # Support pipeline input\n'
+         + '  if ($MyInvocation.ExpectingInput) {\n'
+         + `    $input | & ${pwshLongProg} ${args} ${shTarget} $args\n`
+         + '  } else {\n'
+         + `    & ${pwshLongProg} ${args} ${shTarget} $args\n`
+         + '  }\n'
          + '  $ret=$LASTEXITCODE\n'
          + '} else {\n'
-         + `  & ${pwshProg} ${args} ${shTarget} $args\n`
+         + '  # Support pipeline input\n'
+         + '  if ($MyInvocation.ExpectingInput) {\n'
+         + `    $input | & ${pwshProg} ${args} ${shTarget} $args\n`
+         + '  } else {\n'
+         + `    & ${pwshProg} ${args} ${shTarget} $args\n`
+         + '  }\n'
          + '  $ret=$LASTEXITCODE\n'
          + '}\n'
          + 'exit $ret\n'
   } else {
     pwsh = pwsh
-         + `& ${pwshProg} ${args} ${shTarget} $args\n`
+         + '# Support pipeline input\n'
+         + 'if ($MyInvocation.ExpectingInput) {\n'
+         + `  $input | & ${pwshProg} ${args} ${shTarget} $args\n`
+         + '} else {\n'
+         + `  & ${pwshProg} ${args} ${shTarget} $args\n`
+         + '}\n'
          + 'exit $LASTEXITCODE\n'
   }
 
