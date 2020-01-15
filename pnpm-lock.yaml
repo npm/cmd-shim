@@ -11,7 +11,7 @@ devDependencies:
   mos: 1.3.1
   mos-plugin-readme: 1.0.4
   standard: 14.0.2
-  typescript: 3.5.3
+  typescript: 3.7.4
 lockfileVersion: 5.1
 packages:
   /@babel/code-frame/7.5.5:
@@ -5740,13 +5740,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-cUGJnCdr4STbePCgqNFbpVNCepa+kAVohJs1sLhxzdH+gnEoOd8VhbYa7pD3zZYGiURWM2xzEII3fQcRizDkYQ==
-  /typescript/3.5.3:
+  /typescript/3.7.4:
     dev: true
     engines:
       node: '>=4.2.0'
     hasBin: true
     resolution:
-      integrity: sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
+      integrity: sha512-A25xv5XCtarLwXpcDNZzCGvW2D1S3/bACratYBx2sax8PefsFhlYmkQicKHvpYflFS8if4zne5zT5kpJ7pzuvw==
   /uglify-js/3.6.0:
     dependencies:
       commander: 2.20.0
@@ -6109,4 +6109,4 @@ specifiers:
   mos: ^1.3.1
   mos-plugin-readme: ^1.0.4
   standard: ^14.0.2
-  typescript: ^3.5.3
+  typescript: ^3.7.4
