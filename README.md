@@ -6,10 +6,7 @@
 [![Build Status](https://img.shields.io/travis/pnpm/cmd-shim/master.svg)](https://travis-ci.org/pnpm/cmd-shim) [![Build Status on Windows](https://img.shields.io/appveyor/ci/zkochan/cmd-shim-8ah3a/master.svg)](https://ci.appveyor.com/project/zkochan/cmd-shim-8ah3a/branch/master) [![npm version](https://img.shields.io/npm/v/@zkochan/cmd-shim.svg)](https://www.npmjs.com/package/@zkochan/cmd-shim)
 <!--/@-->
 
-The cmd-shim used in [pnpm](https://github.com/rstacruz/pnpm) to create executable scripts on Windows,
-since symlinks are not suitable for this purpose there.
-
-On Unix systems, you should use a symbolic link instead.
+The cmd-shim used in [pnpm](https://github.com/rstacruz/pnpm) to create executable scripts.
 
 ## Installation
 
