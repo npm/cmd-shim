@@ -11,7 +11,7 @@
     "clean": "tsc --build --clean",
     "build": "tsc --build --verbose --listEmittedFiles",
     "test:unit": "jest",
-    "test": "pnpm run build && standard --env jest && pnpm run test:unit && mos test",
+    "test": "pnpm run build && standard && pnpm run test:unit && mos test",
     "md": "mos",
     "prepublishOnly": "pnpm run build"
   },
@@ -49,6 +49,11 @@
     "plugins": [
       "readme"
     ]
+  },
+  "standard": {
+    "env": {
+      "jest": true
+    }
   },
   "jest": {
     "testEnvironment": "node"
