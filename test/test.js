@@ -86,13 +86,10 @@ test('env shebang', async () => {
     '\nesac' +
     '\n' +
     '\nif [ -x "$basedir/node" ]; then' +
-    '\n  "$basedir/node"  "$basedir/src.env" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec "$basedir/node"  "$basedir/src.env" "$@"' +
     '\nelse ' +
-    '\n  node  "$basedir/src.env" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec node  "$basedir/src.env" "$@"' +
     '\nfi' +
-    '\nexit $ret' +
     '\n')
   expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(
     '@IF EXIST "%~dp0\\node.exe" (\r' +
@@ -146,14 +143,12 @@ test('env shebang with NODE_PATH', async () => {
     '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
     '\nesac' +
     '\n' +
+    '\nexport NODE_PATH="/john/src/node_modules:/bin/node/node_modules"' +
     '\nif [ -x "$basedir/node" ]; then' +
-    '\n  NODE_PATH="/john/src/node_modules:/bin/node/node_modules" "$basedir/node"  "$basedir/src.env" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec "$basedir/node"  "$basedir/src.env" "$@"' +
     '\nelse ' +
-    '\n  NODE_PATH="/john/src/node_modules:/bin/node/node_modules" node  "$basedir/src.env" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec node  "$basedir/src.env" "$@"' +
     '\nfi' +
-    '\nexit $ret' +
     '\n')
   expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(
     '@SET NODE_PATH=\\john\\src\\node_modules;\\bin\\node\\node_modules\r' +
@@ -214,13 +209,10 @@ test('env shebang with default args', async () => {
     '\nesac' +
     '\n' +
     '\nif [ -x "$basedir/node" ]; then' +
-    '\n  "$basedir/node" --preserve-symlinks "$basedir/src.env" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec "$basedir/node" --preserve-symlinks "$basedir/src.env" "$@"' +
     '\nelse ' +
-    '\n  node --preserve-symlinks "$basedir/src.env" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec node --preserve-symlinks "$basedir/src.env" "$@"' +
     '\nfi' +
-    '\nexit $ret' +
     '\n')
   expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(
     '@IF EXIST "%~dp0\\node.exe" (\r' +
@@ -275,13 +267,10 @@ test('env shebang with args', async () => {
     '\nesac' +
     '\n' +
     '\nif [ -x "$basedir/node" ]; then' +
-    '\n  "$basedir/node"  --expose_gc "$basedir/src.env.args" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec "$basedir/node"  --expose_gc "$basedir/src.env.args" "$@"' +
     '\nelse ' +
-    '\n  node  --expose_gc "$basedir/src.env.args" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec node  --expose_gc "$basedir/src.env.args" "$@"' +
     '\nfi' +
-    '\nexit $ret' +
     '\n')
   expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(
     '@IF EXIST "%~dp0\\node.exe" (\r' +
@@ -336,13 +325,10 @@ test('explicit shebang', async () => {
     '\nesac' +
     '\n' +
     '\nif [ -x "$basedir//usr/bin/sh" ]; then' +
-    '\n  "$basedir//usr/bin/sh"  "$basedir/src.sh" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec "$basedir//usr/bin/sh"  "$basedir/src.sh" "$@"' +
     '\nelse ' +
-    '\n  /usr/bin/sh  "$basedir/src.sh" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec /usr/bin/sh  "$basedir/src.sh" "$@"' +
     '\nfi' +
-    '\nexit $ret' +
     '\n')
 
   expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(
@@ -399,13 +385,10 @@ test('explicit shebang with args', async () => {
     '\nesac' +
     '\n' +
     '\nif [ -x "$basedir//usr/bin/sh" ]; then' +
-    '\n  "$basedir//usr/bin/sh"  -x "$basedir/src.sh.args" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec "$basedir//usr/bin/sh"  -x "$basedir/src.sh.args" "$@"' +
     '\nelse ' +
-    '\n  /usr/bin/sh  -x "$basedir/src.sh.args" "$@"' +
-    '\n  ret=$?' +
+    '\n  exec /usr/bin/sh  -x "$basedir/src.sh.args" "$@"' +
     '\nfi' +
-    '\nexit $ret' +
     '\n')
 
   expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(

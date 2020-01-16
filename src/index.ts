@@ -380,14 +380,13 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
   //     *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
   // esac
   //
+  // export NODE_PATH="<nodepath>"
+  //
   // if [ -x "$basedir/node.exe" ]; then
-  //   "$basedir/node.exe" "$basedir/node_modules/npm/bin/npm-cli.js" "$@"
-  //   ret=$?
+  //   exec "$basedir/node.exe" "$basedir/node_modules/npm/bin/npm-cli.js" "$@"
   // else
-  //   node "$basedir/node_modules/npm/bin/npm-cli.js" "$@"
-  //   ret=$?
+  //   exec node "$basedir/node_modules/npm/bin/npm-cli.js" "$@"
   // fi
-  // exit $ret
 
   let sh = '#!/bin/sh\n'
   sh = sh +
@@ -397,18 +396,15 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
     '    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;\n' +
     'esac\n' +
     '\n'
-  const env = opts.nodePath ? `NODE_PATH="${shNodePath}" ` : ''
+  const env = opts.nodePath ? `export NODE_PATH="${shNodePath}"\n` : ''
 
   if (shLongProg) {
-    sh = sh +
+    sh = sh + env +
       'if [ -x ' + shLongProg + ' ]; then\n' +
-      '  ' + env + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
-      '  ret=$?\n' +
+      '  exec ' + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
       'else \n' +
-      '  ' + env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
-      '  ret=$?\n' +
-      'fi\n' +
-      'exit $ret\n'
+      '  exec ' + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      'fi\n'
   } else {
     sh = sh + env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
       'exit $?\n'
