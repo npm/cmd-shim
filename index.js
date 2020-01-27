@@ -8,64 +8,55 @@
 // Write a binroot/pkg.bin + ".cmd" file that has this line in it:
 // @<prog> <args...> %dp0%<target> %*
 
+const {promisify} = require('util')
 const fs = require('fs')
+const writeFile = promisify(fs.writeFile)
+const readFile = promisify(fs.readFile)
+const chmod = promisify(fs.chmod)
+const stat = promisify(fs.stat)
+const unlink = promisify(fs.unlink)
 
+const {dirname, relative} = require('path')
 const mkdir = require('mkdirp')
-const path = require('path')
 const toBatchSyntax = require('./lib/to-batch-syntax')
 const shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+=[^ \t]+\s+)*\s*([^ \t]+)(.*)$/
 
-const cmdShimIfExists = (from, to, cb) => {
-  fs.stat(from, er => {
-    if (er) return cb()
-    cmdShim(from, to, cb)
-  })
-}
+const cmdShimIfExists = (from, to) =>
+  stat(from).then(() => cmdShim(from, to), () => {})
 
 // Try to unlink, but ignore errors.
 // Any problems will surface later.
-const rm = (path, cb) => fs.unlink(path, () => cb())
+const rm = path => unlink(path).catch(() => {})
 
-const cmdShim = (from, to, cb) => {
-  fs.stat(from, (er, stat) => {
-    if (er)
-      return cb(er)
+const cmdShim = (from, to) =>
+  stat(from).then(() => cmdShim_(from, to))
 
-    cmdShim_(from, to, cb)
-  })
-}
+const cmdShim_ = (from, to) => Promise.all([
+  rm(to),
+  rm(to + '.cmd'),
+  rm(to + '.ps1'),
+]).then(() => writeShim(from, to))
 
-const cmdShim_ = (from, to, cb) => {
-  const next = () => writeShim(from, to, cb)
-  const then = times(3, next, cb)
-
-  rm(to, then)
-  rm(to + '.cmd', then)
-  rm(to + '.ps1', then)
-}
-
-const writeShim = (from, to, cb) => {
+const writeShim = (from, to) =>
   // make a cmd file and a sh script
   // First, check if the bin is a #! of some sort.
   // If not, then assume it's something that'll be compiled, or some other
   // sort of script, and just call it directly.
-  mkdir(path.dirname(to)).then(() => {
-    fs.readFile(from, 'utf8', (er, data) => {
-      if (er) return writeShim_(from, to, null, null, null, cb)
+  mkdir(dirname(to))
+    .then(() => readFile(from, 'utf8'))
+    .then(data => {
       const firstLine = data.trim().split(/\r*\n/)[0]
       const shebang = firstLine.match(shebangExpr)
-      if (!shebang) return writeShim_(from, to, null, null, null, cb)
+      if (!shebang) return writeShim_(from, to)
       const vars = shebang[1] || ''
       const prog = shebang[2]
       const args = shebang[3] || ''
-      return writeShim_(from, to, prog, args, vars, cb)
-    })
-  }, cb)
-}
+      return writeShim_(from, to, prog, args, vars)
+    }, er => writeShim_(from, to))
 
 
-const writeShim_ = (from, to, prog, args, variables, cb) => {
-  let shTarget = path.relative(path.dirname(to), from)
+const writeShim_ = (from, to, prog, args, variables) => {
+  let shTarget = relative(dirname(to), from)
   let target = shTarget.split('/').join('\\')
   let longProg
   let shProg = prog && prog.split('\\').join('/')
@@ -225,31 +216,18 @@ const writeShim_ = (from, to, prog, args, variables, cb) => {
          + 'exit $LASTEXITCODE\n'
   }
 
-  const next = () => chmodShim(to, cb)
-  const then = times(3, next, cb)
-  fs.writeFile(to + '.ps1', pwsh, 'utf8', then)
-  fs.writeFile(to + '.cmd', cmd, 'utf8', then)
-  fs.writeFile(to, sh, 'utf8', then)
+  return Promise.all([
+    writeFile(to + '.ps1', pwsh, 'utf8'),
+    writeFile(to + '.cmd', cmd, 'utf8'),
+    writeFile(to, sh, 'utf8'),
+  ]).then(() => chmodShim(to))
 }
 
-const chmodShim = (to, cb) => {
-  const then = times(3, cb, cb)
-  fs.chmod(to, 0o755, then)
-  fs.chmod(to + '.cmd', 0o755, then)
-  fs.chmod(to + '.ps1', 0o755, then)
-}
-
-const times = (n, ok, cb) => {
-  let errState = null
-  return er => {
-    if (!errState) {
-      if (er)
-        cb(errState = er)
-      else if (--n === 0)
-        ok()
-    }
-  }
-}
+const chmodShim = to => Promise.all([
+  chmod(to, 0o755),
+  chmod(to + '.cmd', 0o755),
+  chmod(to + '.ps1', 0o755),
+])
 
 module.exports = cmdShim
 cmdShim.ifExists = cmdShimIfExists
