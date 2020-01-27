@@ -1,10 +1,8 @@
-var test = require('tap').test
-var mkdirp = require('mkdirp')
-var fs = require('fs')
-var path = require('path')
-var fixtures = path.resolve(__dirname, 'fixtures')
+const mkdirp = require('mkdirp')
+const fs = require('fs')
+const fixtures = __dirname + '/fixtures'
 
-var froms = {
+const froms = {
   'from.exe': 'exe',
   'from.env': '#!/usr/bin/env node\nconsole.log(/hi/)\n',
   'from.env.args': '#!/usr/bin/env node --expose_gc\ngc()\n',
@@ -13,23 +11,7 @@ var froms = {
   'from.sh.args': '#!/usr/bin/sh -x\necho hi\n'
 }
 
-var cmdShim = require('../')
-
-test('create fixture', function (t) {
-  mkdirp(fixtures, function (er) {
-    if (er)
-      throw er
-    t.pass('made dir')
-    Object.keys(froms).forEach(function (f) {
-      t.test('write ' + f, function (t) {
-        fs.writeFile(path.resolve(fixtures, f), froms[f], function (er) {
-          if (er)
-            throw er
-          t.pass('wrote ' + f)
-          t.end()
-        })
-      })
-    })
-    t.end()
-  })
-})
+mkdirp.sync(__dirname + '/fixtures')
+for (const [f, content] of Object.entries(froms)) {
+  fs.writeFileSync(`${fixtures}/${f}`, content)
+}

@@ -1,5 +1,4 @@
 var test = require('tap').test
-var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var fs = require('fs')
 var path = require('path')

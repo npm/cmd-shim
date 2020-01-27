@@ -16,14 +16,22 @@
   "license": "ISC",
   "dependencies": {
     "graceful-fs": "^4.1.2",
-    "mkdirp": "~0.5.0"
+    "mkdirp": "^1.0.3"
   },
   "devDependencies": {
     "rimraf": "~2.2.8",
-    "tap": "^12.7.0"
+    "tap": "^14.10.6"
   },
   "files": [
     "index.js",
     "lib"
-  ]
+  ],
+  "tap": {
+    "before": "test/00-setup.js",
+    "after": "test/zz-cleanup.js",
+    "check-coverage": true
+  },
+  "engines": {
+    "node": ">=10"
+  }
 }
