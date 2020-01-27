@@ -17,7 +17,7 @@ const stat = promisify(fs.stat)
 const unlink = promisify(fs.unlink)
 
 const {dirname, relative} = require('path')
-const mkdir = require('mkdirp')
+const mkdir = require('mkdirp-infer-owner')
 const toBatchSyntax = require('./lib/to-batch-syntax')
 const shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+=[^ \t]+\s+)*\s*([^ \t]+)(.*)$/
 
