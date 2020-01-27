@@ -1,6 +1,6 @@
 {
   "name": "cmd-shim",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Used in npm for command line application support",
   "scripts": {
     "test": "tap",
