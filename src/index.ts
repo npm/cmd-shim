@@ -333,12 +333,12 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
   // )
   let cmd = nodePath ? `@SET NODE_PATH=${nodePath}\r\n` : ''
   if (longProg) {
-    cmd += '@IF EXIST ' + longProg + ' (\r\n' +
-      '  ' + longProg + ' ' + args + ' ' + target + ' %*\r\n' +
+    cmd += `@IF EXIST ${longProg} (\r\n` +
+      `  ${longProg} ${args} ${target} %*\r\n` +
       ') ELSE (\r\n' +
       '  @SETLOCAL\r\n' +
       '  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n' +
-      '  ' + prog + ' ' + args + ' ' + target + ' %*\r\n' +
+      `  ${prog} ${args} ${target} %*\r\n` +
       ')'
   } else {
     cmd += `@${prog} ${args} ${target} %*\r\n`
@@ -399,14 +399,14 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
   const env = opts.nodePath ? `export NODE_PATH="${shNodePath}"\n` : ''
 
   if (shLongProg) {
-    sh = sh + env +
-      'if [ -x ' + shLongProg + ' ]; then\n' +
-      '  exec ' + shLongProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+    sh += env +
+      `if [ -x ${shLongProg} ]; then\n` +
+      `  exec ${shLongProg} ${args} ${shTarget} "$@"\n` +
       'else \n' +
-      '  exec ' + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+      `  exec ${shProg} ${args} ${shTarget} "$@"\n` +
       'fi\n'
   } else {
-    sh = sh + env + shProg + ' ' + args + ' ' + shTarget + ' "$@"\n' +
+    sh += `${env}${shProg} ${args} ${shTarget} "$@"\n` +
       'exit $?\n'
   }
 
