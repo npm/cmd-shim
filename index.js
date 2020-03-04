@@ -101,13 +101,13 @@ const writeShim_ = (from, to, prog, args, variables) => {
   //
   // Subroutine trick to fix https://github.com/npm/cmd-shim/issues/10
   const head = '@ECHO off\r\n' +
-    'SETLOCAL\r\n' +
-    'CALL :find_dp0\r\n'
-  const foot = 'ENDLOCAL\r\n' +
-    'EXIT /b %errorlevel%\r\n' +
+    'GOTO start\r\n' +
     ':find_dp0\r\n' +
     'SET dp0=%~dp0\r\n' +
-    'EXIT /b\r\n'
+    'EXIT /b\r\n' +
+    ':start\r\n' +
+    'SETLOCAL\r\n' +
+    'CALL :find_dp0\r\n'
 
   let cmd
   if (longProg) {
@@ -125,9 +125,8 @@ const writeShim_ = (from, to, prog, args, variables) => {
         + ')\r\n'
         + '\r\n'
         +  `"%_prog%" ${args} ${target} %*\r\n`
-        + foot
   } else {
-    cmd = `${head}${prog} ${args} ${target} %*\r\n${foot}`
+    cmd = `${head}${prog} ${args} ${target} %*\r\n`
   }
 
   // #!/bin/sh
