@@ -432,6 +432,66 @@ test('explicit shebang with args', async () => {
     '\n')
 })
 
+test('explicit shebang with prog args', async () => {
+  const src = path.resolve(fixtures, 'src.sh.args')
+  const to = path.resolve(fixtures, 'sh.args.shim')
+  await cmdShim(src, to, { createCmdFile: true, progArgs: ['hello'], fs })
+  expect(fs.readFileSync(to, 'utf8')).toBe(
+    '#!/bin/sh' +
+    "\nbasedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")" +
+    '\n' +
+    '\ncase `uname` in' +
+    '\n    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;' +
+    '\nesac' +
+    '\n' +
+    '\nif [ -x "$basedir//usr/bin/sh" ]; then' +
+    '\n  exec "$basedir//usr/bin/sh"  -x "$basedir/src.sh.args" hello "$@"' +
+    '\nelse ' +
+    '\n  exec /usr/bin/sh  -x "$basedir/src.sh.args" hello "$@"' +
+    '\nfi' +
+    '\n')
+
+  expect(fs.readFileSync(to + '.cmd', 'utf8')).toBe(
+    '@IF EXIST "%~dp0\\/usr/bin/sh.exe" (\r' +
+    '\n  "%~dp0\\/usr/bin/sh.exe"  -x "%~dp0\\src.sh.args" hello %*\r' +
+    '\n) ELSE (\r' +
+    '\n  @SETLOCAL\r' +
+    '\n  @SET PATHEXT=%PATHEXT:;.JS;=;%\r' +
+    '\n  /usr/bin/sh  -x "%~dp0\\src.sh.args" hello %*\r' +
+    '\n)')
+
+  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toBe(
+    '#!/usr/bin/env pwsh' +
+    '\n$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent' +
+    '\n' +
+    '\n$exe=""' +
+    '\nif ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {' +
+    '\n  # Fix case when both the Windows and Linux builds of Node' +
+    '\n  # are installed in the same directory' +
+    '\n  $exe=".exe"' +
+    '\n}' +
+    '\n$ret=0' +
+    '\nif (Test-Path "$basedir//usr/bin/sh$exe") {' +
+    '\n  # Support pipeline input' +
+    '\n  if ($MyInvocation.ExpectingInput) {' +
+    '\n    $input | & "$basedir//usr/bin/sh$exe"  -x "$basedir/src.sh.args" hello $args' +
+    '\n  } else {' +
+    '\n    & "$basedir//usr/bin/sh$exe"  -x "$basedir/src.sh.args" hello $args' +
+    '\n  }' +
+    '\n  $ret=$LASTEXITCODE' +
+    '\n} else {' +
+    '\n  # Support pipeline input' +
+    '\n  if ($MyInvocation.ExpectingInput) {' +
+    '\n    $input | & "/usr/bin/sh$exe"  -x "$basedir/src.sh.args" hello $args' +
+    '\n  } else {' +
+    '\n    & "/usr/bin/sh$exe"  -x "$basedir/src.sh.args" hello $args' +
+    '\n  }' +
+    '\n  $ret=$LASTEXITCODE' +
+    '\n}' +
+    '\nexit $ret' +
+    '\n')
+})
+
 ;(process.platform === 'win32' ? test : test.skip)('explicit shebang with args, linking to another drive on Windows', async () => {
   const src = path.resolve(fixtures2, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')

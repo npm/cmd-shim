@@ -43,6 +43,11 @@ namespace cmdShim {
     args?: string
 
     /**
+     * The arguments to initialize the target process with, before the actual CLI arguments
+     */
+    progArgs?: string[]
+
+    /**
      * The value of the $NODE_PATH environment variable.
      *
      * The single `string` format is only kept for legacy compatibility,
@@ -324,6 +329,8 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
     target = quotedPathToTarget
   }
 
+  let progArgs = opts.progArgs ? `${opts.progArgs.join(` `)} ` : ''
+
   // @IF EXIST "%~dp0\node.exe" (
   //   "%~dp0\node.exe" "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
   // ) ELSE (
@@ -334,14 +341,14 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
   let cmd = nodePath ? `@SET NODE_PATH=${nodePath}\r\n` : ''
   if (longProg) {
     cmd += `@IF EXIST ${longProg} (\r\n` +
-      `  ${longProg} ${args} ${target} %*\r\n` +
+      `  ${longProg} ${args} ${target} ${progArgs}%*\r\n` +
       ') ELSE (\r\n' +
       '  @SETLOCAL\r\n' +
       '  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n' +
-      `  ${prog} ${args} ${target} %*\r\n` +
+      `  ${prog} ${args} ${target} ${progArgs}%*\r\n` +
       ')'
   } else {
-    cmd += `@${prog} ${args} ${target} %*\r\n`
+    cmd += `@${prog} ${args} ${target} ${progArgs}%*\r\n`
   }
 
   return cmd
@@ -373,6 +380,8 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
     shTarget = quotedPathToTarget
   }
 
+  let progArgs = opts.progArgs ? `${opts.progArgs.join(` `)} ` : ''
+
   // #!/bin/sh
   // basedir=`dirname "$0"`
   //
@@ -401,12 +410,12 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
   if (shLongProg) {
     sh += env +
       `if [ -x ${shLongProg} ]; then\n` +
-      `  exec ${shLongProg} ${args} ${shTarget} "$@"\n` +
+      `  exec ${shLongProg} ${args} ${shTarget} ${progArgs}"$@"\n` +
       'else \n' +
-      `  exec ${shProg} ${args} ${shTarget} "$@"\n` +
+      `  exec ${shProg} ${args} ${shTarget} ${progArgs}"$@"\n` +
       'fi\n'
   } else {
-    sh += `${env}${shProg} ${args} ${shTarget} "$@"\n` +
+    sh += `${env}${shProg} ${args} ${shTarget} ${progArgs}"$@"\n` +
       'exit $?\n'
   }
 
@@ -441,6 +450,8 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
     pwshLongProg = `"$basedir/${opts.prog}$exe"`
     shTarget = quotedPathToTarget
   }
+
+  let progArgs = opts.progArgs ? `${opts.progArgs.join(` `)} ` : ''
 
   // #!/usr/bin/env pwsh
   // $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
@@ -494,17 +505,17 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
       `if (Test-Path ${pwshLongProg}) {\n` +
       '  # Support pipeline input\n' +
       '  if ($MyInvocation.ExpectingInput) {\n' +
-      `    $input | & ${pwshLongProg} ${args} ${shTarget} $args\n` +
+      `    $input | & ${pwshLongProg} ${args} ${shTarget} ${progArgs}$args\n` +
       '  } else {\n' +
-      `    & ${pwshLongProg} ${args} ${shTarget} $args\n` +
+      `    & ${pwshLongProg} ${args} ${shTarget} ${progArgs}$args\n` +
       '  }\n' +
       '  $ret=$LASTEXITCODE\n' +
       '} else {\n' +
       '  # Support pipeline input\n' +
       '  if ($MyInvocation.ExpectingInput) {\n' +
-      `    $input | & ${pwshProg} ${args} ${shTarget} $args\n` +
+      `    $input | & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
       '  } else {\n' +
-      `    & ${pwshProg} ${args} ${shTarget} $args\n` +
+      `    & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
       '  }\n' +
       '  $ret=$LASTEXITCODE\n' +
       '}\n' +
@@ -514,9 +525,9 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
     pwsh = pwsh +
       '# Support pipeline input\n' +
       'if ($MyInvocation.ExpectingInput) {\n' +
-      `  $input | & ${pwshProg} ${args} ${shTarget} $args\n` +
+      `  $input | & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
       '} else {\n' +
-      `  & ${pwshProg} ${args} ${shTarget} $args\n` +
+      `  & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
       '}\n' +
       (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
       'exit $LASTEXITCODE\n'
