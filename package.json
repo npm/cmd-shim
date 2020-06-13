@@ -43,7 +43,7 @@
     "typescript": "^3.9.5"
   },
   "engines": {
-    "node": ">=8.15"
+    "node": ">=10.13"
   },
   "mos": {
     "plugins": [
