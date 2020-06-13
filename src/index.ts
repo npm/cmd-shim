@@ -73,7 +73,7 @@ type InternalOptions = Options & Required<Pick<Options, keyof typeof DEFAULT_OPT
   fs_: FsPromisified
 }
 
-type Fs_= Pick<typeof import('fs'), 'stat' | 'unlink' | 'readFile' | 'writeFile' | 'chmod'>
+type Fs_= Pick<typeof import('fs'), 'stat' | 'unlink' | 'readFile' | 'writeFile' | 'chmod' | 'mkdir'>
 type FsPromisified = {[K in keyof Fs_]: Fs_[K]['__promisify__']}
 
 /**
@@ -94,7 +94,6 @@ interface ShimGenExtTuple {
 
 import {promisify} from 'util'
 
-import makeDir = require('make-dir')
 import path = require('path')
 import isWindows = require('is-windows')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
@@ -120,11 +119,11 @@ function ingestOptions (opts: Options): InternalOptions {
   const opts_ = {...DEFAULT_OPTIONS, ...opts} as InternalOptions
   const fs = opts_.fs
   opts_.fs_ = {
-
     chmod: fs.chmod ? promisify(fs.chmod) : (async () => { /* noop */ }) as any,
+    mkdir: promisify(fs.mkdir),
+    readFile: promisify(fs.readFile),
     stat: promisify(fs.stat),
     unlink: promisify(fs.unlink),
-    readFile: promisify(fs.readFile),
     writeFile: promisify(fs.writeFile)
   }
   return opts_
@@ -194,7 +193,7 @@ async function cmdShim_ (src: string, to: string, opts: InternalOptions) {
  * @param target Path of shims that are going to be created.
  */
 function writeShimsPreCommon (target: string, opts: InternalOptions) {
-  return makeDir(path.dirname(target), {fs: opts.fs})
+  return opts.fs_.mkdir(path.dirname(target), { recursive: true })
 }
 
 /**

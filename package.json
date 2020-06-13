@@ -27,8 +27,7 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "is-windows": "^1.0.2",
-    "make-dir": "^3.1.0"
+    "is-windows": "^1.0.2"
   },
   "devDependencies": {
     "@types/is-windows": "^1.0.0",
