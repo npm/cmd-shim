@@ -5,8 +5,7 @@ devDependencies:
   '@types/is-windows': 1.0.0
   '@types/node': 14.0.13
   jest: 26.0.1
-  lodash: 4.17.15
-  memory-fs: 0.5.0
+  memfs: 3.2.0
   mock-fs: 4.12.0
   mos: 1.3.1
   mos-plugin-readme: 1.0.4
@@ -1835,13 +1834,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
-  /errno/0.1.7:
-    dependencies:
-      prr: 1.0.1
-    dev: true
-    hasBin: true
-    resolution:
-      integrity: sha512-MfrRBDWzIWifgq6tJj60gkAwtLNb6sQPlcFrSOflcP1aFmmruKQ2wRnze/8V6kgyz7H3FF8Npzv78mZ7XLLflg==
   /error-ex/1.3.2:
     dependencies:
       is-arrayish: 0.2.1
@@ -2432,6 +2424,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-QpD60n8T6Jvn8zeZxrxaCr//DRk=
+  /fs-monkey/1.0.1:
+    dev: true
+    resolution:
+      integrity: sha512-fcSa+wyTqZa46iWweI7/ZiUfegOZl0SG8+dltIwFXo7+zYU9J9kpS3NB6pZcSlJdhvIwp81Adx2XhZorncxiaA==
   /fs.realpath/1.0.0:
     dev: true
     resolution:
@@ -3967,15 +3963,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-jVU0Nr2B9X3MU4tSK7JP1CMkSvOj7X5l/GboG1tKRw52lLF1x2Ju92Ms9tNetCcbfX3hzlM73zYo2NKkWSfF/A==
-  /memory-fs/0.5.0:
+  /memfs/3.2.0:
     dependencies:
-      errno: 0.1.7
-      readable-stream: 2.3.7
+      fs-monkey: 1.0.1
     dev: true
     engines:
-      node: '>=4.3.0 <5.0.0 || >=5.10'
+      node: '>= 4.0.0'
     resolution:
-      integrity: sha512-jA0rdU5KoQMC0e6ppoNRtpp6vjFq6+NY7r8hywnC7V+1Xj/MtHwGIbB1QaK/dunyjWteJzmkpd7ooeWg10T7GA==
+      integrity: sha512-f/xxz2TpdKv6uDn6GtHee8ivFyxwxmPuXatBb1FBwxYNuVpbM3k/Y1Z+vC0mH/dIXXrukYfe3qe5J32Dfjg93A==
   /meow/3.7.0:
     dependencies:
       camelcase-keys: 2.1.0
@@ -4892,10 +4887,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
-  /prr/1.0.1:
-    dev: true
-    resolution:
-      integrity: sha1-0/wRS6BplaRexok/SEzrHXj19HY=
   /pseudomap/1.0.2:
     dev: true
     resolution:
@@ -6553,9 +6544,8 @@ specifiers:
   '@types/node': ^14.0.13
   is-windows: ^1.0.2
   jest: ^26.0.1
-  lodash: ^4.17.15
   make-dir: ^3.1.0
-  memory-fs: ^0.5.0
+  memfs: ^3.2.0
   mock-fs: ^4.12.0
   mos: ^1.3.1
   mos-plugin-readme: ^1.0.4

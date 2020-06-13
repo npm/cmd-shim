@@ -1,8 +1,5 @@
 'use strict'
-const _ = require('lodash')
-const MemoryFS = require('memory-fs')
-const _fs = new MemoryFS()
-const fs = _.mapValues(Object.getPrototypeOf(_fs), (v, k) => typeof v === 'function' ? v.bind(_fs) : v)
+const fs = require('memfs')
 const path = require('path')
 
 const { fixtures, fixtures2 } = process.platform === 'win32' ? {
