@@ -12,6 +12,8 @@ const { fixtures, fixtures2 } = process.platform === 'win32' ? {
 
 exports.fixtures = fixtures
 exports.fixtures2 = fixtures2
+/** @type {typeof import("fs")} */
+// @ts-ignore
 exports.fs = fs
 
 const fixtureFiles = {

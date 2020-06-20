@@ -2,6 +2,7 @@ dependencies:
   is-windows: 1.0.2
 devDependencies:
   '@types/is-windows': 1.0.0
+  '@types/jest': 26.0.0
   '@types/node': 14.0.13
   jest: 26.0.1
   memfs: 3.2.0
@@ -465,6 +466,17 @@ packages:
       node: '>= 10.14.2'
     resolution:
       integrity: sha512-pPRkVkAQ91drKGbzCfDOoHN838+FSbYaEAvBXvKuWeeRRUD8FjwXkqfUNUZL6Ke48aA/1cqq/Ni7kVMCoqagWA==
+  /@jest/types/25.5.0:
+    dependencies:
+      '@types/istanbul-lib-coverage': 2.0.3
+      '@types/istanbul-reports': 1.1.2
+      '@types/yargs': 15.0.5
+      chalk: 3.0.0
+    dev: true
+    engines:
+      node: '>= 8.3'
+    resolution:
+      integrity: sha512-OXD0RgQ86Tu3MazKo8bnrkDRaDXXMGUqd+kTtLtK1Zb7CRzQcaSRPPPV37SvYTdevXEBVxe0HXylEjs8ibkmCw==
   /@jest/types/26.0.1:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.3
@@ -548,6 +560,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-P/W9yOX/3oPZSpaYOCQzGqgCQRXn0FFO/V8bWrCQs+wLmvVVxk6CRBXALEvNs9OHIatlnlFokfhuDo2ug01ciw==
+  /@types/jest/26.0.0:
+    dependencies:
+      jest-diff: 25.5.0
+      pretty-format: 25.5.0
+    dev: true
+    resolution:
+      integrity: sha512-/yeMsH9HQ1RLORlXAwoLXe8S98xxvhNtUz3yrgrwbaxYjT+6SFPZZRksmRKRA6L5vsUtSHeN71viDOTTyYAD+g==
   /@types/node/14.0.13:
     dev: true
     resolution:
@@ -1745,6 +1764,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
+  /diff-sequences/25.2.6:
+    dev: true
+    engines:
+      node: '>= 8.3'
+    resolution:
+      integrity: sha512-Hq8o7+6GaZeoFjtpgvRBUknSXNeJiCx7V9Fr94ZMljNiCr9n9L8H8aJqgWOQiDDGdyn29fRNcDdRVJ5fdyihfg==
   /diff-sequences/26.0.0:
     dev: true
     engines:
@@ -3265,6 +3290,17 @@ packages:
       node: '>= 10.14.2'
     resolution:
       integrity: sha512-9mWKx2L1LFgOXlDsC4YSeavnblN6A4CPfXFiobq+YYLaBMymA/SczN7xYTSmLaEYHZOcB98UdoN4m5uNt6tztg==
+  /jest-diff/25.5.0:
+    dependencies:
+      chalk: 3.0.0
+      diff-sequences: 25.2.6
+      jest-get-type: 25.2.6
+      pretty-format: 25.5.0
+    dev: true
+    engines:
+      node: '>= 8.3'
+    resolution:
+      integrity: sha512-z1kygetuPiREYdNIumRpAHY6RXiGmp70YHptjdaxTWGmA085W3iCnXNx0DhflK3vwrKmrRWyY1wUpkPMVxMK7A==
   /jest-diff/26.0.1:
     dependencies:
       chalk: 4.1.0
@@ -3321,6 +3357,12 @@ packages:
       node: '>= 10.14.2'
     resolution:
       integrity: sha512-4FRBWcSn5yVo0KtNav7+5NH5Z/tEgDLp7VRQVS5tCouWORxj+nI+1tOLutM07Zb2Qi7ja+HEDoOUkjBSWZg/IQ==
+  /jest-get-type/25.2.6:
+    dev: true
+    engines:
+      node: '>= 8.3'
+    resolution:
+      integrity: sha512-DxjtyzOHjObRM+sM1knti6or+eOgcGU4xVSb2HNP1TqO4ahsT+rqZg+nyqHWJSvWgKC5cG3QjGFBqxLghiF/Ig==
   /jest-get-type/26.0.0:
     dev: true
     engines:
@@ -4828,6 +4870,17 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-1PRWKwzjaW5BrFLQ4ALlemNdxtw=
+  /pretty-format/25.5.0:
+    dependencies:
+      '@jest/types': 25.5.0
+      ansi-regex: 5.0.0
+      ansi-styles: 4.2.1
+      react-is: 16.13.1
+    dev: true
+    engines:
+      node: '>= 8.3'
+    resolution:
+      integrity: sha512-kbo/kq2LQ/A/is0PQwsEHM7Ca6//bGPPvU6UnsdDRSKTWxT/ru/xb88v4BJf6a69H+uTytOEsTusT9ksd/1iWQ==
   /pretty-format/26.0.1:
     dependencies:
       '@jest/types': 26.0.1
@@ -6542,6 +6595,7 @@ packages:
       integrity: sha512-92O1HWEjw27sBfgmXiixJWT5hRBp2eobqXicLtPBIDBhYB+1HpwZlXmbW2luivBJHBzki+7VyCLRtAkScbTBQA==
 specifiers:
   '@types/is-windows': ^1.0.0
+  '@types/jest': ^26.0.0
   '@types/node': ^14.0.13
   is-windows: ^1.0.2
   jest: ^26.0.1

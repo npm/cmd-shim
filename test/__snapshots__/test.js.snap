@@ -1,0 +1,543 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`env shebang 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir/node\\" ]; then
+  exec \\"$basedir/node\\"  \\"$basedir/src.env\\" \\"$@\\"
+else 
+  exec node  \\"$basedir/src.env\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`env shebang 2`] = `
+"@IF EXIST \\"%~dp0\\\\node.exe\\" (
+  \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  node  \\"%~dp0\\\\src.env\\" %*
+)"
+`;
+
+exports[`env shebang 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir/node$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir/node$exe\\"  \\"$basedir/src.env\\" $args
+  } else {
+    & \\"$basedir/node$exe\\"  \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"node$exe\\"  \\"$basedir/src.env\\" $args
+  } else {
+    & \\"node$exe\\"  \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`env shebang with NODE_PATH 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+export NODE_PATH=\\"/john/src/node_modules:/bin/node/node_modules\\"
+if [ -x \\"$basedir/node\\" ]; then
+  exec \\"$basedir/node\\"  \\"$basedir/src.env\\" \\"$@\\"
+else 
+  exec node  \\"$basedir/src.env\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`env shebang with NODE_PATH 2`] = `
+"@SET NODE_PATH=\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
+@IF EXIST \\"%~dp0\\\\node.exe\\" (
+  \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  node  \\"%~dp0\\\\src.env\\" %*
+)"
+`;
+
+exports[`env shebang with NODE_PATH 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+$env_node_path=$env:NODE_PATH
+$env:NODE_PATH=\\"\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+} else {
+  $env:NODE_PATH=\\"/john/src/node_modules:/bin/node/node_modules\\"
+}
+$ret=0
+if (Test-Path \\"$basedir/node$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir/node$exe\\"  \\"$basedir/src.env\\" $args
+  } else {
+    & \\"$basedir/node$exe\\"  \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"node$exe\\"  \\"$basedir/src.env\\" $args
+  } else {
+    & \\"node$exe\\"  \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+$env:NODE_PATH=$env_node_path
+exit $ret
+"
+`;
+
+exports[`env shebang with args 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir/node\\" ]; then
+  exec \\"$basedir/node\\"  --expose_gc \\"$basedir/src.env.args\\" \\"$@\\"
+else 
+  exec node  --expose_gc \\"$basedir/src.env.args\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`env shebang with args 2`] = `
+"@IF EXIST \\"%~dp0\\\\node.exe\\" (
+  \\"%~dp0\\\\node.exe\\"  --expose_gc \\"%~dp0\\\\src.env.args\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  node  --expose_gc \\"%~dp0\\\\src.env.args\\" %*
+)"
+`;
+
+exports[`env shebang with args 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir/node$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir/node$exe\\"  --expose_gc \\"$basedir/src.env.args\\" $args
+  } else {
+    & \\"$basedir/node$exe\\"  --expose_gc \\"$basedir/src.env.args\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"node$exe\\"  --expose_gc \\"$basedir/src.env.args\\" $args
+  } else {
+    & \\"node$exe\\"  --expose_gc \\"$basedir/src.env.args\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`env shebang with default args 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir/node\\" ]; then
+  exec \\"$basedir/node\\" --preserve-symlinks \\"$basedir/src.env\\" \\"$@\\"
+else 
+  exec node --preserve-symlinks \\"$basedir/src.env\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`env shebang with default args 2`] = `
+"@IF EXIST \\"%~dp0\\\\node.exe\\" (
+  \\"%~dp0\\\\node.exe\\" --preserve-symlinks \\"%~dp0\\\\src.env\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  node --preserve-symlinks \\"%~dp0\\\\src.env\\" %*
+)"
+`;
+
+exports[`env shebang with default args 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir/node$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir/node$exe\\" --preserve-symlinks \\"$basedir/src.env\\" $args
+  } else {
+    & \\"$basedir/node$exe\\" --preserve-symlinks \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"node$exe\\" --preserve-symlinks \\"$basedir/src.env\\" $args
+  } else {
+    & \\"node$exe\\" --preserve-symlinks \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`explicit shebang 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir//usr/bin/sh\\" ]; then
+  exec \\"$basedir//usr/bin/sh\\"  \\"$basedir/src.sh\\" \\"$@\\"
+else 
+  exec /usr/bin/sh  \\"$basedir/src.sh\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`explicit shebang 2`] = `
+"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+  \\"%~dp0\\\\/usr/bin/sh.exe\\"  \\"%~dp0\\\\src.sh\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  /usr/bin/sh  \\"%~dp0\\\\src.sh\\" %*
+)"
+`;
+
+exports[`explicit shebang 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir//usr/bin/sh$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir//usr/bin/sh$exe\\"  \\"$basedir/src.sh\\" $args
+  } else {
+    & \\"$basedir//usr/bin/sh$exe\\"  \\"$basedir/src.sh\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"/usr/bin/sh$exe\\"  \\"$basedir/src.sh\\" $args
+  } else {
+    & \\"/usr/bin/sh$exe\\"  \\"$basedir/src.sh\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`explicit shebang with args 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir//usr/bin/sh\\" ]; then
+  exec \\"$basedir//usr/bin/sh\\"  -x \\"$basedir/src.sh.args\\" \\"$@\\"
+else 
+  exec /usr/bin/sh  -x \\"$basedir/src.sh.args\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`explicit shebang with args 2`] = `
+"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+  \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"%~dp0\\\\src.sh.args\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  /usr/bin/sh  -x \\"%~dp0\\\\src.sh.args\\" %*
+)"
+`;
+
+exports[`explicit shebang with args 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir//usr/bin/sh$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir//usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" $args
+  } else {
+    & \\"$basedir//usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"/usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" $args
+  } else {
+    & \\"/usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`explicit shebang with args, linking to another drive on Windows 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir//usr/bin/sh\\" ]; then
+  exec \\"$basedir//usr/bin/sh\\"  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" \\"$@\\"
+else 
+  exec /usr/bin/sh  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`explicit shebang with args, linking to another drive on Windows 2`] = `
+"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+  \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"J:\\\\cmd-shim\\\\fixtures\\\\src.sh.args\\" %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  /usr/bin/sh  -x \\"J:\\\\cmd-shim\\\\fixtures\\\\src.sh.args\\" %*
+)"
+`;
+
+exports[`explicit shebang with args, linking to another drive on Windows 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir//usr/bin/sh$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir//usr/bin/sh$exe\\"  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" $args
+  } else {
+    & \\"$basedir//usr/bin/sh$exe\\"  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"/usr/bin/sh$exe\\"  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" $args
+  } else {
+    & \\"/usr/bin/sh$exe\\"  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`explicit shebang with prog args 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+if [ -x \\"$basedir//usr/bin/sh\\" ]; then
+  exec \\"$basedir//usr/bin/sh\\"  -x \\"$basedir/src.sh.args\\" hello \\"$@\\"
+else 
+  exec /usr/bin/sh  -x \\"$basedir/src.sh.args\\" hello \\"$@\\"
+fi
+"
+`;
+
+exports[`explicit shebang with prog args 2`] = `
+"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+  \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"%~dp0\\\\src.sh.args\\" hello %*
+) ELSE (
+  @SETLOCAL
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  /usr/bin/sh  -x \\"%~dp0\\\\src.sh.args\\" hello %*
+)"
+`;
+
+exports[`explicit shebang with prog args 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+$ret=0
+if (Test-Path \\"$basedir//usr/bin/sh$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir//usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" hello $args
+  } else {
+    & \\"$basedir//usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" hello $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"/usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" hello $args
+  } else {
+    & \\"/usr/bin/sh$exe\\"  -x \\"$basedir/src.sh.args\\" hello $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+"
+`;
+
+exports[`no cmd file 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+\\"$basedir/src.exe\\"   \\"$@\\"
+exit $?
+"
+`;
+
+exports[`no cmd file 2`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & \\"$basedir/src.exe\\"   $args
+} else {
+  & \\"$basedir/src.exe\\"   $args
+}
+exit $LASTEXITCODE
+"
+`;
+
+exports[`no shebang 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+\\"$basedir/src.exe\\"   \\"$@\\"
+exit $?
+"
+`;
+
+exports[`no shebang 2`] = `
+"@\\"%~dp0\\\\src.exe\\"   %*
+"
+`;
+
+exports[`no shebang 3`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & \\"$basedir/src.exe\\"   $args
+} else {
+  & \\"$basedir/src.exe\\"   $args
+}
+exit $LASTEXITCODE
+"
+`;
