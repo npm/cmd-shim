@@ -10,7 +10,7 @@ esac
 
 if [ -x \\"$basedir/node\\" ]; then
   exec \\"$basedir/node\\"  \\"$basedir/src.env\\" \\"$@\\"
-else 
+else
   exec node  \\"$basedir/src.env\\" \\"$@\\"
 fi
 "
@@ -23,7 +23,8 @@ exports[`env shebang env.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node  \\"%~dp0\\\\src.env\\" %*
-)"
+)
+"
 `;
 
 exports[`env shebang env.shim.ps1 1`] = `
@@ -69,7 +70,7 @@ esac
 export NODE_PATH=\\"/john/src/node_modules:/bin/node/node_modules\\"
 if [ -x \\"$basedir/node\\" ]; then
   exec \\"$basedir/node\\"  \\"$basedir/src.env\\" \\"$@\\"
-else 
+else
   exec node  \\"$basedir/src.env\\" \\"$@\\"
 fi
 "
@@ -83,7 +84,8 @@ exports[`env shebang with NODE_PATH env.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node  \\"%~dp0\\\\src.env\\" %*
-)"
+)
+"
 `;
 
 exports[`env shebang with NODE_PATH env.shim.ps1 1`] = `
@@ -133,7 +135,7 @@ esac
 
 if [ -x \\"$basedir/node\\" ]; then
   exec \\"$basedir/node\\"  --expose_gc \\"$basedir/src.env.args\\" \\"$@\\"
-else 
+else
   exec node  --expose_gc \\"$basedir/src.env.args\\" \\"$@\\"
 fi
 "
@@ -146,7 +148,8 @@ exports[`env shebang with args env.args.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node  --expose_gc \\"%~dp0\\\\src.env.args\\" %*
-)"
+)
+"
 `;
 
 exports[`env shebang with args env.args.shim.ps1 1`] = `
@@ -191,7 +194,7 @@ esac
 
 if [ -x \\"$basedir/node\\" ]; then
   exec \\"$basedir/node\\" --preserve-symlinks \\"$basedir/src.env\\" \\"$@\\"
-else 
+else
   exec node --preserve-symlinks \\"$basedir/src.env\\" \\"$@\\"
 fi
 "
@@ -204,7 +207,8 @@ exports[`env shebang with default args env.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node --preserve-symlinks \\"%~dp0\\\\src.env\\" %*
-)"
+)
+"
 `;
 
 exports[`env shebang with default args env.shim.ps1 1`] = `
@@ -249,7 +253,7 @@ esac
 
 if [ -x \\"$basedir//usr/bin/sh\\" ]; then
   exec \\"$basedir//usr/bin/sh\\"  \\"$basedir/src.sh\\" \\"$@\\"
-else 
+else
   exec /usr/bin/sh  \\"$basedir/src.sh\\" \\"$@\\"
 fi
 "
@@ -262,7 +266,8 @@ exports[`explicit shebang sh.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  \\"%~dp0\\\\src.sh\\" %*
-)"
+)
+"
 `;
 
 exports[`explicit shebang sh.shim.ps1 1`] = `
@@ -307,7 +312,7 @@ esac
 
 if [ -x \\"$basedir//usr/bin/sh\\" ]; then
   exec \\"$basedir//usr/bin/sh\\"  -x \\"$basedir/src.sh.args\\" \\"$@\\"
-else 
+else
   exec /usr/bin/sh  -x \\"$basedir/src.sh.args\\" \\"$@\\"
 fi
 "
@@ -320,7 +325,8 @@ exports[`explicit shebang with args sh.args.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  -x \\"%~dp0\\\\src.sh.args\\" %*
-)"
+)
+"
 `;
 
 exports[`explicit shebang with args sh.args.shim.ps1 1`] = `
@@ -365,7 +371,7 @@ esac
 
 if [ -x \\"$basedir//usr/bin/sh\\" ]; then
   exec \\"$basedir//usr/bin/sh\\"  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" \\"$@\\"
-else 
+else
   exec /usr/bin/sh  -x \\"J:/cmd-shim/fixtures/src.sh.args\\" \\"$@\\"
 fi
 "
@@ -378,7 +384,8 @@ exports[`explicit shebang with args, linking to another drive on Windows sh.args
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  -x \\"J:\\\\cmd-shim\\\\fixtures\\\\src.sh.args\\" %*
-)"
+)
+"
 `;
 
 exports[`explicit shebang with args, linking to another drive on Windows sh.args.shim.ps1 1`] = `
@@ -423,7 +430,7 @@ esac
 
 if [ -x \\"$basedir//usr/bin/sh\\" ]; then
   exec \\"$basedir//usr/bin/sh\\"  -x \\"$basedir/src.sh.args\\" hello \\"$@\\"
-else 
+else
   exec /usr/bin/sh  -x \\"$basedir/src.sh.args\\" hello \\"$@\\"
 fi
 "
@@ -436,7 +443,8 @@ exports[`explicit shebang with prog args sh.args.shim.cmd 1`] = `
   @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  -x \\"%~dp0\\\\src.sh.args\\" hello %*
-)"
+)
+"
 `;
 
 exports[`explicit shebang with prog args sh.args.shim.ps1 1`] = `

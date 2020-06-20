@@ -339,13 +339,15 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
   // )
   let cmd = nodePath ? `@SET NODE_PATH=${nodePath}\r\n` : ''
   if (longProg) {
-    cmd += `@IF EXIST ${longProg} (\r\n` +
-      `  ${longProg} ${args} ${target} ${progArgs}%*\r\n` +
-      ') ELSE (\r\n' +
-      '  @SETLOCAL\r\n' +
-      '  @SET PATHEXT=%PATHEXT:;.JS;=;%\r\n' +
-      `  ${prog} ${args} ${target} ${progArgs}%*\r\n` +
-      ')'
+    cmd += `\
+@IF EXIST ${longProg} (\r
+  ${longProg} ${args} ${target} ${progArgs}%*\r
+) ELSE (\r
+  @SETLOCAL\r
+  @SET PATHEXT=%PATHEXT:;.JS;=;%\r
+  ${prog} ${args} ${target} ${progArgs}%*\r
+)\r
+`
   } else {
     cmd += `@${prog} ${args} ${target} ${progArgs}%*\r\n`
   }
@@ -396,26 +398,32 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
   //   exec node "$basedir/node_modules/npm/bin/npm-cli.js" "$@"
   // fi
 
-  let sh = '#!/bin/sh\n'
-  sh = sh +
-    "basedir=$(dirname \"$(echo \"$0\" | sed -e 's,\\\\,/,g')\")\n" +
-    '\n' +
-    'case `uname` in\n' +
-    '    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;\n' +
-    'esac\n' +
-    '\n'
+  let sh = `\
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w "$basedir"\`;;
+esac
+
+`
   const env = opts.nodePath ? `export NODE_PATH="${shNodePath}"\n` : ''
 
   if (shLongProg) {
-    sh += env +
-      `if [ -x ${shLongProg} ]; then\n` +
-      `  exec ${shLongProg} ${args} ${shTarget} ${progArgs}"$@"\n` +
-      'else \n' +
-      `  exec ${shProg} ${args} ${shTarget} ${progArgs}"$@"\n` +
-      'fi\n'
+    sh += `\
+${env}\
+if [ -x ${shLongProg} ]; then
+  exec ${shLongProg} ${args} ${shTarget} ${progArgs}"$@"
+else
+  exec ${shProg} ${args} ${shTarget} ${progArgs}"$@"
+fi
+`
   } else {
-    sh += `${env}${shProg} ${args} ${shTarget} ${progArgs}"$@"\n` +
-      'exit $?\n'
+    sh += `\
+${env}\
+${shProg} ${args} ${shTarget} ${progArgs}"$@"
+exit $?
+`
   }
 
   return sh
@@ -480,56 +488,59 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
   //   $ret=$LASTEXITCODE
   // }
   // exit $ret
-  let pwsh = '#!/usr/bin/env pwsh\n' +
-    '$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent\n' +
-    '\n' +
-    '$exe=""\n' +
-    (opts.nodePath ? '$env_node_path=$env:NODE_PATH\n' +
-      `$env:NODE_PATH="${nodePath}"\n` : '') +
-    'if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {\n' +
-    '  # Fix case when both the Windows and Linux builds of Node\n' +
-    '  # are installed in the same directory\n' +
-    '  $exe=".exe"\n' +
-    '}'
+  let pwsh = `\
+#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=""
+${opts.nodePath ? `$env_node_path=$env:NODE_PATH
+$env:NODE_PATH="${nodePath}"
+` : ''}\
+if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=".exe"
+}`
   if (opts.nodePath) {
-    pwsh = pwsh +
-      ' else {\n' +
-      `  $env:NODE_PATH="${shNodePath}"\n` +
-      '}'
+    pwsh += `\
+ else {
+  $env:NODE_PATH="${shNodePath}"
+}`
   }
-  pwsh += '\n'
   if (pwshLongProg) {
-    pwsh = pwsh +
-      '$ret=0\n' +
-      `if (Test-Path ${pwshLongProg}) {\n` +
-      '  # Support pipeline input\n' +
-      '  if ($MyInvocation.ExpectingInput) {\n' +
-      `    $input | & ${pwshLongProg} ${args} ${shTarget} ${progArgs}$args\n` +
-      '  } else {\n' +
-      `    & ${pwshLongProg} ${args} ${shTarget} ${progArgs}$args\n` +
-      '  }\n' +
-      '  $ret=$LASTEXITCODE\n' +
-      '} else {\n' +
-      '  # Support pipeline input\n' +
-      '  if ($MyInvocation.ExpectingInput) {\n' +
-      `    $input | & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
-      '  } else {\n' +
-      `    & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
-      '  }\n' +
-      '  $ret=$LASTEXITCODE\n' +
-      '}\n' +
-      (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
-      'exit $ret\n'
+    pwsh += `
+$ret=0
+if (Test-Path ${pwshLongProg}) {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & ${pwshLongProg} ${args} ${shTarget} ${progArgs}$args
   } else {
-    pwsh = pwsh +
-      '# Support pipeline input\n' +
-      'if ($MyInvocation.ExpectingInput) {\n' +
-      `  $input | & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
-      '} else {\n' +
-      `  & ${pwshProg} ${args} ${shTarget} ${progArgs}$args\n` +
-      '}\n' +
-      (opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : '') +
-      'exit $LASTEXITCODE\n'
+    & ${pwshLongProg} ${args} ${shTarget} ${progArgs}$args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & ${pwshProg} ${args} ${shTarget} ${progArgs}$args
+  } else {
+    & ${pwshProg} ${args} ${shTarget} ${progArgs}$args
+  }
+  $ret=$LASTEXITCODE
+}
+${opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : ''}\
+exit $ret
+`
+  } else {
+    pwsh += `
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & ${pwshProg} ${args} ${shTarget} ${progArgs}$args
+} else {
+  & ${pwshProg} ${args} ${shTarget} ${progArgs}$args
+}
+${opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : ''}\
+exit $LASTEXITCODE
+`
   }
 
   return pwsh
