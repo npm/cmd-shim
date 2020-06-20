@@ -9,10 +9,12 @@
     "allowJs": true,
     "checkJs": true,
     "strict": true,
-    "noImplicitAny": false,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "types": ["node","jest"],
     "noEmit": true
-  }
+  },
+  "references": [
+    { "path": ".." }
+  ]
 }

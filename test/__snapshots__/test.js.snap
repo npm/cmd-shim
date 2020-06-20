@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`env shebang 1`] = `
+exports[`env shebang env.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -16,7 +16,7 @@ fi
 "
 `;
 
-exports[`env shebang 2`] = `
+exports[`env shebang env.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
 ) ELSE (
@@ -26,7 +26,7 @@ exports[`env shebang 2`] = `
 )"
 `;
 
-exports[`env shebang 3`] = `
+exports[`env shebang env.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -58,7 +58,7 @@ exit $ret
 "
 `;
 
-exports[`env shebang with NODE_PATH 1`] = `
+exports[`env shebang with NODE_PATH env.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -75,7 +75,7 @@ fi
 "
 `;
 
-exports[`env shebang with NODE_PATH 2`] = `
+exports[`env shebang with NODE_PATH env.shim.cmd 1`] = `
 "@SET NODE_PATH=\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
 @IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
@@ -86,7 +86,7 @@ exports[`env shebang with NODE_PATH 2`] = `
 )"
 `;
 
-exports[`env shebang with NODE_PATH 3`] = `
+exports[`env shebang with NODE_PATH env.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -123,7 +123,7 @@ exit $ret
 "
 `;
 
-exports[`env shebang with args 1`] = `
+exports[`env shebang with args env.args.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -139,7 +139,7 @@ fi
 "
 `;
 
-exports[`env shebang with args 2`] = `
+exports[`env shebang with args env.args.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  --expose_gc \\"%~dp0\\\\src.env.args\\" %*
 ) ELSE (
@@ -149,7 +149,7 @@ exports[`env shebang with args 2`] = `
 )"
 `;
 
-exports[`env shebang with args 3`] = `
+exports[`env shebang with args env.args.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -181,7 +181,7 @@ exit $ret
 "
 `;
 
-exports[`env shebang with default args 1`] = `
+exports[`env shebang with default args env.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -197,7 +197,7 @@ fi
 "
 `;
 
-exports[`env shebang with default args 2`] = `
+exports[`env shebang with default args env.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\" --preserve-symlinks \\"%~dp0\\\\src.env\\" %*
 ) ELSE (
@@ -207,7 +207,7 @@ exports[`env shebang with default args 2`] = `
 )"
 `;
 
-exports[`env shebang with default args 3`] = `
+exports[`env shebang with default args env.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -239,7 +239,7 @@ exit $ret
 "
 `;
 
-exports[`explicit shebang 1`] = `
+exports[`explicit shebang sh.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -255,7 +255,7 @@ fi
 "
 `;
 
-exports[`explicit shebang 2`] = `
+exports[`explicit shebang sh.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  \\"%~dp0\\\\src.sh\\" %*
 ) ELSE (
@@ -265,7 +265,7 @@ exports[`explicit shebang 2`] = `
 )"
 `;
 
-exports[`explicit shebang 3`] = `
+exports[`explicit shebang sh.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -297,7 +297,7 @@ exit $ret
 "
 `;
 
-exports[`explicit shebang with args 1`] = `
+exports[`explicit shebang with args sh.args.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -313,7 +313,7 @@ fi
 "
 `;
 
-exports[`explicit shebang with args 2`] = `
+exports[`explicit shebang with args sh.args.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"%~dp0\\\\src.sh.args\\" %*
 ) ELSE (
@@ -323,7 +323,7 @@ exports[`explicit shebang with args 2`] = `
 )"
 `;
 
-exports[`explicit shebang with args 3`] = `
+exports[`explicit shebang with args sh.args.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -355,7 +355,7 @@ exit $ret
 "
 `;
 
-exports[`explicit shebang with args, linking to another drive on Windows 1`] = `
+exports[`explicit shebang with args, linking to another drive on Windows sh.args.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -371,7 +371,7 @@ fi
 "
 `;
 
-exports[`explicit shebang with args, linking to another drive on Windows 2`] = `
+exports[`explicit shebang with args, linking to another drive on Windows sh.args.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"J:\\\\cmd-shim\\\\fixtures\\\\src.sh.args\\" %*
 ) ELSE (
@@ -381,7 +381,7 @@ exports[`explicit shebang with args, linking to another drive on Windows 2`] = `
 )"
 `;
 
-exports[`explicit shebang with args, linking to another drive on Windows 3`] = `
+exports[`explicit shebang with args, linking to another drive on Windows sh.args.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -413,7 +413,7 @@ exit $ret
 "
 `;
 
-exports[`explicit shebang with prog args 1`] = `
+exports[`explicit shebang with prog args sh.args.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -429,7 +429,7 @@ fi
 "
 `;
 
-exports[`explicit shebang with prog args 2`] = `
+exports[`explicit shebang with prog args sh.args.shim.cmd 1`] = `
 "@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"%~dp0\\\\src.sh.args\\" hello %*
 ) ELSE (
@@ -439,7 +439,7 @@ exports[`explicit shebang with prog args 2`] = `
 )"
 `;
 
-exports[`explicit shebang with prog args 3`] = `
+exports[`explicit shebang with prog args sh.args.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -471,7 +471,7 @@ exit $ret
 "
 `;
 
-exports[`no cmd file 1`] = `
+exports[`no cmd file exe.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -484,7 +484,7 @@ exit $?
 "
 `;
 
-exports[`no cmd file 2`] = `
+exports[`no cmd file exe.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
@@ -504,7 +504,7 @@ exit $LASTEXITCODE
 "
 `;
 
-exports[`no shebang 1`] = `
+exports[`no shebang exe.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
 
@@ -517,12 +517,12 @@ exit $?
 "
 `;
 
-exports[`no shebang 2`] = `
+exports[`no shebang exe.shim.cmd 1`] = `
 "@\\"%~dp0\\\\src.exe\\"   %*
 "
 `;
 
-exports[`no shebang 3`] = `
+exports[`no shebang exe.shim.ps1 1`] = `
 "#!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 

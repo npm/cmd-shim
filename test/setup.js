@@ -1,5 +1,7 @@
 'use strict'
-const fs = require('memfs')
+/** @type {typeof import("fs")} */
+// @ts-ignore
+const memfs = require('memfs')
 const path = require('path')
 
 const { fixtures, fixtures2 } = process.platform === 'win32' ? {
@@ -12,10 +14,9 @@ const { fixtures, fixtures2 } = process.platform === 'win32' ? {
 
 exports.fixtures = fixtures
 exports.fixtures2 = fixtures2
-/** @type {typeof import("fs")} */
-// @ts-ignore
-exports.fs = fs
+exports.fs = memfs
 
+/** @type {{ [dir: string]: { [filename: string]: string } }} */
 const fixtureFiles = {
   [fixtures]: {
     'src.exe': 'exe',
@@ -29,9 +30,16 @@ const fixtureFiles = {
   }
 }
 
-for (const [dir, files] of Object.entries(fixtureFiles)) {
-  fs.mkdirpSync(dir)
-  for (const [filename, contents] of Object.entries(files)) {
-    fs.writeFileSync(path.join(dir, filename), contents)
-  }
-}
+beforeAll(() => {
+  const fs = memfs.promises
+  return Promise.all(
+    Object.entries(fixtureFiles).map(async ([dir, files]) => {
+      await fs.mkdir(dir, { recursive: true })
+      return Promise.all(
+        Object.entries(files).map(([filename, contents]) => {
+          return fs.writeFile(path.join(dir, filename), contents)
+        })
+      )
+    })
+  )
+})

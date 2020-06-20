@@ -10,6 +10,7 @@
   "scripts": {
     "clean": "tsc --build --clean",
     "build": "tsc --build --verbose --listEmittedFiles",
+    "pretest:unit": "tsc --build test --verbose --listEmittedFiles",
     "test:unit": "jest",
     "test": "pnpm run build && standard && pnpm run test:unit && mos test",
     "md": "mos",

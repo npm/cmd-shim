@@ -5,92 +5,138 @@ const { fixtures, fixtures2, fs } = require('./setup')
 
 const cmdShim = require('../')
 
-test('no cmd file', async () => {
+/**
+ * @param {string} fileName
+ * @param {'\n' | '\r\n'} lineEnding
+ */
+function testFile (fileName, lineEnding = '\n') {
+  test(path.basename(fileName), async () => {
+    const invalidLineEnding = lineEnding === '\r\n' ? /$(?<!\r)\n/ugm : /$\r\n/ugm
+    const content = await fs.promises.readFile(fileName, 'utf8')
+
+    expect(content).not.toMatch(invalidLineEnding)
+    expect(content).toMatchSnapshot()
+  })
+}
+
+describe('no cmd file', () => {
   const src = path.resolve(fixtures, 'src.exe')
   const to = path.resolve(fixtures, 'exe.shim')
-  await cmdShim(src, to, { createCmdFile: false, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(() => fs.readFileSync(`${to}.cmd`, 'utf8')).toThrow('no such file or directory')
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: false, fs })
+  })
+
+  testFile(to)
+  test(`${to}.cmd`, () => {
+    expect(() => fs.readFileSync(`${to}.cmd`, 'utf8')).toThrow('no such file or directory')
+  })
+  testFile(`${to}.ps1`)
 })
 
-test('no shebang', async () => {
+describe('no shebang', () => {
   const src = path.resolve(fixtures, 'src.exe')
   const to = path.resolve(fixtures, 'exe.shim')
-  await cmdShim(src, to, { createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('env shebang', async () => {
+describe('env shebang', () => {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  await cmdShim(src, to, { createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('env shebang with NODE_PATH', async () => {
+describe('env shebang with NODE_PATH', () => {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  await cmdShim(src, to, { nodePath: ['/john/src/node_modules', '/bin/node/node_modules'], createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { nodePath: ['/john/src/node_modules', '/bin/node/node_modules'], createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('env shebang with default args', async () => {
+describe('env shebang with default args', () => {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
-  await cmdShim(src, to, { preserveSymlinks: true, createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { preserveSymlinks: true, createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('env shebang with args', async () => {
+describe('env shebang with args', () => {
   const src = path.resolve(fixtures, 'src.env.args')
   const to = path.resolve(fixtures, 'env.args.shim')
-  await cmdShim(src, to, { createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('explicit shebang', async () => {
+describe('explicit shebang', () => {
   const src = path.resolve(fixtures, 'src.sh')
   const to = path.resolve(fixtures, 'sh.shim')
-  await cmdShim(src, to, { createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('explicit shebang with args', async () => {
+describe('explicit shebang with args', () => {
   const src = path.resolve(fixtures, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
-  await cmdShim(src, to, { createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-test('explicit shebang with prog args', async () => {
+describe('explicit shebang with prog args', () => {
   const src = path.resolve(fixtures, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
-  await cmdShim(src, to, { createCmdFile: true, progArgs: ['hello'], fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, progArgs: ['hello'], fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
 
-;(process.platform === 'win32' ? test : test.skip)('explicit shebang with args, linking to another drive on Windows', async () => {
+;(process.platform === 'win32' ? describe : describe.skip)('explicit shebang with args, linking to another drive on Windows', () => {
   const src = path.resolve(fixtures2, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
-  await cmdShim(src, to, { createCmdFile: true, fs })
-  expect(fs.readFileSync(to, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.cmd`, 'utf8')).toMatchSnapshot()
-  expect(fs.readFileSync(`${to}.ps1`, 'utf8')).toMatchSnapshot()
+  beforeAll(() => {
+    return cmdShim(src, to, { createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
 })
