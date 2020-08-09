@@ -115,7 +115,7 @@ const extensionToProgramMap = new Map([
   ['.sh', 'sh']
 ])
 
-function ingestOptions (opts: Options): InternalOptions {
+function ingestOptions (opts?: Options): InternalOptions {
   const opts_ = {...DEFAULT_OPTIONS, ...opts} as InternalOptions
   const fs = opts_.fs
   opts_.fs_ = {
@@ -138,7 +138,7 @@ function ingestOptions (opts: Options): InternalOptions {
  * @param opts Options.
  * @throws If `src` is missing.
  */
-async function cmdShim (src: string, to: string, opts: Options): Promise<void> {
+async function cmdShim (src: string, to: string, opts?: Options): Promise<void> {
   const opts_ = ingestOptions(opts)
   await opts_.fs_.stat(src)
   await cmdShim_(src, to, opts_)
@@ -154,7 +154,7 @@ async function cmdShim (src: string, to: string, opts: Options): Promise<void> {
  * Don't add an extension if you will create multiple types of shims.
  * @param opts Options.
  */
-function cmdShimIfExists (src: string, to: string, opts: Options): Promise<void> {
+function cmdShimIfExists (src: string, to: string, opts?: Options): Promise<void> {
   return cmdShim(src, to, opts).catch(() => {})
 }
 
