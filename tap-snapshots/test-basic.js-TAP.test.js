@@ -67,13 +67,10 @@ case \`uname\` in
 esac
 
 if [ -x "$basedir/node" ]; then
-  "$basedir/node"  "$basedir/from.env" "$@"
-  ret=$?
+  exec "$basedir/node"  "$basedir/from.env" "$@"
 else 
-  node  "$basedir/from.env" "$@"
-  ret=$?
+  exec node  "$basedir/from.env" "$@"
 fi
-exit $ret
 
 `
 
@@ -139,13 +136,10 @@ case \`uname\` in
 esac
 
 if [ -x "$basedir/node" ]; then
-  "$basedir/node" --expose_gc "$basedir/from.env.args" "$@"
-  ret=$?
+  exec "$basedir/node" --expose_gc "$basedir/from.env.args" "$@"
 else 
-  node --expose_gc "$basedir/from.env.args" "$@"
-  ret=$?
+  exec node --expose_gc "$basedir/from.env.args" "$@"
 fi
-exit $ret
 
 `
 
@@ -212,13 +206,10 @@ case \`uname\` in
 esac
 
 if [ -x "$basedir/node" ]; then
-  NODE_PATH=./lib:$NODE_PATH "$basedir/node"  "$basedir/from.env.variables" "$@"
-  ret=$?
+  exec NODE_PATH=./lib:$NODE_PATH "$basedir/node"  "$basedir/from.env.variables" "$@"
 else 
-  NODE_PATH=./lib:$NODE_PATH node  "$basedir/from.env.variables" "$@"
-  ret=$?
+  exec NODE_PATH=./lib:$NODE_PATH node  "$basedir/from.env.variables" "$@"
 fi
-exit $ret
 
 `
 
@@ -284,13 +275,10 @@ case \`uname\` in
 esac
 
 if [ -x "$basedir//usr/bin/sh" ]; then
-  "$basedir//usr/bin/sh"  "$basedir/from.sh" "$@"
-  ret=$?
+  exec "$basedir//usr/bin/sh"  "$basedir/from.sh" "$@"
 else 
-  /usr/bin/sh  "$basedir/from.sh" "$@"
-  ret=$?
+  exec /usr/bin/sh  "$basedir/from.sh" "$@"
 fi
-exit $ret
 
 `
 
@@ -356,13 +344,10 @@ case \`uname\` in
 esac
 
 if [ -x "$basedir//usr/bin/sh" ]; then
-  "$basedir//usr/bin/sh" -x "$basedir/from.sh.args" "$@"
-  ret=$?
+  exec "$basedir//usr/bin/sh" -x "$basedir/from.sh.args" "$@"
 else 
-  /usr/bin/sh -x "$basedir/from.sh.args" "$@"
-  ret=$?
+  exec /usr/bin/sh -x "$basedir/from.sh.args" "$@"
 fi
-exit $ret
 
 `
 
@@ -407,8 +392,7 @@ case \`uname\` in
     *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
 esac
 
-"$basedir/from.exe"   "$@"
-exit $?
+exec "$basedir/from.exe"   "$@"
 
 `
 
@@ -453,8 +437,7 @@ case \`uname\` in
     *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
 esac
 
-"$basedir/"   "$@"
-exit $?
+exec "$basedir/"   "$@"
 
 `
 
@@ -499,7 +482,6 @@ case \`uname\` in
     *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
 esac
 
-"$basedir/from.exe"   "$@"
-exit $?
+exec "$basedir/from.exe"   "$@"
 
 `
