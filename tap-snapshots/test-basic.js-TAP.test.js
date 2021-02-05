@@ -22,7 +22,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%"  "%dp0%\\from.env" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\from.env" %*\\r
 
 `
 
@@ -94,7 +94,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
 
 `
 
@@ -167,7 +167,7 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%"  "%dp0%\\from.env.variables" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\from.env.variables" %*\\r
 
 `
 
@@ -239,7 +239,7 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%"  "%dp0%\\from.sh" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\from.sh" %*\\r
 
 `
 
@@ -311,7 +311,7 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-"%_prog%" -x "%dp0%\\from.sh.args" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" -x "%dp0%\\from.sh.args" %*\\r
 
 `
 

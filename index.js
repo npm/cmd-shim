@@ -81,25 +81,8 @@ const writeShim_ = (from, to, prog, args, variables) => {
     shTarget = `"$basedir/${shTarget}"`
   }
 
-  // @SETLOCAL
-  // @CALL :find_dp0
-  //
-  // @IF EXIST "%dp0%\node.exe" (
-  //   @SET "_prog=%dp0%\node.exe"
-  // ) ELSE (
-  //   @SET "_prog=node"
-  //   @SET PATHEXT=%PATHEXT:;.JS;=;%
-  // )
-  //
-  // "%_prog%" "%dp0%\.\node_modules\npm\bin\npm-cli.js" %*
-  // @ENDLOCAL
-  // @EXIT /b %errorlevel%
-  //
-  // :find_dp0
-  // SET dp0=%~dp0
-  // EXIT /b
-  //
   // Subroutine trick to fix https://github.com/npm/cmd-shim/issues/10
+  // and https://github.com/npm/cli/issues/969
   const head = '@ECHO off\r\n' +
     'GOTO start\r\n' +
     ':find_dp0\r\n' +
@@ -124,6 +107,9 @@ const writeShim_ = (from, to, prog, args, variables) => {
         + '  SET PATHEXT=%PATHEXT:;.JS;=;%\r\n'
         + ')\r\n'
         + '\r\n'
+        // prevent "Terminate Batch Job? (Y/n)" message
+        // https://github.com/npm/cli/issues/969#issuecomment-737496588
+        + 'endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & '
         +  `"%_prog%" ${args} ${target} %*\r\n`
   } else {
     cmd = `${head}${prog} ${args} ${target} %*\r\n`
