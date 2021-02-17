@@ -30,31 +30,20 @@ exports[`test/basic.js TAP env shebang > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
+$nodepath="node"
+if ($IsWindows -and (Test-Path ("$basedir/node" + ".exe"))) {
+  $nodepath="$basedir/node" + ".exe"
+} elseif (Test-Path "$basedir/node") {
+  $nodepath="$basedir/node"
 }
-$ret=0
-if (Test-Path "$basedir/node$exe") {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "$basedir/node$exe"  "$basedir/from.env" $args
-  } else {
-    & "$basedir/node$exe"  "$basedir/from.env" $args
-  }
-  $ret=$LASTEXITCODE
+
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & $nodepath  "$basedir/from.env" $args
 } else {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "node$exe"  "$basedir/from.env" $args
-  } else {
-    & "node$exe"  "$basedir/from.env" $args
-  }
-  $ret=$LASTEXITCODE
+  & $nodepath  "$basedir/from.env" $args
 }
-exit $ret
+exit $LASTEXITCODE
 
 `
 
@@ -99,31 +88,20 @@ exports[`test/basic.js TAP env shebang with args > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
+$nodepath="node"
+if ($IsWindows -and (Test-Path ("$basedir/node" + ".exe"))) {
+  $nodepath="$basedir/node" + ".exe"
+} elseif (Test-Path "$basedir/node") {
+  $nodepath="$basedir/node"
 }
-$ret=0
-if (Test-Path "$basedir/node$exe") {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "$basedir/node$exe" --expose_gc "$basedir/from.env.args" $args
-  } else {
-    & "$basedir/node$exe" --expose_gc "$basedir/from.env.args" $args
-  }
-  $ret=$LASTEXITCODE
+
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & $nodepath --expose_gc "$basedir/from.env.args" $args
 } else {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "node$exe" --expose_gc "$basedir/from.env.args" $args
-  } else {
-    & "node$exe" --expose_gc "$basedir/from.env.args" $args
-  }
-  $ret=$LASTEXITCODE
+  & $nodepath --expose_gc "$basedir/from.env.args" $args
 }
-exit $ret
+exit $LASTEXITCODE
 
 `
 
@@ -169,31 +147,20 @@ exports[`test/basic.js TAP env shebang with variables > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
+$nodepath="node"
+if ($IsWindows -and (Test-Path ("$basedir/node" + ".exe"))) {
+  $nodepath="$basedir/node" + ".exe"
+} elseif (Test-Path "$basedir/node") {
+  $nodepath="$basedir/node"
 }
-$ret=0
-if (Test-Path "$basedir/node$exe") {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "$basedir/node$exe"  "$basedir/from.env.variables" $args
-  } else {
-    & "$basedir/node$exe"  "$basedir/from.env.variables" $args
-  }
-  $ret=$LASTEXITCODE
+
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & $nodepath  "$basedir/from.env.variables" $args
 } else {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "node$exe"  "$basedir/from.env.variables" $args
-  } else {
-    & "node$exe"  "$basedir/from.env.variables" $args
-  }
-  $ret=$LASTEXITCODE
+  & $nodepath  "$basedir/from.env.variables" $args
 }
-exit $ret
+exit $LASTEXITCODE
 
 `
 
@@ -238,31 +205,20 @@ exports[`test/basic.js TAP explicit shebang > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
+$nodepath="/usr/bin/sh"
+if ($IsWindows -and (Test-Path ("$basedir//usr/bin/sh" + ".exe"))) {
+  $nodepath="$basedir//usr/bin/sh" + ".exe"
+} elseif (Test-Path "$basedir//usr/bin/sh") {
+  $nodepath="$basedir//usr/bin/sh"
 }
-$ret=0
-if (Test-Path "$basedir//usr/bin/sh$exe") {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "$basedir//usr/bin/sh$exe"  "$basedir/from.sh" $args
-  } else {
-    & "$basedir//usr/bin/sh$exe"  "$basedir/from.sh" $args
-  }
-  $ret=$LASTEXITCODE
+
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & $nodepath  "$basedir/from.sh" $args
 } else {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "/usr/bin/sh$exe"  "$basedir/from.sh" $args
-  } else {
-    & "/usr/bin/sh$exe"  "$basedir/from.sh" $args
-  }
-  $ret=$LASTEXITCODE
+  & $nodepath  "$basedir/from.sh" $args
 }
-exit $ret
+exit $LASTEXITCODE
 
 `
 
@@ -307,31 +263,20 @@ exports[`test/basic.js TAP explicit shebang with args > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
+$nodepath="/usr/bin/sh"
+if ($IsWindows -and (Test-Path ("$basedir//usr/bin/sh" + ".exe"))) {
+  $nodepath="$basedir//usr/bin/sh" + ".exe"
+} elseif (Test-Path "$basedir//usr/bin/sh") {
+  $nodepath="$basedir//usr/bin/sh"
 }
-$ret=0
-if (Test-Path "$basedir//usr/bin/sh$exe") {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "$basedir//usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
-  } else {
-    & "$basedir//usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
-  }
-  $ret=$LASTEXITCODE
+
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & $nodepath -x "$basedir/from.sh.args" $args
 } else {
-  # Support pipeline input
-  if ($MyInvocation.ExpectingInput) {
-    $input | & "/usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
-  } else {
-    & "/usr/bin/sh$exe" -x "$basedir/from.sh.args" $args
-  }
-  $ret=$LASTEXITCODE
+  & $nodepath -x "$basedir/from.sh.args" $args
 }
-exit $ret
+exit $LASTEXITCODE
 
 `
 
@@ -368,17 +313,13 @@ exports[`test/basic.js TAP if exists (it does exist) > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
-}
+$nodepath="$basedir/from.exe"
+
 # Support pipeline input
 if ($MyInvocation.ExpectingInput) {
-  $input | & "$basedir/from.exe"   $args
+  $input | & $nodepath   $args
 } else {
-  & "$basedir/from.exe"   $args
+  & $nodepath   $args
 }
 exit $LASTEXITCODE
 
@@ -413,17 +354,13 @@ exports[`test/basic.js TAP just proceed if reading fails > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
-}
+$nodepath="$basedir/"
+
 # Support pipeline input
 if ($MyInvocation.ExpectingInput) {
-  $input | & "$basedir/"   $args
+  $input | & $nodepath   $args
 } else {
-  & "$basedir/"   $args
+  & $nodepath   $args
 }
 exit $LASTEXITCODE
 
@@ -458,17 +395,13 @@ exports[`test/basic.js TAP no shebang > ps1 1`] = `
 #!/usr/bin/env pwsh
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
-$exe=""
-if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  # Fix case when both the Windows and Linux builds of Node
-  # are installed in the same directory
-  $exe=".exe"
-}
+$nodepath="$basedir/from.exe"
+
 # Support pipeline input
 if ($MyInvocation.ExpectingInput) {
-  $input | & "$basedir/from.exe"   $args
+  $input | & $nodepath   $args
 } else {
-  & "$basedir/from.exe"   $args
+  & $nodepath   $args
 }
 exit $LASTEXITCODE
 
