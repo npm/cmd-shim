@@ -152,22 +152,12 @@ const writeShim_ = (from, to, prog, args, variables) => {
 
   // #!/usr/bin/env pwsh
   // $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
-  // $exe=""
-  // if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
-  //   # Fix case when both the Windows and Linux builds of Node
-  //   # are installed in the same directory
-  //   $exe=".exe"
-  // }
   //
-  // $nodepath=""
-  // if (($exe -ne "") -and (Test-Path ("$basedir/node" + $exe))) {
-  //   $nodepath="$basedir/node" + $exe
+  // $nodepath="node"
+  // if ($IsWindows -and (Test-Path ("$basedir/node" + ".exe"))) {
+  //   $nodepath="$basedir/node" + ".exe"
   // } elseif (Test-Path "$basedir/node") {
   //   $nodepath="$basedir/node"
-  // } elseif (($exe -ne "") -and (Get-Command ("node" + $exe) -errorAction SilentlyContinue)) {
-  //   $nodepath="node" + $exe
-  // } else {
-  //   $nodepath="node"
   // }
   //
   // # Support pipeline input
@@ -179,28 +169,17 @@ const writeShim_ = (from, to, prog, args, variables) => {
   // exit $LASTEXITCODE
   let pwsh = '#!/usr/bin/env pwsh\n'
            + '$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent\n'
-           + '$exe=""\n'
-           + 'if ($PSVersionTable.PSVersion -lt \"6.0\" -or $IsWindows) {\n'
-           + '  # Fix case when both the Windows and Linux builds of Node\n'
-           + '  # are installed in the same directory\n'
-           + '  $exe=".exe"\n'
-           + '}\n'
            + '\n'
-           + `$nodepath=""\n`
+           + `$nodepath=${pwshProg}\n`
   if (pwshLongProg) {
     pwsh = pwsh
-         + `if (($exe -ne "") -and (Test-Path (${pwshLongProg} + $exe))) {\n`
-         + `  $nodepath=${pwshLongProg} + $exe\n`
+         + `if ($IsWindows -and (Test-Path (${pwshLongProg} + ".exe"))) {\n`
+         + `  $nodepath=${pwshLongProg} + ".exe"\n`
          + `} elseif (Test-Path ${pwshLongProg}) {\n`
          + `  $nodepath=${pwshLongProg}\n`
-         + '} else'
+         + `}\n`;
   }
   pwsh = pwsh
-        + `if (($exe -ne "") -and (Get-Command (${pwshProg} + $exe) -errorAction SilentlyContinue)) {\n`
-        + `  $nodepath=${pwshProg} + $exe\n`
-        + `} else {\n`
-        + `  $nodepath=${pwshProg}\n`
-        + `}\n`
         + '\n'
         + '# Support pipeline input\n'
         + 'if ($MyInvocation.ExpectingInput) {\n'
