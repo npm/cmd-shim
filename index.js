@@ -61,7 +61,7 @@ const writeShim_ = (from, to, prog, args, variables) => {
   let longProg
   let shProg = prog && prog.split('\\').join('/')
   let shLongProg
-  let pwshProg = shProg && `"${shProg}$exe"`
+  let pwshProg = shProg && `"${shProg}"`
   let pwshLongProg
   shTarget = shTarget.split('\\').join('/')
   args = args || ''
@@ -76,7 +76,7 @@ const writeShim_ = (from, to, prog, args, variables) => {
   } else {
     longProg = `"%dp0%\\${prog}.exe"`
     shLongProg = `"$basedir/${prog}"`
-    pwshLongProg = `"$basedir/${prog}$exe"`
+    pwshLongProg = `"$basedir/${prog}"`
     target = `"%dp0%\\${target}"`
     shTarget = `"$basedir/${shTarget}"`
   }
@@ -152,72 +152,63 @@ const writeShim_ = (from, to, prog, args, variables) => {
 
   // #!/usr/bin/env pwsh
   // $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
-  //
-  // $ret=0
-  // $exe = ""
+  // $exe=""
   // if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   //   # Fix case when both the Windows and Linux builds of Node
   //   # are installed in the same directory
-  //   $exe = ".exe"
+  //   $exe=".exe"
   // }
-  // if (Test-Path "$basedir/node") {
-  //   # Suport pipeline input
-  //   if ($MyInvocation.ExpectingInput) {
-  //     input | & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
-  //   } else {
-  //     & "$basedir/node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
-  //   }
-  //   $ret=$LASTEXITCODE
+  //
+  // $nodepath=""
+  // if (($exe -ne "") -and (Test-Path ("$basedir/node" + $exe))) {
+  //   $nodepath="$basedir/node" + $exe
+  // } elseif (Test-Path "$basedir/node") {
+  //   $nodepath="$basedir/node"
+  // } elseif (($exe -ne "") -and (Get-Command ("node" + $exe) -errorAction SilentlyContinue)) {
+  //   $nodepath="node" + $exe
   // } else {
-  //   # Support pipeline input
-  //   if ($MyInvocation.ExpectingInput) {
-  //     $input | & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
-  //   } else {
-  //     & "node$exe" "$basedir/node_modules/npm/bin/npm-cli.js" $args
-  //   }
-  //   $ret=$LASTEXITCODE
+  //   $nodepath="node"
   // }
-  // exit $ret
+  //
+  // # Support pipeline input
+  // if ($MyInvocation.ExpectingInput) {
+  //   $input | & $nodepath  "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  // } else {
+  //   & $nodepath  "$basedir/node_modules/npm/bin/npm-cli.js" $args
+  // }
+  // exit $LASTEXITCODE
   let pwsh = '#!/usr/bin/env pwsh\n'
            + '$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent\n'
-           + '\n'
            + '$exe=""\n'
            + 'if ($PSVersionTable.PSVersion -lt \"6.0\" -or $IsWindows) {\n'
            + '  # Fix case when both the Windows and Linux builds of Node\n'
            + '  # are installed in the same directory\n'
            + '  $exe=".exe"\n'
            + '}\n'
-  if (shLongProg) {
+           + '\n'
+           + `$nodepath=""\n`
+  if (pwshLongProg) {
     pwsh = pwsh
-         + '$ret=0\n'
-         + `if (Test-Path ${pwshLongProg}) {\n`
-         + '  # Support pipeline input\n'
-         + '  if ($MyInvocation.ExpectingInput) {\n'
-         + `    $input | & ${pwshLongProg} ${args} ${shTarget} $args\n`
-         + '  } else {\n'
-         + `    & ${pwshLongProg} ${args} ${shTarget} $args\n`
-         + '  }\n'
-         + '  $ret=$LASTEXITCODE\n'
-         + '} else {\n'
-         + '  # Support pipeline input\n'
-         + '  if ($MyInvocation.ExpectingInput) {\n'
-         + `    $input | & ${pwshProg} ${args} ${shTarget} $args\n`
-         + '  } else {\n'
-         + `    & ${pwshProg} ${args} ${shTarget} $args\n`
-         + '  }\n'
-         + '  $ret=$LASTEXITCODE\n'
-         + '}\n'
-         + 'exit $ret\n'
-  } else {
-    pwsh = pwsh
-         + '# Support pipeline input\n'
-         + 'if ($MyInvocation.ExpectingInput) {\n'
-         + `  $input | & ${pwshProg} ${args} ${shTarget} $args\n`
-         + '} else {\n'
-         + `  & ${pwshProg} ${args} ${shTarget} $args\n`
-         + '}\n'
-         + 'exit $LASTEXITCODE\n'
+         + `if (($exe -ne "") -and (Test-Path (${pwshLongProg} + $exe))) {\n`
+         + `  $nodepath=${pwshLongProg} + $exe\n`
+         + `} elseif (Test-Path ${pwshLongProg}) {\n`
+         + `  $nodepath=${pwshLongProg}\n`
+         + '} else'
   }
+  pwsh = pwsh
+        + `if (($exe -ne "") -and (Get-Command (${pwshProg} + $exe) -errorAction SilentlyContinue)) {\n`
+        + `  $nodepath=${pwshProg} + $exe\n`
+        + `} else {\n`
+        + `  $nodepath=${pwshProg}\n`
+        + `}\n`
+        + '\n'
+        + '# Support pipeline input\n'
+        + 'if ($MyInvocation.ExpectingInput) {\n'
+        + `  $input | & $nodepath ${args} ${shTarget} $args\n`
+        + '} else {\n'
+        + `  & $nodepath ${args} ${shTarget} $args\n`
+        + '}\n'
+       + 'exit $LASTEXITCODE\n'
 
   return Promise.all([
     writeFile(to + '.ps1', pwsh, 'utf8'),
