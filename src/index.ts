@@ -109,6 +109,8 @@ const DEFAULT_OPTIONS = {
  */
 const extensionToProgramMap = new Map([
   ['.js', 'node'],
+  ['.cjs', 'node'],
+  ['.mjs', 'node'],
   ['.cmd', 'cmd'],
   ['.bat', 'cmd'],
   ['.ps1', 'pwsh'], // not 'powershell'
