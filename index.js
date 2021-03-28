@@ -86,7 +86,7 @@ const writeShim_ = (from, to, prog, args, variables) => {
   const head = '@ECHO off\r\n' +
     'GOTO start\r\n' +
     ':find_dp0\r\n' +
-    'SET dp0=%~dp0\r\n' +
+    'SET "dp0=%~dp0"\r\n' +
     'EXIT /b\r\n' +
     ':start\r\n' +
     'SETLOCAL\r\n' +
