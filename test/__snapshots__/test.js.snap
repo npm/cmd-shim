@@ -17,10 +17,10 @@ fi
 `;
 
 exports[`env shebang env.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\node.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node  \\"%~dp0\\\\src.env\\" %*
 )
@@ -67,7 +67,11 @@ case \`uname\` in
     *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
 esac
 
-export NODE_PATH=\\"/john/src/node_modules:/bin/node/node_modules\\"
+if [ -z \\"$NODE_PATH\\" ]; then
+  export NODE_PATH=\\"/john/src/node_modules:/bin/node/node_modules\\"
+else
+  export NODE_PATH=\\"$NODE_PATH:/john/src/node_modules:/bin/node/node_modules\\"
+fi
 if [ -x \\"$basedir/node\\" ]; then
   exec \\"$basedir/node\\"  \\"$basedir/src.env\\" \\"$@\\"
 else
@@ -77,11 +81,15 @@ fi
 `;
 
 exports[`env shebang with NODE_PATH env.shim.cmd 1`] = `
-"@SET NODE_PATH=\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
+"@SETLOCAL
+@IF NOT DEFINED NODE_PATH (
+  @SET NODE_PATH=\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
+) ELSE (
+  @SET NODE_PATH=%NODE_PATH%;\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
+)
 @IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node  \\"%~dp0\\\\src.env\\" %*
 )
@@ -93,15 +101,23 @@ exports[`env shebang with NODE_PATH env.shim.ps1 1`] = `
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
 $exe=\\"\\"
+$pathsep=\\":\\"
 $env_node_path=$env:NODE_PATH
-$env:NODE_PATH=\\"\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules\\"
+$new_node_path=\\"\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules\\"
 if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
   # Fix case when both the Windows and Linux builds of Node
   # are installed in the same directory
   $exe=\\".exe\\"
+  $pathsep=\\";\\"
 } else {
-  $env:NODE_PATH=\\"/john/src/node_modules:/bin/node/node_modules\\"
+  $new_node_path=\\"/john/src/node_modules:/bin/node/node_modules\\"
 }
+if ([string]::IsNullOrEmpty($env_node_path)) {
+  $env:NODE_PATH=$new_node_path
+} else {
+  $env:NODE_PATH=\\"$env_node_path$pathsep$new_node_path\\"
+}
+
 $ret=0
 if (Test-Path \\"$basedir/node$exe\\") {
   # Support pipeline input
@@ -142,10 +158,10 @@ fi
 `;
 
 exports[`env shebang with args env.args.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\node.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  --expose_gc \\"%~dp0\\\\src.env.args\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node  --expose_gc \\"%~dp0\\\\src.env.args\\" %*
 )
@@ -201,10 +217,10 @@ fi
 `;
 
 exports[`env shebang with default args env.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\node.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\" --preserve-symlinks \\"%~dp0\\\\src.env\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   node --preserve-symlinks \\"%~dp0\\\\src.env\\" %*
 )
@@ -260,10 +276,10 @@ fi
 `;
 
 exports[`explicit shebang sh.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  \\"%~dp0\\\\src.sh\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  \\"%~dp0\\\\src.sh\\" %*
 )
@@ -319,10 +335,10 @@ fi
 `;
 
 exports[`explicit shebang with args sh.args.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"%~dp0\\\\src.sh.args\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  -x \\"%~dp0\\\\src.sh.args\\" %*
 )
@@ -378,10 +394,10 @@ fi
 `;
 
 exports[`explicit shebang with args, linking to another drive on Windows sh.args.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"J:\\\\cmd-shim\\\\fixtures\\\\src.sh.args\\" %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  -x \\"J:\\\\cmd-shim\\\\fixtures\\\\src.sh.args\\" %*
 )
@@ -437,10 +453,10 @@ fi
 `;
 
 exports[`explicit shebang with prog args sh.args.shim.cmd 1`] = `
-"@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
+"@SETLOCAL
+@IF EXIST \\"%~dp0\\\\/usr/bin/sh.exe\\" (
   \\"%~dp0\\\\/usr/bin/sh.exe\\"  -x \\"%~dp0\\\\src.sh.args\\" hello %*
 ) ELSE (
-  @SETLOCAL
   @SET PATHEXT=%PATHEXT:;.JS;=;%
   /usr/bin/sh  -x \\"%~dp0\\\\src.sh.args\\" hello %*
 )
@@ -526,7 +542,8 @@ exit $?
 `;
 
 exports[`no shebang exe.shim.cmd 1`] = `
-"@\\"%~dp0\\\\src.exe\\"   %*
+"@SETLOCAL
+@\\"%~dp0\\\\src.exe\\"   %*
 "
 `;
 

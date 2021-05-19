@@ -339,13 +339,21 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
   //   SET PATHEXT=%PATHEXT:;.JS;=;%
   //   node "%~dp0\.\node_modules\npm\bin\npm-cli.js" %*
   // )
-  let cmd = nodePath ? `@SET NODE_PATH=${nodePath}\r\n` : ''
+  let cmd = '@SETLOCAL\r\n'
+  if (nodePath) {
+      cmd += `\
+@IF NOT DEFINED NODE_PATH (\r
+  @SET NODE_PATH=${nodePath}\r
+) ELSE (\r
+  @SET NODE_PATH=%NODE_PATH%;${nodePath}\r
+)\r
+`
+  }
   if (longProg) {
     cmd += `\
 @IF EXIST ${longProg} (\r
   ${longProg} ${args} ${target} ${progArgs}%*\r
 ) ELSE (\r
-  @SETLOCAL\r
   @SET PATHEXT=%PATHEXT:;.JS;=;%\r
   ${prog} ${args} ${target} ${progArgs}%*\r
 )\r
@@ -409,11 +417,18 @@ case \`uname\` in
 esac
 
 `
-  const env = opts.nodePath ? `export NODE_PATH="${shNodePath}"\n` : ''
+  if (opts.nodePath) {
+      sh += `\
+if [ -z "$NODE_PATH" ]; then
+  export NODE_PATH="${shNodePath}"
+else
+  export NODE_PATH="$NODE_PATH:${shNodePath}"
+fi
+`
+  }
 
   if (shLongProg) {
     sh += `\
-${env}\
 if [ -x ${shLongProg} ]; then
   exec ${shLongProg} ${args} ${shTarget} ${progArgs}"$@"
 else
@@ -422,7 +437,6 @@ fi
 `
   } else {
     sh += `\
-${env}\
 ${shProg} ${args} ${shTarget} ${progArgs}"$@"
 exit $?
 `
@@ -495,19 +509,28 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
 $exe=""
-${opts.nodePath ? `$env_node_path=$env:NODE_PATH
-$env:NODE_PATH="${nodePath}"
+${opts.nodePath ? `\
+$pathsep=":"
+$env_node_path=$env:NODE_PATH
+$new_node_path="${nodePath}"
 ` : ''}\
 if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # Fix case when both the Windows and Linux builds of Node
   # are installed in the same directory
   $exe=".exe"
+${opts.nodePath ? '  $pathsep=";"\n' : ''}\
 }`
   if (opts.nodePath) {
     pwsh += `\
  else {
-  $env:NODE_PATH="${shNodePath}"
-}`
+  $new_node_path="${shNodePath}"
+}
+if ([string]::IsNullOrEmpty($env_node_path)) {
+  $env:NODE_PATH=$new_node_path
+} else {
+  $env:NODE_PATH="$env_node_path$pathsep$new_node_path"
+}
+`
   }
   if (pwshLongProg) {
     pwsh += `
