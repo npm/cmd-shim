@@ -343,9 +343,9 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
   if (nodePath) {
       cmd += `\
 @IF NOT DEFINED NODE_PATH (\r
-  @SET NODE_PATH=${nodePath}\r
+  @SET NODE_PATH="${nodePath}"\r
 ) ELSE (\r
-  @SET NODE_PATH=%NODE_PATH%;${nodePath}\r
+  @SET NODE_PATH="%NODE_PATH%;${nodePath}"\r
 )\r
 `
   }

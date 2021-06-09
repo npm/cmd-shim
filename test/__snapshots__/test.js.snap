@@ -83,9 +83,9 @@ fi
 exports[`env shebang with NODE_PATH env.shim.cmd 1`] = `
 "@SETLOCAL
 @IF NOT DEFINED NODE_PATH (
-  @SET NODE_PATH=\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
+  @SET NODE_PATH=\\"\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules\\"
 ) ELSE (
-  @SET NODE_PATH=%NODE_PATH%;\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules
+  @SET NODE_PATH=\\"%NODE_PATH%;\\\\john\\\\src\\\\node_modules;\\\\bin\\\\node\\\\node_modules\\"
 )
 @IF EXIST \\"%~dp0\\\\node.exe\\" (
   \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
