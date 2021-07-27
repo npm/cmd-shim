@@ -122,3 +122,13 @@ test('explicit shebang with args', function (t) {
     matchSnapshot(t, fs.readFileSync(to + '.ps1', 'utf8'), 'ps1')
   })
 })
+
+test('shebang with -S', function (t) {
+  var from = path.resolve(fixtures, 'from.env.S')
+  var to = path.resolve(fixtures, 'env.S.shim')
+  return cmdShim(from, to).then(() => {
+    matchSnapshot(t, fs.readFileSync(to, 'utf8'), 'shell')
+    matchSnapshot(t, fs.readFileSync(to + '.cmd', 'utf8'), 'cmd')
+    matchSnapshot(t, fs.readFileSync(to + '.ps1', 'utf8'), 'ps1')
+  })
+});

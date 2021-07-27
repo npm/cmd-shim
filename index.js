@@ -19,7 +19,7 @@ const unlink = promisify(fs.unlink)
 const {dirname, relative} = require('path')
 const mkdir = require('mkdirp-infer-owner')
 const toBatchSyntax = require('./lib/to-batch-syntax')
-const shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+=[^ \t]+\s+)*\s*([^ \t]+)(.*)$/
+const shebangExpr = /^#\!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+=[^ \t]+\s+)*\s*(?:-S)?\s*([^ \t]+)(.*)$/
 
 const cmdShimIfExists = (from, to) =>
   stat(from).then(() => cmdShim(from, to), () => {})
