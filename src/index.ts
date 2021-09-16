@@ -59,6 +59,8 @@ namespace cmdShim {
      * fs implementation to use.  Must implement node's `fs` module interface.
      */
     fs?: typeof import('fs')
+
+    nodeProg?: string
   }
 }
 type Options = cmdShim.Options
@@ -325,6 +327,8 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
     prog = quotedPathToTarget
     args = ''
     target = ''
+  } else if (prog === 'node' && opts.nodeProg) {
+    prog = `"${opts.nodeProg}"`
   } else {
     longProg = `"%~dp0\\${prog}.exe"`
     target = quotedPathToTarget
@@ -386,6 +390,8 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
     shProg = quotedPathToTarget
     args = ''
     shTarget = ''
+  } else if (opts.prog === 'node' && opts.nodeProg) {
+    shProg = `"${opts.nodeProg}"`
   } else {
     shLongProg = `"$basedir/${opts.prog}"`
     shTarget = quotedPathToTarget
@@ -469,6 +475,8 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
     pwshProg = quotedPathToTarget
     args = ''
     shTarget = ''
+  } else if (opts.prog === 'node' && opts.nodeProg) {
+    pwshProg = `"${opts.nodeProg}"`
   } else {
     pwshLongProg = `"$basedir/${opts.prog}$exe"`
     shTarget = quotedPathToTarget
