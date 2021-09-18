@@ -329,6 +329,7 @@ function generateCmdShim (src: string, to: string, opts: InternalOptions): strin
     target = ''
   } else if (prog === 'node' && opts.nodeProg) {
     prog = `"${opts.nodeProg}"`
+    target = quotedPathToTarget
   } else {
     longProg = `"%~dp0\\${prog}.exe"`
     target = quotedPathToTarget
@@ -392,6 +393,7 @@ function generateShShim (src: string, to: string, opts: InternalOptions): string
     shTarget = ''
   } else if (opts.prog === 'node' && opts.nodeProg) {
     shProg = `"${opts.nodeProg}"`
+    shTarget = quotedPathToTarget
   } else {
     shLongProg = `"$basedir/${opts.prog}"`
     shTarget = quotedPathToTarget
@@ -477,6 +479,7 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
     shTarget = ''
   } else if (opts.prog === 'node' && opts.nodeProg) {
     pwshProg = `"${opts.nodeProg}"`
+    shTarget = quotedPathToTarget
   } else {
     pwshLongProg = `"$basedir/${opts.prog}$exe"`
     shTarget = quotedPathToTarget
