@@ -1,5 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`custom node executable env.shim 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+\\"/.pnpm/nodejs/16.0.0/node\\"  \\"$basedir/src.env\\" \\"$@\\"
+exit $?
+"
+`;
+
+exports[`custom node executable env.shim.cmd 1`] = `
+"@SETLOCAL
+@\\"/.pnpm/nodejs/16.0.0/node\\"  \\"%~dp0\\\\src.env\\" %*
+"
+`;
+
+exports[`custom node executable env.shim.ps1 1`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+}
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & \\"/.pnpm/nodejs/16.0.0/node\\"  \\"$basedir/src.env\\" $args
+} else {
+  & \\"/.pnpm/nodejs/16.0.0/node\\"  \\"$basedir/src.env\\" $args
+}
+exit $LASTEXITCODE
+"
+`;
+
 exports[`env shebang env.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")

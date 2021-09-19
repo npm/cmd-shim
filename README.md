@@ -35,6 +35,7 @@ The same as above, but will just continue if the file does not exist.
 
 - `opts.preserveSymlinks` - _Boolean_ - if true, `--preserve-symlinks` is added to the options passed to NodeJS.
 - `opts.nodePath` - _String_ - sets the [NODE_PATH](https://nodejs.org/api/cli.html#cli_node_path_path) env variable.
+- `opts.nodeExecPath` - _String_ - sets the path to the Node.js executable.
 - `opts.createCmdFile` - _Boolean_ - is `true` on Windows by default. If true, creates a cmd file.
 - `opts.createPwshFile` - _Boolean_ - is `true` by default. If true, creates a powershell file.
 - `opts.progArgs` - String - optional arguments that will be prepend to any CLI arguments

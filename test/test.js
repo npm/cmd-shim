@@ -129,6 +129,18 @@ describe('explicit shebang with prog args', () => {
   testFile(`${to}.ps1`)
 })
 
+describe('custom node executable', () => {
+  const src = path.resolve(fixtures, 'src.env')
+  const to = path.resolve(fixtures, 'env.shim')
+  beforeAll(() => {
+    return cmdShim(src, to, { nodeExecPath: '/.pnpm/nodejs/16.0.0/node', fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
+})
+
 ;(process.platform === 'win32' ? describe : describe.skip)('explicit shebang with args, linking to another drive on Windows', () => {
   const src = path.resolve(fixtures2, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
