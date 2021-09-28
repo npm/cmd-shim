@@ -28,7 +28,7 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "cmd-extension": "^1.0.0",
+    "cmd-extension": "^1.0.1",
     "is-windows": "^1.0.2"
   },
   "devDependencies": {

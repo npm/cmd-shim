@@ -4,7 +4,7 @@ specifiers:
   '@types/is-windows': ^1.0.0
   '@types/jest': ^26.0.20
   '@types/node': ^14.14.20
-  cmd-extension: ^1.0.0
+  cmd-extension: ^1.0.1
   is-windows: ^1.0.2
   jest: ^26.6.3
   memfs: ^3.2.0
@@ -15,7 +15,7 @@ specifiers:
   typescript: ^4.1.3
 
 dependencies:
-  cmd-extension: 1.0.0
+  cmd-extension: 1.0.1
   is-windows: 1.0.2
 
 devDependencies:
@@ -453,7 +453,7 @@ packages:
       terminal-link: 2.1.1
       v8-to-istanbul: 7.1.0
     optionalDependencies:
-      node-notifier: 8.0.1
+      node-notifier: 8.0.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1422,9 +1422,9 @@ packages:
       wrap-ansi: 6.2.0
     dev: true
 
-  /cmd-extension/1.0.0:
-    resolution: {integrity: sha512-kMfdk3ehpeZLySWlza7Vw7Uh/aXYU+57BU2KTkpqQI2XW+ITngM136rMnt7P2pNvSTfdrc+xL8gITNAoVnwqfQ==}
-    engines: {node: '>=12'}
+  /cmd-extension/1.0.1:
+    resolution: {integrity: sha512-gZWHJ9fu2rBAGufA/3F5ousXFiXHyhXKkym2xmXNWaebMUOkhxE1vCQEdegaXyi95180A32b+j4lQaOv7LqzxA==}
+    engines: {node: '>=10'}
     dev: false
 
   /co/4.6.0:
@@ -2395,8 +2395,8 @@ packages:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
     dev: true
 
-  /fsevents/2.3.1:
-    resolution: {integrity: sha512-YR47Eg4hChJGAB1O3yEAOkGO+rlzutoICGqGo9EZ4lKWokzZRSyIW1QmTzqjtw8MJdj9srP869CuWw/hyzSiBw==}
+  /fsevents/2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     dev: true
@@ -3265,7 +3265,7 @@ packages:
       sane: 4.1.0
       walker: 1.0.7
     optionalDependencies:
-      fsevents: 2.3.1
+      fsevents: 2.3.2
     dev: true
 
   /jest-jasmine2/26.6.3:
@@ -4207,8 +4207,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /node-notifier/8.0.1:
-    resolution: {integrity: sha512-BvEXF+UmsnAfYfoapKM9nGxnP+Wn7P91YfXmrKnfcYCx6VBeoN5Ez5Ogck6I8Bi5k4RlpqRYaw75pAwzX9OphA==}
+  /node-notifier/8.0.2:
+    resolution: {integrity: sha512-oJP/9NAdd9+x2Q+rfphB2RJCHjod70RcRLjosiPMMu5gjIfwVnOUGq2nbTjTUbmy0DJ/tFIVT30+Qe3nzl4TJg==}
     dependencies:
       growly: 1.3.0
       is-wsl: 2.2.0
