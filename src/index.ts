@@ -101,6 +101,7 @@ import {promisify} from 'util'
 
 import path = require('path')
 import isWindows = require('is-windows')
+import CMD_EXTENSION = require('cmd-extension')
 const shebangExpr = /^#!\s*(?:\/usr\/bin\/env)?\s*([^ \t]+)(.*)$/
 const DEFAULT_OPTIONS = {
   // Create PowerShell file by default if the option hasn't been specified
@@ -218,7 +219,7 @@ function writeAllShims (src: string, to: string, srcRuntimeInfo: RuntimeInfo, op
   const opts_ = ingestOptions(opts)
   const generatorAndExts: ShimGenExtTuple[] = [{ generator: generateShShim, extension: '' }]
   if (opts_.createCmdFile) {
-    generatorAndExts.push({ generator: generateCmdShim, extension: '.cmd' })
+    generatorAndExts.push({ generator: generateCmdShim, extension: CMD_EXTENSION })
   }
   if (opts_.createPwshFile) {
     generatorAndExts.push({ generator: generatePwshShim, extension: '.ps1' })
