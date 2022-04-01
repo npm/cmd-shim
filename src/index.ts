@@ -429,7 +429,7 @@ case \`uname\` in
 esac
 
 `
-  if (opts.nodePath) {
+  if (shNodePath) {
       sh += `\
 if [ -z "$NODE_PATH" ]; then
   export NODE_PATH="${shNodePath}"
@@ -524,7 +524,7 @@ function generatePwshShim (src: string, to: string, opts: InternalOptions): stri
 $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
 
 $exe=""
-${opts.nodePath ? `\
+${nodePath ? `\
 $pathsep=":"
 $env_node_path=$env:NODE_PATH
 $new_node_path="${nodePath}"
@@ -533,9 +533,9 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # Fix case when both the Windows and Linux builds of Node
   # are installed in the same directory
   $exe=".exe"
-${opts.nodePath ? '  $pathsep=";"\n' : ''}\
+${nodePath ? '  $pathsep=";"\n' : ''}\
 }`
-  if (opts.nodePath) {
+  if (shNodePath) {
     pwsh += `\
  else {
   $new_node_path="${shNodePath}"
@@ -567,7 +567,7 @@ if (Test-Path ${pwshLongProg}) {
   }
   $ret=$LASTEXITCODE
 }
-${opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : ''}\
+${nodePath ? '$env:NODE_PATH=$env_node_path\n' : ''}\
 exit $ret
 `
   } else {
@@ -578,7 +578,7 @@ if ($MyInvocation.ExpectingInput) {
 } else {
   & ${pwshProg} ${args} ${shTarget} ${progArgs}$args
 }
-${opts.nodePath ? '$env:NODE_PATH=$env_node_path\n' : ''}\
+${nodePath ? '$env:NODE_PATH=$env_node_path\n' : ''}\
 exit $LASTEXITCODE
 `
   }
@@ -601,7 +601,7 @@ interface NormalizedPathEnvVar {
   [index:number]: {win32:string,posix:string}
 }
 function normalizePathEnvVar (nodePath: undefined | string | string[]): NormalizedPathEnvVar {
-  if (!nodePath) {
+  if (!nodePath || !nodePath.length) {
     return {
       win32: '',
       posix: ''

@@ -69,6 +69,18 @@ describe('env shebang with NODE_PATH', () => {
   testFile(`${to}.ps1`)
 })
 
+describe('env shebang with no NODE_PATH', () => {
+  const src = path.resolve(fixtures, 'src.env')
+  const to = path.resolve(fixtures, 'env.shim')
+  beforeAll(() => {
+    return cmdShim(src, to, { nodePath: [], createCmdFile: true, fs })
+  })
+
+  testFile(to)
+  testFile(`${to}.cmd`, '\r\n')
+  testFile(`${to}.ps1`)
+})
+
 describe('env shebang with default args', () => {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
