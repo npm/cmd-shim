@@ -7,7 +7,7 @@ var fixtures = path.resolve(__dirname, 'fixtures')
 const matchSnapshot = (t, found, name) =>
   t.matchSnapshot(found.replace(/\r/g, '\\r'), name)
 
-var cmdShim = require('../')
+var cmdShim = require('..')
 
 test('no shebang', function (t) {
   var from = path.resolve(fixtures, 'from.exe')
@@ -50,7 +50,7 @@ test('fails if from doesnt exist', t => {
 test('fails if mkdir fails', t => {
   var from = path.resolve(fixtures, 'from.env')
   var to = path.resolve(fixtures, 'from.env/a/b/c')
-  return t.rejects(cmdShim(from, to), { code: /^(ENOTDIR|EEXIST)$/ })
+  return t.rejects(cmdShim(from, to), { code: /^(ENOTDIR|EEXIST|ENOENT)$/ })
 })
 
 test('fails if to is a dir', t => {

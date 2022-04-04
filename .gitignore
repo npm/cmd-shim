@@ -1,18 +1,25 @@
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
+# This file is automatically added by @npmcli/template-oss. Do not edit.
 
-pids
-logs
-results
+# ignore everything in the root
+/*
 
-npm-debug.log
-
-node_modules
-/coverage
-/.nyc_output
+# keep these
+!/.eslintrc.local.*
+!**/.gitignore
+!/docs/
+!/tap-snapshots/
+!/test/
+!/map.js
+!/scripts/
+!/README*
+!/LICENSE*
+!/CHANGELOG*
+!/.commitlintrc.js
+!/.eslintrc.js
+!/.github/
+!/.gitignore
+!/.npmrc
+!/SECURITY.md
+!/bin/
+!/lib/
+!/package.json
