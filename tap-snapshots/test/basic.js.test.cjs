@@ -441,6 +441,77 @@ exec "$basedir/"   "$@"
 
 `
 
+exports[`test/basic.js TAP multiple variables > cmd 1`] = `
+@ECHO off\\r
+GOTO start\\r
+:find_dp0\\r
+SET dp0=%~dp0\\r
+EXIT /b\\r
+:start\\r
+SETLOCAL\\r
+CALL :find_dp0\\r
+@SET key=value\\r
+@SET key2=value2\\r
+\\r
+IF EXIST "%dp0%\\node.exe" (\\r
+  SET "_prog=%dp0%\\node.exe"\\r
+) ELSE (\\r
+  SET "_prog=node"\\r
+  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
+)\\r
+\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" --flag-one --flag-two "%dp0%\\from.env.multiple.variables" %*\\r
+
+`
+
+exports[`test/basic.js TAP multiple variables > ps1 1`] = `
+#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=""
+if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=".exe"
+}
+$ret=0
+if (Test-Path "$basedir/node$exe") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir/node$exe" --flag-one --flag-two "$basedir/from.env.multiple.variables" $args
+  } else {
+    & "$basedir/node$exe" --flag-one --flag-two "$basedir/from.env.multiple.variables" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "node$exe" --flag-one --flag-two "$basedir/from.env.multiple.variables" $args
+  } else {
+    & "node$exe" --flag-one --flag-two "$basedir/from.env.multiple.variables" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+
+`
+
+exports[`test/basic.js TAP multiple variables > shell 1`] = `
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+
+case \`uname\` in
+    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+esac
+
+if [ -x "$basedir/node" ]; then
+  exec key=value key2=value2 "$basedir/node" --flag-one --flag-two "$basedir/from.env.multiple.variables" "$@"
+else 
+  exec key=value key2=value2 node --flag-one --flag-two "$basedir/from.env.multiple.variables" "$@"
+fi
+
+`
+
 exports[`test/basic.js TAP no shebang > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r

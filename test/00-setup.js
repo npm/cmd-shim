@@ -9,6 +9,7 @@ const froms = {
   'from.env.variables': '#!/usr/bin/env NODE_PATH=./lib:$NODE_PATH node',
   'from.sh': '#!/usr/bin/sh\necho hi\n',
   'from.sh.args': '#!/usr/bin/sh -x\necho hi\n',
+  'from.env.multiple.variables': '#!/usr/bin/env key=value key2=value2 node --flag-one --flag-two',
 }
 
 mkdirp.sync(fixtures)
