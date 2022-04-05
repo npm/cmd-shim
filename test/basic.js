@@ -7,7 +7,7 @@ var fixtures = path.resolve(__dirname, 'fixtures')
 const matchSnapshot = (t, found, name) =>
   t.matchSnapshot(found.replace(/\r/g, '\\r'), name)
 
-var cmdShim = require('../')
+var cmdShim = require('..')
 
 test('no shebang', function (t) {
   var from = path.resolve(fixtures, 'from.exe')
@@ -50,7 +50,7 @@ test('fails if from doesnt exist', t => {
 test('fails if mkdir fails', t => {
   var from = path.resolve(fixtures, 'from.env')
   var to = path.resolve(fixtures, 'from.env/a/b/c')
-  return t.rejects(cmdShim(from, to), { code: /^(ENOTDIR|EEXIST)$/ })
+  return t.rejects(cmdShim(from, to), { code: /^(ENOTDIR|EEXIST|ENOENT)$/ })
 })
 
 test('fails if to is a dir', t => {
@@ -116,6 +116,16 @@ test('explicit shebang', function (t) {
 test('explicit shebang with args', function (t) {
   var from = path.resolve(fixtures, 'from.sh.args')
   var to = path.resolve(fixtures, 'sh.args.shim')
+  return cmdShim(from, to).then(() => {
+    matchSnapshot(t, fs.readFileSync(to, 'utf8'), 'shell')
+    matchSnapshot(t, fs.readFileSync(to + '.cmd', 'utf8'), 'cmd')
+    matchSnapshot(t, fs.readFileSync(to + '.ps1', 'utf8'), 'ps1')
+  })
+})
+
+test('multiple variables', function (t) {
+  var from = path.resolve(fixtures, 'from.env.multiple.variables')
+  var to = path.resolve(fixtures, 'sh.multiple.shim')
   return cmdShim(from, to).then(() => {
     matchSnapshot(t, fs.readFileSync(to, 'utf8'), 'shell')
     matchSnapshot(t, fs.readFileSync(to + '.cmd', 'utf8'), 'cmd')
