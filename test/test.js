@@ -145,7 +145,7 @@ describe('custom node executable', () => {
   const src = path.resolve(fixtures, 'src.env')
   const to = path.resolve(fixtures, 'env.shim')
   beforeAll(() => {
-    return cmdShim(src, to, { nodeExecPath: '/.pnpm/nodejs/16.0.0/node', fs })
+    return cmdShim(src, to, { createCmdFile: true, nodeExecPath: '/.pnpm/nodejs/16.0.0/node', fs })
   })
 
   testFile(to)
