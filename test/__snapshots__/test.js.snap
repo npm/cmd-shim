@@ -180,6 +180,77 @@ exit $ret
 "
 `;
 
+exports[`env shebang with PATH extending env.shim 1`] = `
+"#!/bin/sh
+basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
+
+case \`uname\` in
+    *CYGWIN*) basedir=\`cygpath -w \\"$basedir\\"\`;;
+esac
+
+export PATH=\\"/add-to-path:$PATH\\"
+if [ -x \\"$basedir/node\\" ]; then
+  exec \\"$basedir/node\\"  \\"$basedir/src.env\\" \\"$@\\"
+else
+  exec node  \\"$basedir/src.env\\" \\"$@\\"
+fi
+"
+`;
+
+exports[`env shebang with PATH extending env.shim.cmd 1`] = `
+"@SETLOCAL
+@SET \\"PATH=\\\\add-to-path:%PATH%\\"
+@IF EXIST \\"%~dp0\\\\node.exe\\" (
+  \\"%~dp0\\\\node.exe\\"  \\"%~dp0\\\\src.env\\" %*
+) ELSE (
+  @SET PATHEXT=%PATHEXT:;.JS;=;%
+  node  \\"%~dp0\\\\src.env\\" %*
+)
+"
+`;
+
+exports[`env shebang with PATH extending env.shim.ps1 1`] = `
+"#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=\\"\\"
+$pathsep=\\":\\"
+$env_path=$env:PATH
+$prepend_path=\\"\\\\add-to-path\\"
+if ($PSVersionTable.PSVersion -lt \\"6.0\\" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=\\".exe\\"
+  $pathsep=\\";\\"
+} else {
+  $prepend_path=\\"/add-to-path\\"
+}
+
+$env:PATH=\\"$prepend_path$pathsep$env:PATH\\"
+
+$ret=0
+if (Test-Path \\"$basedir/node$exe\\") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"$basedir/node$exe\\"  \\"$basedir/src.env\\" $args
+  } else {
+    & \\"$basedir/node$exe\\"  \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & \\"node$exe\\"  \\"$basedir/src.env\\" $args
+  } else {
+    & \\"node$exe\\"  \\"$basedir/src.env\\" $args
+  }
+  $ret=$LASTEXITCODE
+}
+$env:PATH=$env_path
+exit $ret
+"
+`;
+
 exports[`env shebang with args env.args.shim 1`] = `
 "#!/bin/sh
 basedir=$(dirname \\"$(echo \\"$0\\" | sed -e 's,\\\\\\\\,/,g')\\")
