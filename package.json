@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@npmcli/eslint-config": "^3.0.1",
-    "@npmcli/template-oss": "3.4.3",
+    "@npmcli/template-oss": "3.5.0",
     "rimraf": "^3.0.2",
     "tap": "^16.0.1"
   },
@@ -45,6 +45,6 @@
   "author": "GitHub Inc.",
   "templateOSS": {
     "//@npmcli/template-oss": "This file is partially managed by @npmcli/template-oss. Edits may be overwritten.",
-    "version": "3.4.3"
+    "version": "3.5.0"
   }
 }
