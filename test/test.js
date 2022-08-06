@@ -165,7 +165,9 @@ describe('custom node executable', () => {
   testFile(`${to}.ps1`)
 })
 
-;(process.platform === 'win32' ? describe : describe.skip)('explicit shebang with args, linking to another drive on Windows', () => {
+const testOnWindows = process.platform === 'win32' ? describe : describe.skip
+
+testOnWindows('explicit shebang with args, linking to another drive on Windows', () => {
   const src = path.resolve(fixtures2, 'src.sh.args')
   const to = path.resolve(fixtures, 'sh.args.shim')
   beforeAll(() => {

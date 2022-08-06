@@ -150,7 +150,6 @@ function ingestOptions (opts?: Options): InternalOptions {
  */
 async function cmdShim (src: string, to: string, opts?: Options): Promise<void> {
   const opts_ = ingestOptions(opts)
-  await opts_.fs_.stat(src)
   await cmdShim_(src, to, opts_)
 }
 
@@ -264,26 +263,49 @@ interface RuntimeInfo {
  * @return Promise of infomation of runtime of `target`.
  */
 async function searchScriptRuntime (target: string, opts: InternalOptions): Promise<RuntimeInfo> {
-  const data = await opts.fs_.readFile(target, 'utf8')
+  try {
+    const data = await opts.fs_.readFile(target, 'utf8')
 
-  // First, check if the bin is a #! of some sort.
-  const firstLine = data.trim().split(/\r*\n/)[0]
-  const shebang = firstLine.match(shebangExpr)
-  if (!shebang) {
-    // If not, infer script type from its extension.
-    // If the inference fails, it's something that'll be compiled, or some other
-    // sort of script, and just call it directly.
-    const targetExtension = path.extname(target).toLowerCase()
-    return {
-      // undefined if extension is unknown but it's converted to null.
-      program: extensionToProgramMap.get(targetExtension) || null,
-      additionalArgs: ''
+    // First, check if the bin is a #! of some sort.
+    const firstLine = data.trim().split(/\r*\n/)[0]
+    const shebang = firstLine.match(shebangExpr)
+    if (!shebang) {
+      // If not, infer script type from its extension.
+      // If the inference fails, it's something that'll be compiled, or some other
+      // sort of script, and just call it directly.
+      const targetExtension = path.extname(target).toLowerCase()
+      return {
+        // undefined if extension is unknown but it's converted to null.
+        program: extensionToProgramMap.get(targetExtension) || null,
+        additionalArgs: ''
+      }
     }
+    return {
+      program: shebang[1],
+      additionalArgs: shebang[2]
+    }
+  } catch (err: any) {
+    if (!isWindows() || err.code !== 'ENOENT') throw err
+    if (await opts.fs_.stat(`${target}${getExeExtension()}`)) {
+      return {
+        program: null,
+        additionalArgs: '',
+      }
+    }
+    throw err
   }
-  return {
-    program: shebang[1],
-    additionalArgs: shebang[2]
+}
+
+function getExeExtension (): string {
+  let cmdExtension
+
+  if (process.env.PATHEXT) {
+    cmdExtension = process.env.PATHEXT
+      .split(path.delimiter)
+      .find(ext => ext.toLowerCase() === '.exe')
   }
+
+  return cmdExtension || '.exe'
 }
 
 /**
