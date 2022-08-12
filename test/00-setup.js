@@ -1,6 +1,6 @@
 const mkdirp = require('mkdirp')
 const fs = require('fs')
-const fixtures = __dirname + '/fixtures'
+const fixtures = require('path').join(__dirname, '/fixtures')
 
 const froms = {
   'from.exe': 'exe',
@@ -9,10 +9,11 @@ const froms = {
   'from.env.variables': '#!/usr/bin/env NODE_PATH=./lib:$NODE_PATH node',
   'from.env.S': '#!/usr/bin/env -S node --expose_gc\ngc()\n',
   'from.sh': '#!/usr/bin/sh\necho hi\n',
-  'from.sh.args': '#!/usr/bin/sh -x\necho hi\n'
+  'from.sh.args': '#!/usr/bin/sh -x\necho hi\n',
+  'from.env.multiple.variables': '#!/usr/bin/env key=value key2=value2 node --flag-one --flag-two',
 }
 
-mkdirp.sync(__dirname + '/fixtures')
+mkdirp.sync(fixtures)
 for (const [f, content] of Object.entries(froms)) {
   fs.writeFileSync(`${fixtures}/${f}`, content)
 }

@@ -1,1 +1,1 @@
-require('rimraf').sync(__dirname + '/fixtures')
+require('rimraf').sync(require('path').join(__dirname, 'fixtures'))
