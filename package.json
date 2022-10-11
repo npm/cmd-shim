@@ -16,14 +16,9 @@
     "url": "https://github.com/npm/cmd-shim.git"
   },
   "license": "ISC",
-  "dependencies": {
-    "mkdirp-infer-owner": "^2.0.0"
-  },
   "devDependencies": {
     "@npmcli/eslint-config": "^3.0.1",
     "@npmcli/template-oss": "4.5.1",
-    "mkdirp": "^1.0.4",
-    "rimraf": "^3.0.2",
     "tap": "^16.0.1"
   },
   "files": [

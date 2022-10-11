@@ -1,5 +1,8 @@
-const mkdirp = require('mkdirp')
-const fs = require('fs')
+const {
+  mkdirSync,
+  writeFileSync,
+} = require('fs')
+
 const fixtures = require('path').join(__dirname, '/fixtures')
 
 const froms = {
@@ -12,7 +15,7 @@ const froms = {
   'from.env.multiple.variables': '#!/usr/bin/env key=value key2=value2 node --flag-one --flag-two',
 }
 
-mkdirp.sync(fixtures)
+mkdirSync(fixtures, { recursive: true })
 for (const [f, content] of Object.entries(froms)) {
-  fs.writeFileSync(`${fixtures}/${f}`, content)
+  writeFileSync(`${fixtures}/${f}`, content)
 }

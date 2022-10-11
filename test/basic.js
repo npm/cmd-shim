@@ -1,5 +1,6 @@
+'use strict'
+
 var test = require('tap').test
-var rimraf = require('rimraf')
 var fs = require('fs')
 var path = require('path')
 var fixtures = path.resolve(__dirname, 'fixtures')
@@ -52,8 +53,7 @@ test('fails if to is a dir', async t => {
   var from = path.resolve(fixtures, 'from.env')
   var to = path.resolve(fixtures)
   t.teardown(() => {
-    rimraf.sync(to + '.cmd')
-    rimraf.sync(to + '.ps1')
+    fs.rmSync(to + '.cmd', { recursive: true, force: true })
   })
   await t.rejects(cmdShim(from, to), { code: 'EISDIR' })
 })
