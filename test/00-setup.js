@@ -13,6 +13,8 @@ const froms = {
   'from.sh': '#!/usr/bin/sh\necho hi\n',
   'from.sh.args': '#!/usr/bin/sh -x\necho hi\n',
   'from.env.multiple.variables': '#!/usr/bin/env key=value key2=value2 node --flag-one --flag-two',
+  'from.env.S': '#!/usr/bin/env -S node --expose_gc\ngc()\n',
+  'from.env.nospace': '#!/usr/bin/envnode\nconsole.log(/hi/)\n',
 }
 
 mkdirSync(fixtures, { recursive: true })

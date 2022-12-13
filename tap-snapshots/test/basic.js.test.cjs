@@ -556,3 +556,72 @@ esac
 exec "$basedir/from.exe"   "$@"
 
 `
+
+exports[`test/basic.js TAP shebang with env -S > cmd 1`] = `
+@ECHO off\\r
+GOTO start\\r
+:find_dp0\\r
+SET dp0=%~dp0\\r
+EXIT /b\\r
+:start\\r
+SETLOCAL\\r
+CALL :find_dp0\\r
+\\r
+IF EXIST "%dp0%\\node.exe" (\\r
+  SET "_prog=%dp0%\\node.exe"\\r
+) ELSE (\\r
+  SET "_prog=node"\\r
+  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
+)\\r
+\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" --expose_gc "%dp0%\\from.env.S" %*\\r
+
+`
+
+exports[`test/basic.js TAP shebang with env -S > cmd 2`] = `
+#!/usr/bin/env pwsh
+$basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+
+$exe=""
+if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
+  # Fix case when both the Windows and Linux builds of Node
+  # are installed in the same directory
+  $exe=".exe"
+}
+$ret=0
+if (Test-Path "$basedir/node$exe") {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "$basedir/node$exe" --expose_gc "$basedir/from.env.S" $args
+  } else {
+    & "$basedir/node$exe" --expose_gc "$basedir/from.env.S" $args
+  }
+  $ret=$LASTEXITCODE
+} else {
+  # Support pipeline input
+  if ($MyInvocation.ExpectingInput) {
+    $input | & "node$exe" --expose_gc "$basedir/from.env.S" $args
+  } else {
+    & "node$exe" --expose_gc "$basedir/from.env.S" $args
+  }
+  $ret=$LASTEXITCODE
+}
+exit $ret
+
+`
+
+exports[`test/basic.js TAP shebang with env -S > shell 1`] = `
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+
+case \`uname\` in
+    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+esac
+
+if [ -x "$basedir/node" ]; then
+  exec "$basedir/node" --expose_gc "$basedir/from.env.S" "$@"
+else 
+  exec node --expose_gc "$basedir/from.env.S" "$@"
+fi
+
+`
