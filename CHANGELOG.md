@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.1](https://github.com/npm/cmd-shim/compare/v6.0.0...v6.0.1) (2022-12-13)
+
+### Bug Fixes
+
+* [`a32b3a0`](https://github.com/npm/cmd-shim/commit/a32b3a06615ed60afaa0441015fb1a456b6be488) [#96](https://github.com/npm/cmd-shim/pull/96) drop the -S flag from env (#96) (@nlf, @yeldiRium)
+
 ## [6.0.0](https://github.com/npm/cmd-shim/compare/v5.0.0...v6.0.0) (2022-10-11)
 
 ### ⚠️ BREAKING CHANGES
