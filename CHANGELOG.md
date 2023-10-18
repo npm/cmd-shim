@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.2](https://github.com/npm/cmd-shim/compare/v6.0.1...v6.0.2) (2023-10-18)
+
+### Bug Fixes
+
+* [`3bdb518`](https://github.com/npm/cmd-shim/commit/3bdb518db21ec6ae64cda74405c7025ee76ccd76) [#117](https://github.com/npm/cmd-shim/pull/117) don't assume cygpath is available (#117) (@davhdavh)
+
 ## [6.0.1](https://github.com/npm/cmd-shim/compare/v6.0.0...v6.0.1) (2022-12-13)
 
 ### Bug Fixes
