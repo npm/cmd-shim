@@ -63,7 +63,11 @@ exports[`test/basic.js TAP env shebang > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir/node" ]; then
@@ -132,7 +136,11 @@ exports[`test/basic.js TAP env shebang with args > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir/node" ]; then
@@ -202,7 +210,11 @@ exports[`test/basic.js TAP env shebang with variables > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir/node" ]; then
@@ -271,7 +283,11 @@ exports[`test/basic.js TAP explicit shebang > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir//usr/bin/sh" ]; then
@@ -340,7 +356,11 @@ exports[`test/basic.js TAP explicit shebang with args > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir//usr/bin/sh" ]; then
@@ -389,7 +409,11 @@ exports[`test/basic.js TAP if exists (it does exist) > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 exec "$basedir/from.exe"   "$@"
@@ -434,7 +458,11 @@ exports[`test/basic.js TAP just proceed if reading fails > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 exec "$basedir/"   "$@"
@@ -501,7 +529,11 @@ exports[`test/basic.js TAP multiple variables > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir/node" ]; then
@@ -550,7 +582,11 @@ exports[`test/basic.js TAP no shebang > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 exec "$basedir/from.exe"   "$@"
@@ -615,7 +651,11 @@ exports[`test/basic.js TAP shebang with env -S > shell 1`] = `
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
 
 case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*) basedir=\`cygpath -w "$basedir"\`;;
+    *CYGWIN*|*MINGW*|*MSYS*)
+        if command -v cygpath > /dev/null 2>&1; then
+            basedir=\`cygpath -w "$basedir"\`
+        fi
+    ;;
 esac
 
 if [ -x "$basedir/node" ]; then
