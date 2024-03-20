@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.0.3](https://github.com/npm/cmd-shim/compare/v6.0.2...v6.0.3) (2024-03-20)
+
+### Documentation
+
+* [`5598b4b`](https://github.com/npm/cmd-shim/commit/5598b4b5d04d42201543dc67b459f0a7db78c211) [#137](https://github.com/npm/cmd-shim/pull/137) readme: fix broken badge URLs (#137) (@10xLaCroixDrinker)
+
+### Chores
+
+* [`d35a68e`](https://github.com/npm/cmd-shim/commit/d35a68e0f2b072fdccea390a13e74c917b206dc9) [#134](https://github.com/npm/cmd-shim/pull/134) postinstall for dependabot template-oss PR (@lukekarrys)
+* [`53ceb1d`](https://github.com/npm/cmd-shim/commit/53ceb1d4a1b6412c0a2fa9fe00270f63ecca1398) [#134](https://github.com/npm/cmd-shim/pull/134) bump @npmcli/template-oss from 4.21.1 to 4.21.3 (@dependabot[bot])
+* [`9bb555f`](https://github.com/npm/cmd-shim/commit/9bb555f9817beb68334415c58f3e60afb29fd4bd) [#131](https://github.com/npm/cmd-shim/pull/131) postinstall for dependabot template-oss PR (@lukekarrys)
+* [`25f72be`](https://github.com/npm/cmd-shim/commit/25f72beb395f60fa21e08994df7a1734ad1774a4) [#131](https://github.com/npm/cmd-shim/pull/131) bump @npmcli/template-oss from 4.19.0 to 4.21.1 (@dependabot[bot])
+
 ## [6.0.2](https://github.com/npm/cmd-shim/compare/v6.0.1...v6.0.2) (2023-10-18)
 
 ### Bug Fixes
