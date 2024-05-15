@@ -19,10 +19,9 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
   SET "_prog=node"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\from.env" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%"  "%dp0%\\from.env" %*\\r
 
 `
 
@@ -92,10 +91,9 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
   SET "_prog=node"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
 
 `
 
@@ -166,10 +164,9 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
   SET "_prog=node"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\from.env.variables" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%"  "%dp0%\\from.env.variables" %*\\r
 
 `
 
@@ -239,10 +236,9 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET "_prog=%dp0%\\/usr/bin/sh.exe"\\r
 ) ELSE (\\r
   SET "_prog=/usr/bin/sh"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\from.sh" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%"  "%dp0%\\from.sh" %*\\r
 
 `
 
@@ -312,10 +308,9 @@ IF EXIST "%dp0%\\/usr/bin/sh.exe" (\\r
   SET "_prog=%dp0%\\/usr/bin/sh.exe"\\r
 ) ELSE (\\r
   SET "_prog=/usr/bin/sh"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" -x "%dp0%\\from.sh.args" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" -x "%dp0%\\from.sh.args" %*\\r
 
 `
 
@@ -485,10 +480,9 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
   SET "_prog=node"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" --flag-one --flag-two "%dp0%\\from.env.multiple.variables" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" --flag-one --flag-two "%dp0%\\from.env.multiple.variables" %*\\r
 
 `
 
