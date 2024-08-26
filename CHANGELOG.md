@@ -1,5 +1,21 @@
 # Changelog
 
+## [7.0.0](https://github.com/npm/cmd-shim/compare/v6.0.3...v7.0.0) (2024-08-26)
+
+### ⚠️ BREAKING CHANGES
+
+* `cmd-shim` now supports node `^18.17.0 || >=20.5.0`
+
+### Bug Fixes
+
+* [`aaf6016`](https://github.com/npm/cmd-shim/commit/aaf601687a131bec7eb94ff06d8fb417f95eed6e) [#154](https://github.com/npm/cmd-shim/pull/154) align to npm 10 node engine range (@hashtagchris)
+
+### Chores
+
+* [`926af07`](https://github.com/npm/cmd-shim/commit/926af0785a59e512d3ea9316b58f98bbe9fb2a88) [#154](https://github.com/npm/cmd-shim/pull/154) run template-oss-apply (@hashtagchris)
+* [`7c154f3`](https://github.com/npm/cmd-shim/commit/7c154f30af2c4e52d34320d044e1201017cbcea2) [#151](https://github.com/npm/cmd-shim/pull/151) postinstall for dependabot template-oss PR (@hashtagchris)
+* [`21178ef`](https://github.com/npm/cmd-shim/commit/21178ef7fc0d087c3071451547e5c635cc19271e) [#151](https://github.com/npm/cmd-shim/pull/151) bump @npmcli/template-oss from 4.22.0 to 4.23.1 (@dependabot[bot])
+
 ## [6.0.3](https://github.com/npm/cmd-shim/compare/v6.0.2...v6.0.3) (2024-05-04)
 
 ### Bug Fixes
