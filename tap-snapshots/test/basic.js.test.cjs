@@ -454,7 +454,6 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # are installed in the same directory
   $exe=".exe"
 }
-
 # Support pipeline input
 if ($MyInvocation.ExpectingInput) {
   $input | & "$basedir/from.exe"   $args
@@ -504,7 +503,6 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # are installed in the same directory
   $exe=".exe"
 }
-
 # Support pipeline input
 if ($MyInvocation.ExpectingInput) {
   $input | & "$basedir/"   $args
@@ -641,7 +639,6 @@ if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
   # are installed in the same directory
   $exe=".exe"
 }
-
 # Support pipeline input
 if ($MyInvocation.ExpectingInput) {
   $input | & "$basedir/from.exe"   $args
