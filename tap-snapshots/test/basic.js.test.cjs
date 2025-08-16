@@ -45,7 +45,7 @@ $PROGRAM_FILE="$basedir/from.env"
 
 if ($MyInvocation.ExpectingInput) { # takes pipeline input
   $input | & "$PROGRAM_EXE"  "$PROGRAM_FILE" $args
-} elseif ($false -or -not $MyInvocation.Line) { # used "-File" argument
+} elseif (-not $MyInvocation.Line) { # used "-File" argument
   & "$PROGRAM_EXE"  "$PROGRAM_FILE" $args
 } else { # used "-Command" argument
   if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
@@ -126,29 +126,12 @@ $PROGRAM_EXE="node$exe"
 if (Test-Path "$basedir/node$exe") {
   $PROGRAM_EXE="$basedir/node$exe"
 }
-$PROGRAM_FILE="$basedir/from.env.args"
 
-if ($MyInvocation.ExpectingInput) { # takes pipeline input
-  $input | & "$PROGRAM_EXE" --expose_gc "$PROGRAM_FILE" $args
-} elseif ($true -or -not $MyInvocation.Line) { # used "-File" argument
-  & "$PROGRAM_EXE" --expose_gc "$PROGRAM_FILE" $args
-} else { # used "-Command" argument
-  if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
-    $ORIGINAL_COMMAND = $MyInvocation.Statement
-  } else {
-    $ORIGINAL_COMMAND = (
-      [Management.Automation.InvocationInfo].GetProperty('ScriptPosition', [Reflection.BindingFlags] 'Instance, NonPublic')
-    ).GetValue($MyInvocation).Text
-  }
-
-  $PROGRAM_EXE = $PROGRAM_EXE.Replace("\`\`", "\`\`\`\`")
-  $PROGRAM_FILE = $PROGRAM_FILE.Replace("\`\`", "\`\`\`\`")
-
-  $NO_REDIRECTS_COMMAND = [Management.Automation.Language.Parser]::ParseInput($ORIGINAL_COMMAND, [ref] $null, [ref] $null).
-    EndBlock.Statements.PipelineElements.CommandElements.Extent.Text -join ' '
-  $PROGRAM_FILE_ARGS = $NO_REDIRECTS_COMMAND.Substring($MyInvocation.InvocationName.Length).Trim()
-
-  Invoke-Expression "& \`"$PROGRAM_EXE\`"  \`"$PROGRAM_FILE\`" $PROGRAM_FILE_ARGS"
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$PROGRAM_EXE" --expose_gc "$basedir/from.env.args" $args
+} else {
+  & "$PROGRAM_EXE" --expose_gc "$basedir/from.env.args" $args
 }
 
 exit $LASTEXITCODE
@@ -216,7 +199,7 @@ $PROGRAM_FILE="$basedir/from.env.variables"
 
 if ($MyInvocation.ExpectingInput) { # takes pipeline input
   $input | & "$PROGRAM_EXE"  "$PROGRAM_FILE" $args
-} elseif ($false -or -not $MyInvocation.Line) { # used "-File" argument
+} elseif (-not $MyInvocation.Line) { # used "-File" argument
   & "$PROGRAM_EXE"  "$PROGRAM_FILE" $args
 } else { # used "-Command" argument
   if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
@@ -301,7 +284,7 @@ $PROGRAM_FILE="$basedir/from.sh"
 
 if ($MyInvocation.ExpectingInput) { # takes pipeline input
   $input | & "$PROGRAM_EXE"  "$PROGRAM_FILE" $args
-} elseif ($false -or -not $MyInvocation.Line) { # used "-File" argument
+} elseif (-not $MyInvocation.Line) { # used "-File" argument
   & "$PROGRAM_EXE"  "$PROGRAM_FILE" $args
 } else { # used "-Command" argument
   if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
@@ -382,29 +365,12 @@ $PROGRAM_EXE="/usr/bin/sh$exe"
 if (Test-Path "$basedir//usr/bin/sh$exe") {
   $PROGRAM_EXE="$basedir//usr/bin/sh$exe"
 }
-$PROGRAM_FILE="$basedir/from.sh.args"
 
-if ($MyInvocation.ExpectingInput) { # takes pipeline input
-  $input | & "$PROGRAM_EXE" -x "$PROGRAM_FILE" $args
-} elseif ($true -or -not $MyInvocation.Line) { # used "-File" argument
-  & "$PROGRAM_EXE" -x "$PROGRAM_FILE" $args
-} else { # used "-Command" argument
-  if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
-    $ORIGINAL_COMMAND = $MyInvocation.Statement
-  } else {
-    $ORIGINAL_COMMAND = (
-      [Management.Automation.InvocationInfo].GetProperty('ScriptPosition', [Reflection.BindingFlags] 'Instance, NonPublic')
-    ).GetValue($MyInvocation).Text
-  }
-
-  $PROGRAM_EXE = $PROGRAM_EXE.Replace("\`\`", "\`\`\`\`")
-  $PROGRAM_FILE = $PROGRAM_FILE.Replace("\`\`", "\`\`\`\`")
-
-  $NO_REDIRECTS_COMMAND = [Management.Automation.Language.Parser]::ParseInput($ORIGINAL_COMMAND, [ref] $null, [ref] $null).
-    EndBlock.Statements.PipelineElements.CommandElements.Extent.Text -join ' '
-  $PROGRAM_FILE_ARGS = $NO_REDIRECTS_COMMAND.Substring($MyInvocation.InvocationName.Length).Trim()
-
-  Invoke-Expression "& \`"$PROGRAM_EXE\`"  \`"$PROGRAM_FILE\`" $PROGRAM_FILE_ARGS"
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$PROGRAM_EXE" -x "$basedir/from.sh.args" $args
+} else {
+  & "$PROGRAM_EXE" -x "$basedir/from.sh.args" $args
 }
 
 exit $LASTEXITCODE
@@ -567,29 +533,12 @@ $PROGRAM_EXE="node$exe"
 if (Test-Path "$basedir/node$exe") {
   $PROGRAM_EXE="$basedir/node$exe"
 }
-$PROGRAM_FILE="$basedir/from.env.multiple.variables"
 
-if ($MyInvocation.ExpectingInput) { # takes pipeline input
-  $input | & "$PROGRAM_EXE" --flag-one --flag-two "$PROGRAM_FILE" $args
-} elseif ($true -or -not $MyInvocation.Line) { # used "-File" argument
-  & "$PROGRAM_EXE" --flag-one --flag-two "$PROGRAM_FILE" $args
-} else { # used "-Command" argument
-  if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
-    $ORIGINAL_COMMAND = $MyInvocation.Statement
-  } else {
-    $ORIGINAL_COMMAND = (
-      [Management.Automation.InvocationInfo].GetProperty('ScriptPosition', [Reflection.BindingFlags] 'Instance, NonPublic')
-    ).GetValue($MyInvocation).Text
-  }
-
-  $PROGRAM_EXE = $PROGRAM_EXE.Replace("\`\`", "\`\`\`\`")
-  $PROGRAM_FILE = $PROGRAM_FILE.Replace("\`\`", "\`\`\`\`")
-
-  $NO_REDIRECTS_COMMAND = [Management.Automation.Language.Parser]::ParseInput($ORIGINAL_COMMAND, [ref] $null, [ref] $null).
-    EndBlock.Statements.PipelineElements.CommandElements.Extent.Text -join ' '
-  $PROGRAM_FILE_ARGS = $NO_REDIRECTS_COMMAND.Substring($MyInvocation.InvocationName.Length).Trim()
-
-  Invoke-Expression "& \`"$PROGRAM_EXE\`"  \`"$PROGRAM_FILE\`" $PROGRAM_FILE_ARGS"
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$PROGRAM_EXE" --flag-one --flag-two "$basedir/from.env.multiple.variables" $args
+} else {
+  & "$PROGRAM_EXE" --flag-one --flag-two "$basedir/from.env.multiple.variables" $args
 }
 
 exit $LASTEXITCODE
@@ -701,29 +650,12 @@ $PROGRAM_EXE="node$exe"
 if (Test-Path "$basedir/node$exe") {
   $PROGRAM_EXE="$basedir/node$exe"
 }
-$PROGRAM_FILE="$basedir/from.env.S"
 
-if ($MyInvocation.ExpectingInput) { # takes pipeline input
-  $input | & "$PROGRAM_EXE" --expose_gc "$PROGRAM_FILE" $args
-} elseif ($true -or -not $MyInvocation.Line) { # used "-File" argument
-  & "$PROGRAM_EXE" --expose_gc "$PROGRAM_FILE" $args
-} else { # used "-Command" argument
-  if (($MyInvocation | Get-Member -Name 'Statement') -and $MyInvocation.Statement) {
-    $ORIGINAL_COMMAND = $MyInvocation.Statement
-  } else {
-    $ORIGINAL_COMMAND = (
-      [Management.Automation.InvocationInfo].GetProperty('ScriptPosition', [Reflection.BindingFlags] 'Instance, NonPublic')
-    ).GetValue($MyInvocation).Text
-  }
-
-  $PROGRAM_EXE = $PROGRAM_EXE.Replace("\`\`", "\`\`\`\`")
-  $PROGRAM_FILE = $PROGRAM_FILE.Replace("\`\`", "\`\`\`\`")
-
-  $NO_REDIRECTS_COMMAND = [Management.Automation.Language.Parser]::ParseInput($ORIGINAL_COMMAND, [ref] $null, [ref] $null).
-    EndBlock.Statements.PipelineElements.CommandElements.Extent.Text -join ' '
-  $PROGRAM_FILE_ARGS = $NO_REDIRECTS_COMMAND.Substring($MyInvocation.InvocationName.Length).Trim()
-
-  Invoke-Expression "& \`"$PROGRAM_EXE\`"  \`"$PROGRAM_FILE\`" $PROGRAM_FILE_ARGS"
+# Support pipeline input
+if ($MyInvocation.ExpectingInput) {
+  $input | & "$PROGRAM_EXE" --expose_gc "$basedir/from.env.S" $args
+} else {
+  & "$PROGRAM_EXE" --expose_gc "$basedir/from.env.S" $args
 }
 
 exit $LASTEXITCODE
