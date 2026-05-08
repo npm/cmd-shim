@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.0.0](https://github.com/npm/cmd-shim/compare/v8.0.0...v9.0.0) (2026-05-08)
+### ⚠️ BREAKING CHANGES
+* `cmd-shim` now supports node `^22.22.2 || ^24.15.0 || >=26.0.0`
+* template-oss-apply
+### Features
+* [`cafe52c`](https://github.com/npm/cmd-shim/commit/cafe52c183d7df07df7e89d6606c3891d40142ec) [#180](https://github.com/npm/cmd-shim/pull/180) bump to new node engine range (@owlstronaut)
+* [`144590a`](https://github.com/npm/cmd-shim/commit/144590aa1fa25ce10df49e8d0b62f04f4e5984db) [#180](https://github.com/npm/cmd-shim/pull/180) template-oss-apply (@owlstronaut)
+### Chores
+* [`1cad536`](https://github.com/npm/cmd-shim/commit/1cad53657b10bb730cdddac01ea17b78587b7158) [#180](https://github.com/npm/cmd-shim/pull/180) template-oss-apply (@owlstronaut)
+* [`c6bf555`](https://github.com/npm/cmd-shim/commit/c6bf555da3034dc4d0ef18f8f2f95756d1b9df85) [#170](https://github.com/npm/cmd-shim/pull/170) bump @npmcli/eslint-config from 5.1.0 to 6.0.0 (#170) (@dependabot[bot])
+* [`39c2c01`](https://github.com/npm/cmd-shim/commit/39c2c014ca83bd719b48079b6920177a89c67f95) [#175](https://github.com/npm/cmd-shim/pull/175) bump @npmcli/template-oss from 4.29.0 to 4.30.0 (#175) (@dependabot[bot], @npm-cli-bot)
+
 ## [8.0.0](https://github.com/npm/cmd-shim/compare/v7.0.0...v8.0.0) (2025-10-22)
 ### ⚠️ BREAKING CHANGES
 * align to npm 11 node engine range (#167)
