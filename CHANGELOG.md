@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.0.1](https://github.com/npm/cmd-shim/compare/v9.0.0...v9.0.1) (2026-06-08)
+### Bug Fixes
+* [`1ca32a3`](https://github.com/npm/cmd-shim/commit/1ca32a3695a45fad94264845596dd1fe8a9ff8cc) [#178](https://github.com/npm/cmd-shim/pull/178) support running sh shim from wsl (#178) (@nadalaba)
+### Chores
+* [`30cad4d`](https://github.com/npm/cmd-shim/commit/30cad4d86e5ead4e9a0af3a8721558dccb74253b) [#183](https://github.com/npm/cmd-shim/pull/183) bump @npmcli/eslint-config from 6.0.1 to 7.0.0 (@dependabot[bot])
+* [`3b7e7dc`](https://github.com/npm/cmd-shim/commit/3b7e7dc49931e69b1f2d866f0d3031d2d39fcb5d) [#182](https://github.com/npm/cmd-shim/pull/182) postinstall for dependabot template-oss PR (@npm-cli-bot)
+* [`c64c525`](https://github.com/npm/cmd-shim/commit/c64c525ace25be9e8b725fe48042c96e1035dcdf) [#182](https://github.com/npm/cmd-shim/pull/182) bump @npmcli/template-oss from 5.0.0 to 5.1.0 (@dependabot[bot])
+
 ## [9.0.0](https://github.com/npm/cmd-shim/compare/v8.0.0...v9.0.0) (2026-05-08)
 ### ⚠️ BREAKING CHANGES
 * `cmd-shim` now supports node `^22.22.2 || ^24.15.0 || >=26.0.0`
