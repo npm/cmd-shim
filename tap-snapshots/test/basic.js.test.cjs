@@ -61,20 +61,37 @@ exit $ret
 exports[`test/basic.js TAP env shebang > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir/node" ]; then
-  exec "$basedir/node"  "$basedir/from.env" "$@"
-else 
-  exec node  "$basedir/from.env" "$@"
+PROG_EXE="$basedir/node.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir/node"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=node
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=node.exe
+    fi
+  fi
 fi
+
+exec "$PROG_EXE"  "$basedir_win/from.env" "$@"
 
 `
 
@@ -134,20 +151,37 @@ exit $ret
 exports[`test/basic.js TAP env shebang with args > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir/node" ]; then
-  exec "$basedir/node" --expose_gc "$basedir/from.env.args" "$@"
-else 
-  exec node --expose_gc "$basedir/from.env.args" "$@"
+PROG_EXE="$basedir/node.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir/node"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=node
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=node.exe
+    fi
+  fi
 fi
+
+exec "$PROG_EXE" --expose_gc "$basedir_win/from.env.args" "$@"
 
 `
 
@@ -208,20 +242,37 @@ exit $ret
 exports[`test/basic.js TAP env shebang with variables > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir/node" ]; then
-  exec NODE_PATH=./lib:$NODE_PATH "$basedir/node"  "$basedir/from.env.variables" "$@"
-else 
-  exec NODE_PATH=./lib:$NODE_PATH node  "$basedir/from.env.variables" "$@"
+PROG_EXE="$basedir/node.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir/node"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=node
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=node.exe
+    fi
+  fi
 fi
+
+exec NODE_PATH=./lib:$NODE_PATH "$PROG_EXE"  "$basedir_win/from.env.variables" "$@"
 
 `
 
@@ -281,20 +332,37 @@ exit $ret
 exports[`test/basic.js TAP explicit shebang > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir//usr/bin/sh" ]; then
-  exec "$basedir//usr/bin/sh"  "$basedir/from.sh" "$@"
-else 
-  exec /usr/bin/sh  "$basedir/from.sh" "$@"
+PROG_EXE="$basedir//usr/bin/sh.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir//usr/bin/sh"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=/usr/bin/sh
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=/usr/bin/sh.exe
+    fi
+  fi
 fi
+
+exec "$PROG_EXE"  "$basedir_win/from.sh" "$@"
 
 `
 
@@ -354,20 +422,37 @@ exit $ret
 exports[`test/basic.js TAP explicit shebang with args > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir//usr/bin/sh" ]; then
-  exec "$basedir//usr/bin/sh" -x "$basedir/from.sh.args" "$@"
-else 
-  exec /usr/bin/sh -x "$basedir/from.sh.args" "$@"
+PROG_EXE="$basedir//usr/bin/sh.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir//usr/bin/sh"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=/usr/bin/sh
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=/usr/bin/sh.exe
+    fi
+  fi
 fi
+
+exec "$PROG_EXE" -x "$basedir_win/from.sh.args" "$@"
 
 `
 
@@ -407,13 +492,23 @@ exit $LASTEXITCODE
 exports[`test/basic.js TAP if exists (it does exist) > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
 exec "$basedir/from.exe"   "$@"
@@ -456,13 +551,23 @@ exit $LASTEXITCODE
 exports[`test/basic.js TAP just proceed if reading fails > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
 exec "$basedir/"   "$@"
@@ -527,20 +632,37 @@ exit $ret
 exports[`test/basic.js TAP multiple variables > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir/node" ]; then
-  exec key=value key2=value2 "$basedir/node" --flag-one --flag-two "$basedir/from.env.multiple.variables" "$@"
-else 
-  exec key=value key2=value2 node --flag-one --flag-two "$basedir/from.env.multiple.variables" "$@"
+PROG_EXE="$basedir/node.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir/node"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=node
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=node.exe
+    fi
+  fi
 fi
+
+exec key=value key2=value2 "$PROG_EXE" --flag-one --flag-two "$basedir_win/from.env.multiple.variables" "$@"
 
 `
 
@@ -580,13 +702,23 @@ exit $LASTEXITCODE
 exports[`test/basic.js TAP no shebang > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
 exec "$basedir/from.exe"   "$@"
@@ -649,19 +781,36 @@ exit $ret
 exports[`test/basic.js TAP shebang with env -S > shell 1`] = `
 #!/bin/sh
 basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+basedir_win="$basedir"
 
-case \`uname\` in
-    *CYGWIN*|*MINGW*|*MSYS*)
-        if command -v cygpath > /dev/null 2>&1; then
-            basedir=\`cygpath -w "$basedir"\`
-        fi
-    ;;
+case \`uname -a\` in
+  *CYGWIN*|*MINGW*|*MSYS*)
+    if command -v cygpath > /dev/null 2>&1; then
+      basedir_win=\`cygpath -w "$basedir"\`
+    fi
+  ;;
+  *WSL2*)
+    if command -v wslpath > /dev/null 2>&1; then
+      basedir_win="$(wslpath -w "$basedir" 2> /dev/null)"
+      if [ $? -ne 0 ] || [ -z "$basedir_win" ]; then
+        echo "Error: wslpath failed to convert path. WSL environment may be misconfigured." >&2
+        exit 1
+      fi
+    fi
+  ;;
 esac
 
-if [ -x "$basedir/node" ]; then
-  exec "$basedir/node" --expose_gc "$basedir/from.env.S" "$@"
-else 
-  exec node --expose_gc "$basedir/from.env.S" "$@"
+PROG_EXE="$basedir/node.exe"
+if ! [ -x "$PROG_EXE" ]; then
+  PROG_EXE="$basedir/node"
+  if ! [ -x "$PROG_EXE" ]; then
+    PROG_EXE=node
+    if ! [ -x "$PROG_EXE" ]; then
+      PROG_EXE=node.exe
+    fi
+  fi
 fi
+
+exec "$PROG_EXE" --expose_gc "$basedir_win/from.env.S" "$@"
 
 `
