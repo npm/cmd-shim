@@ -3,23 +3,32 @@
 # ignore everything in the root
 /*
 
-# keep these
-!/.eslintrc.local.*
 !**/.gitignore
-!/docs/
-!/tap-snapshots/
-!/test/
-!/map.js
-!/scripts/
-!/README*
-!/LICENSE*
-!/CHANGELOG*
 !/.commitlintrc.js
+!/.eslint.config.js
 !/.eslintrc.js
+!/.eslintrc.local.*
+!/.git-blame-ignore-revs
 !/.github/
 !/.gitignore
 !/.npmrc
-!/SECURITY.md
+!/.prettierignore
+!/.prettierrc.js
+!/.release-please-manifest.json
 !/bin/
+!/CHANGELOG*
+!/CODE_OF_CONDUCT.md
+!/CONTRIBUTING.md
+!/docs/
 !/lib/
+!/LICENSE*
+!/map.js
 !/package.json
+!/README*
+!/release-please-config.json
+!/scripts/
+!/SECURITY.md
+!/tap-snapshots/
+!/test/
+!/tsconfig.json
+tap-testdir*/
