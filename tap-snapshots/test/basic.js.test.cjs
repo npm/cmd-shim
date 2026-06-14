@@ -733,10 +733,9 @@ IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
   SET "_prog=node"\\r
-  SET PATHEXT=%PATHEXT:;.JS;=;%\\r
 )\\r
 \\r
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%" --expose_gc "%dp0%\\from.env.S" %*\\r
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" --expose_gc "%dp0%\\from.env.S" %*\\r
 
 `
 
