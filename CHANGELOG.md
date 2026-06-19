@@ -1,5 +1,11 @@
 # Changelog
 
+## [9.0.2](https://github.com/npm/cmd-shim/compare/v9.0.1...v9.0.2) (2026-06-19)
+### Bug Fixes
+* [`1c2f94c`](https://github.com/npm/cmd-shim/commit/1c2f94cc146c7a76112bc23f255ea75afbf30420) [#64](https://github.com/npm/cmd-shim/pull/64) Fixed an issue with files named node.js on Windows (#64) (@giovannicalo)
+### Chores
+* [`4f2209b`](https://github.com/npm/cmd-shim/commit/4f2209b18d81fd13169ebfd24b0da95d0d04b357) [#185](https://github.com/npm/cmd-shim/pull/185) bump @npmcli/template-oss from 5.1.0 to 5.1.1 (#185) (@dependabot[bot], @npm-cli-bot)
+
 ## [9.0.1](https://github.com/npm/cmd-shim/compare/v9.0.0...v9.0.1) (2026-06-08)
 ### Bug Fixes
 * [`1ca32a3`](https://github.com/npm/cmd-shim/commit/1ca32a3695a45fad94264845596dd1fe8a9ff8cc) [#178](https://github.com/npm/cmd-shim/pull/178) support running sh shim from wsl (#178) (@nadalaba)
