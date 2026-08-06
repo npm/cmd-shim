@@ -9,7 +9,7 @@ exports[`test/basic.js TAP env shebang > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -78,7 +78,7 @@ exports[`test/basic.js TAP env shebang with args > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -147,7 +147,7 @@ exports[`test/basic.js TAP env shebang with variables > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -217,7 +217,7 @@ exports[`test/basic.js TAP explicit shebang > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -286,7 +286,7 @@ exports[`test/basic.js TAP explicit shebang with args > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -355,7 +355,7 @@ exports[`test/basic.js TAP if exists (it does exist) > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -400,7 +400,7 @@ exports[`test/basic.js TAP just proceed if reading fails > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
@@ -445,7 +445,7 @@ exports[`test/basic.js TAP no shebang > cmd 1`] = `
 @ECHO off\\r
 GOTO start\\r
 :find_dp0\\r
-SET dp0=%~dp0\\r
+SET "dp0=%~dp0"\\r
 EXIT /b\\r
 :start\\r
 SETLOCAL\\r
