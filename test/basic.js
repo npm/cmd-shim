@@ -2,6 +2,7 @@
 
 var test = require('tap').test
 var fs = require('fs')
+var cp = require('child_process')
 var path = require('path')
 var fixtures = path.resolve(__dirname, 'fixtures')
 
@@ -128,4 +129,15 @@ test('shebang with env -S', async t => {
   matchSnapshot(t, fs.readFileSync(to, 'utf8'), 'shell')
   matchSnapshot(t, fs.readFileSync(to + '.cmd', 'utf8'), 'cmd')
   matchSnapshot(t, fs.readFileSync(to + '.ps1', 'utf8'), 'cmd')
+})
+
+test('shims work in paths containing shell metacharacters', { skip: process.platform !== 'win32' }, async t => {
+  var dir = path.resolve(fixtures, 'dir & name')
+  fs.mkdirSync(dir, { recursive: true })
+  t.teardown(() => fs.rmSync(dir, { recursive: true, force: true }))
+  var from = path.resolve(fixtures, 'from.env')
+  var to = path.join(dir, 'metachars.shim')
+  await cmdShim(from, to)
+  var stdout = cp.execFileSync(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', to + '.cmd'], { encoding: 'utf8' })
+  t.equal(stdout.trim(), '/hi/')
 })
