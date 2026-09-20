@@ -18,7 +18,7 @@ CALL :find_dp0\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
-  SET "_prog=node"\\r
+  SET "_prog=node.exe"\\r
 )\\r
 \\r
 endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%"  "%dp0%\\from.env" %*\\r
@@ -107,7 +107,7 @@ CALL :find_dp0\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
-  SET "_prog=node"\\r
+  SET "_prog=node.exe"\\r
 )\\r
 \\r
 endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" --expose_gc "%dp0%\\from.env.args" %*\\r
@@ -197,7 +197,7 @@ CALL :find_dp0\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
-  SET "_prog=node"\\r
+  SET "_prog=node.exe"\\r
 )\\r
 \\r
 endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%"  "%dp0%\\from.env.variables" %*\\r
@@ -584,7 +584,7 @@ CALL :find_dp0\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
-  SET "_prog=node"\\r
+  SET "_prog=node.exe"\\r
 )\\r
 \\r
 endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" --flag-one --flag-two "%dp0%\\from.env.multiple.variables" %*\\r
@@ -732,7 +732,7 @@ CALL :find_dp0\\r
 IF EXIST "%dp0%\\node.exe" (\\r
   SET "_prog=%dp0%\\node.exe"\\r
 ) ELSE (\\r
-  SET "_prog=node"\\r
+  SET "_prog=node.exe"\\r
 )\\r
 \\r
 endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & set PATHEXT=%PATHEXT:;.JS;=;% & "%_prog%" --expose_gc "%dp0%\\from.env.S" %*\\r

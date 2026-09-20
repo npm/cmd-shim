@@ -15,6 +15,8 @@ const froms = {
   'from.env.multiple.variables': '#!/usr/bin/env key=value key2=value2 node --flag-one --flag-two',
   'from.env.S': '#!/usr/bin/env -S node --expose_gc\ngc()\n',
   'from.env.nospace': '#!/usr/bin/envnode\nconsole.log(/hi/)\n',
+  'from.env.python': '#!/usr/bin/env python\nprint("hi")\n',
+  'from.env.nodeexe': '#!/usr/bin/env node.exe\nconsole.log(/hi/)\n',
 }
 
 mkdirSync(fixtures, { recursive: true })
