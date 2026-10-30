@@ -6,7 +6,12 @@ var path = require('path')
 var fixtures = path.resolve(__dirname, 'fixtures')
 
 const matchSnapshot = (t, found, name) =>
-  t.matchSnapshot(found.replace(/\r/g, '\\r'), name)
+  t.matchSnapshot(found.replace(/^\uFEFF/, '').replace(/\r/g, '\\r'), name)
+
+const UTF8_BOM = Buffer.from([0xEF, 0xBB, 0xBF])
+
+const startsWithUtf8Bom = buf =>
+  buf.length >= 3 && buf.subarray(0, 3).equals(UTF8_BOM)
 
 var cmdShim = require('..')
 
@@ -128,4 +133,44 @@ test('shebang with env -S', async t => {
   matchSnapshot(t, fs.readFileSync(to, 'utf8'), 'shell')
   matchSnapshot(t, fs.readFileSync(to + '.cmd', 'utf8'), 'cmd')
   matchSnapshot(t, fs.readFileSync(to + '.ps1', 'utf8'), 'cmd')
+})
+
+test('ps1 shim is written with a UTF-8 BOM for ASCII paths', async t => {
+  var from = path.resolve(fixtures, 'from.env')
+  var to = path.resolve(fixtures, 'ascii.bom.shim')
+  await cmdShim(from, to)
+
+  const ps1 = fs.readFileSync(to + '.ps1')
+  t.ok(startsWithUtf8Bom(ps1), 'ps1 starts with UTF-8 BOM')
+  t.equal(
+    ps1.subarray(3).toString('utf8').indexOf('\uFEFF'),
+    -1,
+    'ps1 body has no extra BOM'
+  )
+  t.match(ps1.subarray(3).toString('utf8'), /^#!\/usr\/bin\/env pwsh\n/)
+
+  t.notOk(startsWithUtf8Bom(fs.readFileSync(to + '.cmd')), 'cmd has no BOM')
+  t.notOk(startsWithUtf8Bom(fs.readFileSync(to)), 'sh has no BOM')
+})
+
+test('ps1 shim with non-ASCII path is UTF-8 with BOM', async t => {
+  const fromDir = path.resolve(fixtures, 'Gérard')
+  fs.mkdirSync(fromDir, { recursive: true })
+  const from = path.resolve(fromDir, 'from.env')
+  fs.copyFileSync(path.resolve(fixtures, 'from.env'), from)
+  const to = path.resolve(fixtures, 'non-ascii.shim')
+  await cmdShim(from, to)
+
+  const ps1 = fs.readFileSync(to + '.ps1')
+  t.ok(startsWithUtf8Bom(ps1), 'ps1 starts with UTF-8 BOM')
+  const body = ps1.subarray(3).toString('utf8')
+  t.match(body, /Gérard/, 'ps1 body keeps non-ASCII path as UTF-8')
+
+  const cmd = fs.readFileSync(to + '.cmd')
+  t.notOk(startsWithUtf8Bom(cmd), 'cmd has no BOM')
+  t.match(cmd.toString('utf8'), /Gérard/)
+
+  const sh = fs.readFileSync(to)
+  t.notOk(startsWithUtf8Bom(sh), 'sh has no BOM')
+  t.match(sh.toString('utf8'), /Gérard/)
 })
