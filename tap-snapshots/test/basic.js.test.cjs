@@ -59,14 +59,25 @@ exit $ret
 
 exports[`test/basic.js TAP env shebang > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -148,14 +159,25 @@ exit $ret
 
 exports[`test/basic.js TAP env shebang with args > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -238,14 +260,25 @@ exit $ret
 
 exports[`test/basic.js TAP env shebang with variables > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -327,14 +360,25 @@ exit $ret
 
 exports[`test/basic.js TAP explicit shebang > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -416,14 +460,25 @@ exit $ret
 
 exports[`test/basic.js TAP explicit shebang with args > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -486,14 +541,25 @@ exit $LASTEXITCODE
 
 exports[`test/basic.js TAP if exists (it does exist) > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -545,14 +611,25 @@ exit $LASTEXITCODE
 
 exports[`test/basic.js TAP just proceed if reading fails > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -625,14 +702,25 @@ exit $ret
 
 exports[`test/basic.js TAP multiple variables > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -695,14 +783,25 @@ exit $LASTEXITCODE
 
 exports[`test/basic.js TAP no shebang > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
@@ -773,14 +872,25 @@ exit $ret
 
 exports[`test/basic.js TAP shebang with env -S > shell 1`] = `
 #!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+case "$0" in
+  *\\\\*) basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')") ;;
+  */*) basedir="\${0%/*}" ;;
+  *) basedir=. ;;
+esac
+basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
-case \`uname -a\` in
+os=
+{ read -r os < /proc/version; } 2> /dev/null
+case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
-    if command -v cygpath > /dev/null 2>&1; then
-      basedir_win=\`cygpath -w "$basedir"\`
-    fi
+    case "$basedir" in
+      /*)
+        if command -v cygpath > /dev/null 2>&1; then
+          basedir_win=\`cygpath -w "$basedir"\`
+        fi
+      ;;
+    esac
   ;;
   *WSL2*)
     if command -v wslpath > /dev/null 2>&1; then
