@@ -68,7 +68,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -168,7 +168,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -269,7 +269,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -369,7 +369,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -469,7 +469,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -550,7 +550,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -620,7 +620,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -711,7 +711,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -792,7 +792,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
@@ -881,7 +881,7 @@ basedir="\${basedir:-/}"
 basedir_win="$basedir"
 
 os=
-{ read -r os < /proc/version; } 2> /dev/null
+{ read -r os < /proc/version; } 2> /dev/null || :
 case "$os" in
   *CYGWIN*|*MINGW*|*MSYS*)
     case "$basedir" in
